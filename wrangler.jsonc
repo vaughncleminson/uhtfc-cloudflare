@@ -15,6 +15,12 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS",
   },
+  "vars": {
+  "PAYLOAD_SECRET": "9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23",
+  "NEXT_PUBLIC_SERVER_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev",
+  "PAYLOAD_PUBLIC_SERVER_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev",
+  "VERCEL_PROJECT_PRODUCTION_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev"
+  },
   "d1_databases": [
     {
       "binding": "D1",
