@@ -2,7 +2,7 @@ import { withPayload } from '@payloadcms/next/withPayload'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 1. ADD THIS BLOCK TO BYPASS THE R2 TYPE ERROR
+  // 1. Bypass TypeScript build errors
   typescript: {
     ignoreBuildErrors: true,
   },
