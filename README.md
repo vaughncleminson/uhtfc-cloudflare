@@ -1,4 +1,35 @@
-# Payload Cloudflare Template
+# UHTFC-Cloudflare
+
+## Things to install
+
+nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+
+wrangler:
+npm i -D wrangler@latest
+
+pnpm: 
+curl -fsSL https://get.pnpm.io/install.sh | sh -
+source /home/vaughncleminson/.bashrc
+consent in dash.cloudflare.com web browser
+
+## Live URL on Cloudflare
+
+https://uhtfc-cloudflare.vaughn-710.workers.dev/
+
+## Cloudflare Dashboard
+
+https://dash.cloudflare.com/710f16f153fc7b769ec7b58ae089ffdc/workers/services/view/uhtfc-cloudflare/production
+
+## D1 databases
+
+live:
+d1-uhtfc-cloudflare
+
+staging:
+d1-uhtfc-staging
+
+## We used this Payload Cloudflare Template to start
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/payloadcms/payload/tree/main/templates/with-cloudflare-d1)
 
@@ -9,14 +40,6 @@
 This template can be deployed directly to Cloudflare Workers by clicking the button to take you to the setup screen.
 
 From there you can connect your code to a git provider such Github or Gitlab, name your Workers, D1 Database and R2 Bucket as well as attach any additional environment variables or services you need.
-
-## Quick Start - local setup
-
-To spin up this template locally, follow these steps:
-
-### Clone
-
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. Cloudflare will connect your app to a git provider such as Github and you can access your code from there.
 
 ### Local Development
 

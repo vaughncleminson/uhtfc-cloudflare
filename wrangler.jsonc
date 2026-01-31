@@ -3,83 +3,54 @@
   "main": ".open-next/worker.js",
   "name": "uhtfc-cloudflare",
   "compatibility_date": "2026-01-30",
-  "compatibility_flags": [
-    // Enable Node.js API
-    // see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#nodejs-compatibility-flag
-    "nodejs_compat",
-    // Allow to fetch URLs in your app
-    // see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#global-fetch-strictly-public
-    "global_fetch_strictly_public",
-  ],
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS",
   },
   "vars": {
-  "PAYLOAD_SECRET": "9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23",
-  "NEXT_PUBLIC_SERVER_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev/",
-  "PAYLOAD_PUBLIC_SERVER_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev/",
-  "VERCEL_PROJECT_PRODUCTION_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev/"
+    "PAYLOAD_SECRET": "9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23",
+    "NEXT_PUBLIC_SERVER_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev",
+    "PAYLOAD_PUBLIC_SERVER_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev",
+    "VERCEL_PROJECT_PRODUCTION_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev",
   },
+  // PRODUCTION DEFAULT
   "d1_databases": [
     {
       "binding": "D1",
       "database_id": "893cce31-2c9f-4786-b709-af2eea99aab2",
       "database_name": "d1-uhtfc-cloudflare",
-      "remote": true,
     },
-  ],
-  "services": [
-    // The service should match the "name" of your worker
-    // {
-    //   "binding": "WORKER_SELF_REFERENCE",
-    //   "service": "my-app"
-    // },
   ],
   "r2_buckets": [
     {
       "binding": "R2",
       "bucket_name": "r2-uhtfc-cloudflare",
-      "preview_bucket_name": "r2-uhtfc-cloudflare",
     },
-    // Create a R2 binding with the binding name "NEXT_INC_CACHE_R2_BUCKET"
-    // {
-    //   "binding": "NEXT_INC_CACHE_R2_BUCKET",
-    //   "bucket_name": "<BUCKET_NAME>",
-    // },
   ],
-
-  // Here's how to configure an additional environment
-  // It can be deployed with `CLOUDFLARE_ENV=staging pnpm run deploy`
-  // "env": {
-  //   "staging": {
-  //     "name": "my-app-staging",
-  //     "d1_databases": [
-  //       {
-  //         "binding": "D1",
-  //         "database_id": "DATABASE_ID",
-  //         "database_name": "my-app-staging",
-  //         "remote": true
-  //       }
-  //     ],
-  //     "services": [
-  //       // The service should match the "name" of your worker
-  //       // {
-  //       //   "binding": "WORKER_SELF_REFERENCE",
-  //       //   "service": "my-app-staging"
-  //       // },
-  //     ],
-  //     "r2_buckets": [
-  //       {
-  //         "binding": "R2",
-  //         "bucket_name": "my-app-staging"
-  //       }
-  //       // Create a R2 binding with the binding name "NEXT_INC_CACHE_R2_BUCKET"
-  //       // {
-  //       //   "binding": "NEXT_INC_CACHE_R2_BUCKET",
-  //       //   "bucket_name": "<BUCKET_NAME>",
-  //       // },
-  //     ]
-  //   }
-  // }
+  "env": {
+    "staging": {
+      "name": "uhtfc-staging",
+      "vars": {
+        // Update these so Payload knows it's on staging
+        "NEXT_PUBLIC_SERVER_URL": "https://uhtfc-staging.vaughn-710.workers.dev",
+        "PAYLOAD_PUBLIC_SERVER_URL": "https://uhtfc-staging.vaughn-710.workers.dev",
+        "PAYLOAD_SECRET": "9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23",
+        "VERCEL_PROJECT_PRODUCTION_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev",
+      },
+      "d1_databases": [
+        {
+          "binding": "D1", // Keep the binding name identical to production!
+          "database_id": "3229cdbb-93bf-4e04-8fdc-b1457c96d3ee",
+          "database_name": "d1-uhtfc-staging",
+        },
+      ],
+      "r2_buckets": [
+        {
+          "binding": "R2",
+          "bucket_name": "r2-uhtfc-cloudflare", // Using same bucket for now, or create a staging one!
+        },
+      ],
+    },
+  },
 }
