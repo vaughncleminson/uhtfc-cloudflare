@@ -13,9 +13,23 @@ import { Media } from './collections/Media'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-const realpath = (value: string) => (fs.existsSync(value) ? fs.realpathSync(value) : undefined)
 
-const isCLI = process.argv.some((value) => realpath(value).endsWith(path.join('payload', 'bin.js')))
+// Define realpath safely
+const realpath = (value: string) => {
+  try {
+    return fs.existsSync(value) ? fs.realpathSync(value) : undefined
+  } catch (e) {
+    return undefined
+  }
+}
+
+// Check for CLI safely
+const isCLI = typeof process !== 'undefined' && 
+              Array.isArray(process.argv) && 
+              process.argv.some((value) => {
+                const pathValue = realpath(value);
+                return pathValue && pathValue.endsWith(path.join('payload', 'bin.js'));
+              });
 const isProduction = process.env.NODE_ENV === 'production'
 
 const cloudflare =
