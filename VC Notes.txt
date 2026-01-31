@@ -4,6 +4,9 @@ PAYLOAD_SECRET="9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23
 
 npm run deploy
 
+Remote Worker Logout
+npx wrangler tail uhtfc-cloudflare
+
 Logout and in again
 npx wrangler Logout
 npx wranger login
