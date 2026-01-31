@@ -2,10 +2,21 @@ PAYLOAD_SECRET="9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23
 PAYLOAD_SECRET="9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23" npm run payload migrate:create -- --sql
 PAYLOAD_SECRET="9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23" NODE_OPTIONS="--no-deprecation" ./node_modules/.bin/payload migrate:create --sql
 
-npm run deploy
+Deploy Commands
+---------------
+Deploy to Production
+npx wrangler deploy
 
-Remote Worker Logout
+Deploy to Staging
+npx wrangler deploy --env staging
+Run Migrations on Staging
+npx wrangler d1 migrations apply D1 --remote --env staging
+
+View Current Logs
+-----------------
 npx wrangler tail uhtfc-cloudflare
+
+npx wrangler tail uhtfc-staging
 
 Logout and in again
 npx wrangler Logout
