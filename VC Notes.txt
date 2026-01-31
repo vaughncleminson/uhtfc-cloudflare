@@ -3,3 +3,13 @@ PAYLOAD_SECRET="9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23
 PAYLOAD_SECRET="9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23" NODE_OPTIONS="--no-deprecation" ./node_modules/.bin/payload migrate:create --sql
 
 npm run deploy
+
+Logout and in again
+npx wrangler Logout
+npx wranger login
+
+Export database
+npx wrangler d1 export d1-uhtfc-cloudflare --remote --output=./database-exports/export20260131_1.sql
+
+Import database
+npx wrangler d1 execute d1-uhtfc-staging --remote --file=./database-exports/export20260131_1.sql
