@@ -119,6 +119,3 @@ We currently recommend deploying this template to the Paid Workers plan due to b
 
 This also applies to your own code, in the case of importing a lot of libraries you may find yourself limited by the bundle.
 
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
