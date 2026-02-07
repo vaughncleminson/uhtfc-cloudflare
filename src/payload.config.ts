@@ -7,10 +7,21 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import { GetPlatformProxyOptions } from 'wrangler'
-
-import { Articles } from './collections/Articles'
-import { Media } from './collections/Media'
-import { Users } from './collections/Users'
+import { Admins } from './admin/collections/Admins'
+import { BookingHistory } from './admin/collections/BookingHistory'
+import { Bookings } from './admin/collections/Bookings'
+import { CatchReturns } from './admin/collections/CatchReturns'
+import { EmailSubscribers } from './admin/collections/EmailSubscribers'
+import { Festivals } from './admin/collections/Festivals'
+import { Locations } from './admin/collections/Locations'
+import { Media } from './admin/collections/Media'
+import { Navigation } from './admin/collections/Navigation'
+import { NewMemberships } from './admin/collections/NewMemberships'
+import { Orders } from './admin/collections/Orders'
+import { Pages } from './admin/collections/Pages'
+import { Payments } from './admin/collections/Payments'
+import { Settings } from './admin/collections/Settings'
+import { Users } from './admin/collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -41,12 +52,49 @@ const cloudflare =
 
 export default buildConfig({
   admin: {
-    user: Users.slug,
+    user: Admins.slug,
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    livePreview: {
+      breakpoints: [
+        {
+          label: 'Mobile',
+          name: 'mobile',
+          width: 375,
+          height: 667,
+        },
+        {
+          label: 'Tablet',
+          name: 'tablet',
+          width: 768,
+          height: 1024,
+        },
+        {
+          label: 'Desktop',
+          name: 'desktop',
+          width: 1440,
+          height: 900,
+        },
+      ],
+    },
   },
-  collections: [Users, Media, Articles],
+  globals: [Settings, Navigation],
+  collections: [
+    Admins,
+    Media,
+    Orders,
+    Payments,
+    Bookings,
+    BookingHistory,
+    CatchReturns,
+    NewMemberships,
+    Festivals,
+    Pages,
+    Locations,
+    Users,
+    EmailSubscribers,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -55,7 +103,7 @@ export default buildConfig({
   db: sqliteD1Adapter({ binding: cloudflare.env.D1 }),
   plugins: [
     r2Storage({
-      bucket: cloudflare.env.R2,
+      bucket: cloudflare.env.R2 as any,
       collections: { media: true },
     }),
   ],

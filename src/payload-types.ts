@@ -63,13 +63,24 @@ export type SupportedTimezones =
 
 export interface Config {
   auth: {
+    admins: AdminAuthOperations;
     users: UserAuthOperations;
   };
   blocks: {};
   collections: {
-    users: User;
+    admins: Admin;
     media: Media;
-    articles: Article;
+    orders: Order;
+    payments: Payment;
+    bookings: Booking;
+    bookingHistory: BookingHistory;
+    catchReturns: CatchReturn;
+    newMemberships: NewMembership;
+    festivals: Festival;
+    pages: Page;
+    locations: Location;
+    users: User;
+    emailSubscribers: EmailSubscriber;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -77,9 +88,19 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    admins: AdminsSelect<false> | AdminsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    payments: PaymentsSelect<false> | PaymentsSelect<true>;
+    bookings: BookingsSelect<false> | BookingsSelect<true>;
+    bookingHistory: BookingHistorySelect<false> | BookingHistorySelect<true>;
+    catchReturns: CatchReturnsSelect<false> | CatchReturnsSelect<true>;
+    newMemberships: NewMembershipsSelect<false> | NewMembershipsSelect<true>;
+    festivals: FestivalsSelect<false> | FestivalsSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    locations: LocationsSelect<false> | LocationsSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    emailSubscribers: EmailSubscribersSelect<false> | EmailSubscribersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -89,15 +110,43 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
-  locale: null;
-  user: User & {
-    collection: 'users';
+  globals: {
+    settings: Setting;
+    navigation: Navigation;
   };
+  globalsSelect: {
+    settings: SettingsSelect<false> | SettingsSelect<true>;
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
+  };
+  locale: null;
+  user:
+    | (Admin & {
+        collection: 'admins';
+      })
+    | (User & {
+        collection: 'users';
+      });
   jobs: {
     tasks: unknown;
     workflows: unknown;
+  };
+}
+export interface AdminAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
   };
 }
 export interface UserAuthOperations {
@@ -120,10 +169,22 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "admins".
  */
-export interface User {
+export interface Admin {
   id: number;
+  role?: ('admin' | 'editor' | 'viewer') | null;
+  mfa?: {
+    mfaSettings?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -149,6 +210,7 @@ export interface User {
 export interface Media {
   id: number;
   alt: string;
+  description?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -158,16 +220,599 @@ export interface Media {
   filesize?: number | null;
   width?: number | null;
   height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    square?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    small?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    medium?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    large?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    xlarge?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    og?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles".
+ * via the `definition` "orders".
  */
-export interface Article {
+export interface Order {
   id: number;
-  title?: string | null;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role?: ('non-member' | 'member' | 'member-guest' | 'corporate-guest' | 'admin') | null;
+  paymentStatus?: ('not-required' | 'payment-pending' | 'payment-received') | null;
+  products:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  checkoutId?: string | null;
+  createdAt: string;
+  totalAmount?: number | null;
+  lineItems?:
+    | {
+        displayName: string;
+        description: string;
+        quantity: number;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments".
+ */
+export interface Payment {
+  id: number;
+  paymentId: string;
+  userName: string;
+  products?: string | null;
+  details?: string | null;
+  amount: number;
+  currency?: string | null;
+  type?: string | null;
+  status: string;
+  mode?: string | null;
+  order?: (number | null) | Order;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings".
+ */
+export interface Booking {
+  id: number;
+  productType: string;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  role?: ('non-member' | 'member' | 'member-guest' | 'corporate-guest' | 'admin') | null;
+  email: string;
+  location: number | Location;
+  date?: string | null;
+  anglers: {
+    userId?: number | null;
+    fullName?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    email?: string | null;
+    role?: ('non-member' | 'member' | 'member-guest' | 'corporate-guest' | 'admin') | null;
+    id?: string | null;
+  }[];
+  totalAmount?: number | null;
+  lineItems?:
+    | {
+        displayName: string;
+        description: string;
+        quantity: number;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
+  acceptTerms?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations".
+ */
+export interface Location {
+  id: number;
+  title: string;
+  topic: ('trout' | 'bass')[];
+  type: 'river' | 'stillwater';
+  enabled?: boolean | null;
+  temporarilyClosed?: boolean | null;
+  closureReason?: string | null;
+  closureFromDate?: string | null;
+  closureToDate?: string | null;
+  layout: (LocationHeroBlock | LocationDetailsBlock | MapBlock)[];
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationHeroBlock".
+ */
+export interface LocationHeroBlock {
+  title?: string | null;
+  image?: (number | null) | Media;
+  btns?: {
+    links?:
+      | {
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            show?: ('always' | 'auth' | 'no-auth') | null;
+            internalLink?: string | null;
+            url?: string | null;
+            label?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'locationHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationDetailsBlock".
+ */
+export interface LocationDetailsBlock {
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  rodLimit: number;
+  membersOnly?: boolean | null;
+  bagLimit: string;
+  hasBoats?: boolean | null;
+  hasBass?: boolean | null;
+  fishingMethods: 'Bank only' | 'Float tube' | 'Bank & float tube' | 'Float tube & boat' | 'Bank, float tube & boat';
+  requiresKey?: boolean | null;
+  requiresGateCode?: boolean | null;
+  accessInstructions?: string | null;
+  sendLandownerEmail?: boolean | null;
+  landownerEmail?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'locationDetails';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapBlock".
+ */
+export interface MapBlock {
+  map?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  specificDirections?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'map';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookingHistory".
+ */
+export interface BookingHistory {
+  id: number;
+  locationId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  userId: number;
+  members?: number | null;
+  nonMembers?: number | null;
+  corporateGuests?: number | null;
+  date: string;
+  rodsBooked: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "catchReturns".
+ */
+export interface CatchReturn {
+  id: number;
+  booking?: (number | null) | Booking;
+  nilReturn?: boolean | null;
+  returns?:
+    | {
+        species: 'rainbow' | 'brown' | 'bass';
+        quantity: number;
+        length: number;
+        released?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  stats: {
+    total: number;
+    averageLength: number;
+    largeFish: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newMemberships".
+ */
+export interface NewMembership {
+  id: number;
+  productType: string;
+  userId: number;
+  membershipType: 'OM' | 'OMW' | 'F' | 'J' | 'S';
+  firstName: string;
+  lastName: string;
+  idNumber: string;
+  email: string;
+  mobileNumber: string;
+  street: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  country: string;
+  otherMemberships?: string | null;
+  howDidYouHearAboutUs?: string | null;
+  totalAmount?: number | null;
+  acceptTerms?: boolean | null;
+  createdAt: string;
+  lineItems?:
+    | {
+        displayName: string;
+        description: string;
+        quantity: number;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "festivals".
+ */
+export interface Festival {
+  id: number;
+  productType: string;
+  festivalName: string;
+  bookingsOpen?: boolean | null;
+  numberOfTeams?: number | null;
+  entriesPerTeam?: number | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  'Event Duration'?: number | null;
+  price?: number | null;
+  extaMeals?: number | null;
+  giveAwayType?: ('tShirt' | 'hoodie' | 'cap' | 'hat')[] | null;
+  garmentSizes?: ('xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl')[] | null;
+  hatSizes?: ('s' | 'm' | 'l')[] | null;
+  teamMembers: {
+    fullName: string;
+    email: string;
+    mobile: string;
+    garmentSize: string;
+    hatSize: string;
+    extraMeals?: number | null;
+    id?: string | null;
+  }[];
+  totalAmount?: number | null;
+  lineItems?:
+    | {
+        displayName: string;
+        description: string;
+        quantity: number;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  layout: (
+    | HeroBlock
+    | AuthBlock
+    | MapDefaultBlock
+    | MapBlock
+    | RodFeesMembershipBlock
+    | BookingBlock
+    | LocationsBlock
+    | OrderBlock
+    | MyBookingsBlock
+    | CatchReturnsBlock
+    | PaymentsBlock
+  )[];
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock".
+ */
+export interface HeroBlock {
+  title?: string | null;
+  image?: (number | null) | Media;
+  btns?: {
+    links?:
+      | {
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            show?: ('always' | 'auth' | 'no-auth') | null;
+            internalLink?: string | null;
+            url?: string | null;
+            label?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AuthBlock".
+ */
+export interface AuthBlock {
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'auth';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapDefaultBlock".
+ */
+export interface MapDefaultBlock {
+  title?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mapDefault';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RodFeesMembershipBlock".
+ */
+export interface RodFeesMembershipBlock {
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'rodFeesMembership';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BookingBlock".
+ */
+export interface BookingBlock {
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'booking';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationsBlock".
+ */
+export interface LocationsBlock {
+  title?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'locations';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OrderBlock".
+ */
+export interface OrderBlock {
+  title?: string | null;
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'order';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MyBookingsBlock".
+ */
+export interface MyBookingsBlock {
+  title?: string | null;
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'myBookings';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CatchReturnsBlock".
+ */
+export interface CatchReturnsBlock {
+  title?: string | null;
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'catchReturns';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PaymentsBlock".
+ */
+export interface PaymentsBlock {
+  title?: string | null;
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'payments';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  mobileNumber: string;
+  idNumber?: string | null;
+  street?: string | null;
+  city?: string | null;
+  province?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+  role?: ('non-member' | 'member' | 'member-guest' | 'corporate-guest' | 'admin') | null;
+  membershipType?: ('OM' | 'OMW' | 'F' | 'J' | 'S' | 'C' | 'COMP' | 'R') | null;
+  blocked?: boolean | null;
+  subsDue?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "emailSubscribers".
+ */
+export interface EmailSubscriber {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  subscribed: boolean;
+  unsubscribeToken: string;
+  createdAt: string;
+  updatedAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -194,22 +839,67 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'admins';
+        value: number | Admin;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
     | ({
-        relationTo: 'articles';
-        value: number | Article;
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'payments';
+        value: number | Payment;
+      } | null)
+    | ({
+        relationTo: 'bookings';
+        value: number | Booking;
+      } | null)
+    | ({
+        relationTo: 'bookingHistory';
+        value: number | BookingHistory;
+      } | null)
+    | ({
+        relationTo: 'catchReturns';
+        value: number | CatchReturn;
+      } | null)
+    | ({
+        relationTo: 'newMemberships';
+        value: number | NewMembership;
+      } | null)
+    | ({
+        relationTo: 'festivals';
+        value: number | Festival;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'locations';
+        value: number | Location;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'emailSubscribers';
+        value: number | EmailSubscriber;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'admins';
+        value: number | Admin;
+      }
+    | {
+        relationTo: 'users';
+        value: number | User;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -219,10 +909,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'admins';
+        value: number | Admin;
+      }
+    | {
+        relationTo: 'users';
+        value: number | User;
+      };
   key?: string | null;
   value?:
     | {
@@ -249,9 +944,15 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "admins_select".
  */
-export interface UsersSelect<T extends boolean = true> {
+export interface AdminsSelect<T extends boolean = true> {
+  role?: T;
+  mfa?:
+    | T
+    | {
+        mfaSettings?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -275,6 +976,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  description?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -284,15 +986,572 @@ export interface MediaSelect<T extends boolean = true> {
   filesize?: T;
   width?: T;
   height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        square?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        small?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        medium?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        large?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        xlarge?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        og?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles_select".
+ * via the `definition` "orders_select".
  */
-export interface ArticlesSelect<T extends boolean = true> {
-  title?: T;
+export interface OrdersSelect<T extends boolean = true> {
+  userId?: T;
+  firstName?: T;
+  lastName?: T;
+  email?: T;
+  role?: T;
+  paymentStatus?: T;
+  products?: T;
+  checkoutId?: T;
+  createdAt?: T;
+  totalAmount?: T;
+  lineItems?:
+    | T
+    | {
+        displayName?: T;
+        description?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments_select".
+ */
+export interface PaymentsSelect<T extends boolean = true> {
+  paymentId?: T;
+  userName?: T;
+  products?: T;
+  details?: T;
+  amount?: T;
+  currency?: T;
+  type?: T;
+  status?: T;
+  mode?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings_select".
+ */
+export interface BookingsSelect<T extends boolean = true> {
+  productType?: T;
+  userId?: T;
+  firstName?: T;
+  lastName?: T;
+  role?: T;
+  email?: T;
+  location?: T;
+  date?: T;
+  anglers?:
+    | T
+    | {
+        userId?: T;
+        fullName?: T;
+        firstName?: T;
+        lastName?: T;
+        email?: T;
+        role?: T;
+        id?: T;
+      };
+  totalAmount?: T;
+  lineItems?:
+    | T
+    | {
+        displayName?: T;
+        description?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
+  acceptTerms?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookingHistory_select".
+ */
+export interface BookingHistorySelect<T extends boolean = true> {
+  locationId?: T;
+  firstName?: T;
+  lastName?: T;
+  email?: T;
+  userId?: T;
+  members?: T;
+  nonMembers?: T;
+  corporateGuests?: T;
+  date?: T;
+  rodsBooked?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "catchReturns_select".
+ */
+export interface CatchReturnsSelect<T extends boolean = true> {
+  booking?: T;
+  nilReturn?: T;
+  returns?:
+    | T
+    | {
+        species?: T;
+        quantity?: T;
+        length?: T;
+        released?: T;
+        id?: T;
+      };
+  stats?:
+    | T
+    | {
+        total?: T;
+        averageLength?: T;
+        largeFish?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newMemberships_select".
+ */
+export interface NewMembershipsSelect<T extends boolean = true> {
+  productType?: T;
+  userId?: T;
+  membershipType?: T;
+  firstName?: T;
+  lastName?: T;
+  idNumber?: T;
+  email?: T;
+  mobileNumber?: T;
+  street?: T;
+  city?: T;
+  province?: T;
+  postalCode?: T;
+  country?: T;
+  otherMemberships?: T;
+  howDidYouHearAboutUs?: T;
+  totalAmount?: T;
+  acceptTerms?: T;
+  createdAt?: T;
+  lineItems?:
+    | T
+    | {
+        displayName?: T;
+        description?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "festivals_select".
+ */
+export interface FestivalsSelect<T extends boolean = true> {
+  productType?: T;
+  festivalName?: T;
+  bookingsOpen?: T;
+  numberOfTeams?: T;
+  entriesPerTeam?: T;
+  startDate?: T;
+  endDate?: T;
+  'Event Duration'?: T;
+  price?: T;
+  extaMeals?: T;
+  giveAwayType?: T;
+  garmentSizes?: T;
+  hatSizes?: T;
+  teamMembers?:
+    | T
+    | {
+        fullName?: T;
+        email?: T;
+        mobile?: T;
+        garmentSize?: T;
+        hatSize?: T;
+        extraMeals?: T;
+        id?: T;
+      };
+  totalAmount?: T;
+  lineItems?:
+    | T
+    | {
+        displayName?: T;
+        description?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  layout?:
+    | T
+    | {
+        hero?: T | HeroBlockSelect<T>;
+        auth?: T | AuthBlockSelect<T>;
+        mapDefault?: T | MapDefaultBlockSelect<T>;
+        map?: T | MapBlockSelect<T>;
+        rodFeesMembership?: T | RodFeesMembershipBlockSelect<T>;
+        booking?: T | BookingBlockSelect<T>;
+        locations?: T | LocationsBlockSelect<T>;
+        order?: T | OrderBlockSelect<T>;
+        myBookings?: T | MyBookingsBlockSelect<T>;
+        catchReturns?: T | CatchReturnsBlockSelect<T>;
+        payments?: T | PaymentsBlockSelect<T>;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  publishedAt?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock_select".
+ */
+export interface HeroBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  btns?:
+    | T
+    | {
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    show?: T;
+                    internalLink?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AuthBlock_select".
+ */
+export interface AuthBlockSelect<T extends boolean = true> {
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapDefaultBlock_select".
+ */
+export interface MapDefaultBlockSelect<T extends boolean = true> {
+  title?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapBlock_select".
+ */
+export interface MapBlockSelect<T extends boolean = true> {
+  map?: T;
+  specificDirections?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RodFeesMembershipBlock_select".
+ */
+export interface RodFeesMembershipBlockSelect<T extends boolean = true> {
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BookingBlock_select".
+ */
+export interface BookingBlockSelect<T extends boolean = true> {
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationsBlock_select".
+ */
+export interface LocationsBlockSelect<T extends boolean = true> {
+  title?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OrderBlock_select".
+ */
+export interface OrderBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MyBookingsBlock_select".
+ */
+export interface MyBookingsBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CatchReturnsBlock_select".
+ */
+export interface CatchReturnsBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PaymentsBlock_select".
+ */
+export interface PaymentsBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations_select".
+ */
+export interface LocationsSelect<T extends boolean = true> {
+  title?: T;
+  topic?: T;
+  type?: T;
+  enabled?: T;
+  temporarilyClosed?: T;
+  closureReason?: T;
+  closureFromDate?: T;
+  closureToDate?: T;
+  layout?:
+    | T
+    | {
+        locationHero?: T | LocationHeroBlockSelect<T>;
+        locationDetails?: T | LocationDetailsBlockSelect<T>;
+        map?: T | MapBlockSelect<T>;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  publishedAt?: T;
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationHeroBlock_select".
+ */
+export interface LocationHeroBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  btns?:
+    | T
+    | {
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    show?: T;
+                    internalLink?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationDetailsBlock_select".
+ */
+export interface LocationDetailsBlockSelect<T extends boolean = true> {
+  description?: T;
+  rodLimit?: T;
+  membersOnly?: T;
+  bagLimit?: T;
+  hasBoats?: T;
+  hasBass?: T;
+  fishingMethods?: T;
+  requiresKey?: T;
+  requiresGateCode?: T;
+  accessInstructions?: T;
+  sendLandownerEmail?: T;
+  landownerEmail?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  mobileNumber?: T;
+  idNumber?: T;
+  street?: T;
+  city?: T;
+  province?: T;
+  postalCode?: T;
+  country?: T;
+  role?: T;
+  membershipType?: T;
+  blocked?: T;
+  subsDue?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "emailSubscribers_select".
+ */
+export interface EmailSubscribersSelect<T extends boolean = true> {
+  email?: T;
+  firstName?: T;
+  lastName?: T;
+  subscribed?: T;
+  unsubscribeToken?: T;
+  createdAt?: T;
+  updatedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -333,6 +1592,150 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings".
+ */
+export interface Setting {
+  id: number;
+  callToAction?: {
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      show?: ('always' | 'auth' | 'no-auth') | null;
+      internalLink?: string | null;
+      url?: string | null;
+      label?: string | null;
+    };
+  };
+  riversClosed: {
+    closeDate: string;
+    openDate: string;
+  };
+  damsClosed: {
+    closeDate: string;
+    openDate: string;
+  };
+  bookingRules: {
+    allowedFutureBookingDays: number;
+    sameLocationBookingInWeek: number;
+    sameLocationBookingInMonth: number;
+    sameLocationBookingConsecutiveDays: boolean;
+  };
+  subsSettings: {
+    joiningFee: number;
+    OM: number;
+    OMW: number;
+    F: number;
+    J: number;
+    S: number;
+    C: number;
+  };
+  fishingFees: {
+    nonMember: number;
+    memberGuest: number;
+  };
+  emailSettings: {
+    fromEmail: string;
+    fromName: string;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  navigation?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings_select".
+ */
+export interface SettingsSelect<T extends boolean = true> {
+  callToAction?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              show?: T;
+              internalLink?: T;
+              url?: T;
+              label?: T;
+            };
+      };
+  riversClosed?:
+    | T
+    | {
+        closeDate?: T;
+        openDate?: T;
+      };
+  damsClosed?:
+    | T
+    | {
+        closeDate?: T;
+        openDate?: T;
+      };
+  bookingRules?:
+    | T
+    | {
+        allowedFutureBookingDays?: T;
+        sameLocationBookingInWeek?: T;
+        sameLocationBookingInMonth?: T;
+        sameLocationBookingConsecutiveDays?: T;
+      };
+  subsSettings?:
+    | T
+    | {
+        joiningFee?: T;
+        OM?: T;
+        OMW?: T;
+        F?: T;
+        J?: T;
+        S?: T;
+        C?: T;
+      };
+  fishingFees?:
+    | T
+    | {
+        nonMember?: T;
+        memberGuest?: T;
+      };
+  emailSettings?:
+    | T
+    | {
+        fromEmail?: T;
+        fromName?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  navigation?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

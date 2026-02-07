@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  html,
+  body {
+    @apply h-full scroll-smooth;
+  }
+  #__next {
+    @apply h-full;
+  }
+  .text-fancy {
+    font-family: var(--font-crimson-pro);
+  }
+  h1 {
+    @apply text-5xl;
+  }
+  h2 {
+    @apply text-3xl;
+  }
+  h3 {
+    @apply text-xl font-bold;
+  }
+  h4 {
+    @apply text-lg;
+  }
+  p {
+    @apply text-base;
+  }
+  .input {
+    @apply text-lg w-full text-gray-600 bg-slate-100 border px-4 py-2 outline-slate-300;
+  }
+  .select {
+    @apply text-lg text-gray-600 bg-slate-100 border px-4 py-2 outline-slate-300 appearance-none;
+  }
+  .label {
+    @apply text-sm text-gray-500;
+  }
+  .submit {
+    @apply flex gap-2 justify-center items-center bg-red-700 hover:bg-red-600 cursor-pointer text-white p-3 text-xl rounded mt-4 outline-red-800;
+  }
+  .future-available-date {
+    @apply bg-slate-200 rounded-full;
+  }
+  .future-unavailable-date {
+    @apply bg-red-200 rounded-full;
+  }
+  .future-semi-available-date {
+    @apply bg-red-200 rounded-full;
+  }
+  .tooltip {
+    @apply absolute text-white px-2 py-1 rounded bottom-[7px] right-[7px];
+  }
+}

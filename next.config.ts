@@ -3,6 +3,7 @@ import { withPayload } from '@payloadcms/next/withPayload'
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // 1. Bypass TypeScript build errors
+
   typescript: {
     ignoreBuildErrors: true,
   },
