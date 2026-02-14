@@ -10,5 +10,6 @@ export const Booking: Block = {
       label: 'Image',
       relationTo: 'media',
     },
+    // test
   ],
 }
