@@ -18,7 +18,7 @@
   "d1_databases": [
     {
       "binding": "D1",
-      "database_id": "893cce31-2c9f-4786-b709-af2eea99aab2",
+      "database_id": "43dd34de-77e9-45b4-a60b-ad5e3733fa84",
       "database_name": "d1-uhtfc-cloudflare",
       "migrations_dir": "src/migrations",
       "remote": true,
