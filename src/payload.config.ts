@@ -22,6 +22,7 @@ import { Pages } from './admin/collections/Pages'
 import { Payments } from './admin/collections/Payments'
 import { Settings } from './admin/collections/Settings'
 import { Users } from './admin/collections/Users'
+import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -100,7 +101,8 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: sqliteD1Adapter({ binding: cloudflare.env.D1 }),
+  db: sqliteD1Adapter({ binding: cloudflare.env.D1, migrationDir: 'migrations', prodMigrations:migrations }),
+
   plugins: [
     r2Storage({
       bucket: cloudflare.env.R2 as any,
