@@ -20,6 +20,7 @@
       "binding": "D1",
       "database_id": "893cce31-2c9f-4786-b709-af2eea99aab2",
       "database_name": "d1-uhtfc-cloudflare",
+      "migrations_dir": "src/migrations",
     },
   ],
   "r2_buckets": [
