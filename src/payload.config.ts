@@ -98,10 +98,15 @@ export default buildConfig({
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: sqliteD1Adapter({ binding: cloudflare.env.D1, migrationDir: 'migrations', prodMigrations:migrations }),
+  db: sqliteD1Adapter({
+    binding: cloudflare.env.D1,
+    migrationDir: 'migrations',
+    prodMigrations: migrations,
+  }),
 
   plugins: [
     r2Storage({
