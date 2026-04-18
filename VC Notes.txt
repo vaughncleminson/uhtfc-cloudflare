@@ -18,3 +18,5 @@ npx wrangler d1 export d1-uhtfc-cloudflare --remote --output=./database-exports/
 
 Import database
 npx wrangler d1 execute d1-uhtfc-staging --remote --file=./database-exports/export20260131_1.sql
+
+comment to do another deploy
