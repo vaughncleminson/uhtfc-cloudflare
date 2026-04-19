@@ -31,29 +31,4 @@
       "bucket_name": "r2-uhtfc-cloudflare",
     },
   ],
-  "env": {
-    "staging": {
-      "name": "uhtfc-staging",
-      "vars": {
-        // Update these so Payload knows it's on staging
-        "NEXT_PUBLIC_SERVER_URL": "https://uhtfc-staging.vaughn-710.workers.dev",
-        "PAYLOAD_PUBLIC_SERVER_URL": "https://uhtfc-staging.vaughn-710.workers.dev",
-        "PAYLOAD_SECRET": "9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23",
-        "VERCEL_PROJECT_PRODUCTION_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev",
-      },
-      "d1_databases": [
-        {
-          "binding": "D1", // Keep the binding name identical to production!
-          "database_id": "3229cdbb-93bf-4e04-8fdc-b1457c96d3ee",
-          "database_name": "d1-uhtfc-staging",
-        },
-      ],
-      "r2_buckets": [
-        {
-          "binding": "R2",
-          "bucket_name": "r2-uhtfc-cloudflare", // Using same bucket for now, or create a staging one!
-        },
-      ],
-    },
-  },
 }
