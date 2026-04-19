@@ -2,7 +2,10 @@
 import { defineCloudflareConfig } from '@opennextjs/cloudflare/config'
 
 export default defineCloudflareConfig({
+  override: {
+    wrapper: 'cloudflare',
+  },
   middleware: {
-    external: ['drizzle-kit'],
+    external: ['drizzle-kit', '@payloadcms/db-d1-sqlite'],
   },
 })

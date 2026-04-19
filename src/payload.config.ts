@@ -46,8 +46,10 @@ const isCLI =
   })
 const isProduction = process.env.NODE_ENV === 'production'
 
+const skipRemoteCloudflare = process.env.SKIP_REMOTE_CLOUDFLARE === 'true'
+
 const cloudflare =
-  isCLI || !isProduction
+  isCLI || !isProduction || skipRemoteCloudflare
     ? await getCloudflareContextFromWrangler()
     : await getCloudflareContext({ async: true })
 

@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" SKIP_REMOTE_CLOUDFLARE=true next build",
     "build:worker": "npx wrangler d1 migrations apply d1-uhtfc-cloudflare --remote && npm run build && npx @opennextjs/cloudflare build",
     "deploy": "node validate-env.js && pnpm run deploy:database && pnpm run deploy:app",
     "deploy:app": "npm run build:worker && opennextjs-cloudflare deploy --env=$CLOUDFLARE_ENV",
@@ -29,7 +29,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@opennextjs/cloudflare": "^1.11.0",
+    "@opennextjs/cloudflare": "^1.19.1",
     "@payloadcms/db-d1-sqlite": "3.83.0",
     "@payloadcms/live-preview-react": "3.83.0",
     "@payloadcms/next": "3.83.0",
