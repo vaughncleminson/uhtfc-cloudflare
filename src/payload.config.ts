@@ -1,5 +1,4 @@
 import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
-import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { r2Storage } from '@payloadcms/storage-r2'
@@ -46,13 +45,9 @@ const isCLI =
     return pathValue && pathValue.endsWith(path.join('payload', 'bin.js'))
   })
 const isProduction = process.env.NODE_ENV === 'production'
-// Use local SQLite database in development when not running CLI commands, otherwise use D1 in Cloudflare
-const useLocalDB = !isProduction && isCLI === false
 
-// Get Cloudflare context based on environment
-const cloudflare = useLocalDB
-  ? undefined
-  : isCLI || !isProduction
+const cloudflare =
+  isCLI || !isProduction
     ? await getCloudflareContextFromWrangler()
     : await getCloudflareContext({ async: true })
 
@@ -107,26 +102,18 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: useLocalDB
-    ? sqliteAdapter({
-        client: {
-          url: process.env.DATABASE_URL || 'file:./database.sqlite',
-        },
-      })
-    : sqliteD1Adapter({
-        binding: cloudflare.env.D1,
-        migrationDir: 'migrations',
-        prodMigrations: migrations,
-      }),
+  db: sqliteD1Adapter({
+    binding: cloudflare.env.D1,
+    migrationDir: 'migrations',
+    prodMigrations: migrations,
+  }),
 
-  plugins: useLocalDB
-    ? []
-    : [
-        r2Storage({
-          bucket: cloudflare?.env.R2 as any,
-          collections: { media: true },
-        }),
-      ],
+  plugins: [
+    r2Storage({
+      bucket: cloudflare.env.R2 as any,
+      collections: { media: true },
+    }),
+  ],
 })
 
 // Adapted from https://github.com/opennextjs/opennextjs-cloudflare/blob/d00b3a13e42e65aad76fba41774815726422cc39/packages/cloudflare/src/api/cloudflare-context.ts#L328C36-L328C46

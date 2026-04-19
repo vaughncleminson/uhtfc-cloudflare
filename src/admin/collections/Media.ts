@@ -24,6 +24,5 @@ export const Media: CollectionConfig = {
   upload: {
     adminThumbnail: 'thumbnail',
     focalPoint: true,
-    staticDir: 'src/public/media',
   },
 }
