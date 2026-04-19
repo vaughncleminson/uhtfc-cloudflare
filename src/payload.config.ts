@@ -53,7 +53,7 @@ const cloudflare =
 
 export default buildConfig({
   admin: {
-    user: Admins.slug,
+    user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
     },
