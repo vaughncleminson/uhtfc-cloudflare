@@ -5,7 +5,6 @@ import { r2Storage } from '@payloadcms/storage-r2'
 import fs from 'fs'
 import path from 'path'
 import { buildConfig } from 'payload'
-import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 import { GetPlatformProxyOptions } from 'wrangler'
 import { Admins } from './admin/collections/Admins'
@@ -99,7 +98,6 @@ export default buildConfig({
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
-  sharp,
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
