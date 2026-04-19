@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build --no-lint",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "build:worker": "npx wrangler d1 migrations apply d1-uhtfc-cloudflare --remote && npm run build && npx @opennextjs/cloudflare build",
     "deploy": "node validate-env.js && pnpm run deploy:database && pnpm run deploy:app",
     "deploy:app": "npm run build:worker && opennextjs-cloudflare deploy --env=$CLOUDFLARE_ENV",
