@@ -1,4 +1,5 @@
 import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
+import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { r2Storage } from '@payloadcms/storage-r2'
@@ -45,9 +46,8 @@ const isCLI =
     return pathValue && pathValue.endsWith(path.join('payload', 'bin.js'))
   })
 const isProduction = process.env.NODE_ENV === 'production'
-const enableLocalDB = process.env.PAYLOAD_USE_LOCAL_DB === 'true'
-// Use local SQLite only when explicitly enabled and only in local dev (not production or CLI commands)
-const useLocalDB = enableLocalDB && !isProduction && isCLI === false
+// Use local SQLite database in development when not running CLI commands, otherwise use D1 in Cloudflare
+const useLocalDB = !isProduction && isCLI === false
 
 // Get Cloudflare context based on environment
 const cloudflare = useLocalDB
@@ -55,8 +55,6 @@ const cloudflare = useLocalDB
   : isCLI || !isProduction
     ? await getCloudflareContextFromWrangler()
     : await getCloudflareContext({ async: true })
-
-const sqliteAdapter = useLocalDB ? (await import('@payloadcms/db-sqlite')).sqliteAdapter : undefined
 
 export default buildConfig({
   admin: {
