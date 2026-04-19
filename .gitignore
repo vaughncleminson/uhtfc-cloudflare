@@ -53,3 +53,4 @@ node_modules/
 .open-next
 .wrangler
 *.sqlite
+database.sqlite
