@@ -9,7 +9,14 @@ const nextConfig = {
   },
 
   // Your existing configuration
-  serverExternalPackages: ['jose', 'pg-cloudflare'],
+  serverExternalPackages: [
+    'jose',
+    'pg-cloudflare',
+    'drizzle-kit',
+    'drizzle-kit/api',
+    '@payloadcms/db-d1-sqlite',
+    '@next/env',
+  ],
 
   webpack: (webpackConfig: any) => {
     webpackConfig.resolve.extensionAlias = {
