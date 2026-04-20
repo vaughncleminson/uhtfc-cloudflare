@@ -15,6 +15,7 @@ const nextConfig = {
     'drizzle-kit',
     'drizzle-kit/api',
     '@payloadcms/db-d1-sqlite',
+    '@next/env',
   ],
 
   webpack: (webpackConfig: any) => {

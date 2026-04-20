@@ -6,6 +6,6 @@ export default defineCloudflareConfig({
     wrapper: 'cloudflare',
   },
   middleware: {
-    external: ['drizzle-kit', '@payloadcms/db-d1-sqlite'],
+    external: ['drizzle-kit', '@payloadcms/db-d1-sqlite', '@next/env'],
   },
 })
