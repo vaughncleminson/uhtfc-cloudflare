@@ -98,7 +98,9 @@ export default buildConfig({
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
+  // payload.config.ts
+  serverURL:
+    process.env.NEXT_PUBLIC_SERVER_URL || 'https://uhtfc-cloudflare.vaughn-710.workers.dev',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
