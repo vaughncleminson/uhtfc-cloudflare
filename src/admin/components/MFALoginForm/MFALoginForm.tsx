@@ -21,7 +21,7 @@ export default function MFALoginForm(props: any) {
     if (!validateFields()) {
       return
     }
-    const resp = await fetch(`${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/mfa-auth`, {
+    const resp = await fetch(`/api/mfa-auth`, {
       method: 'POST',
       body: JSON.stringify({ email: email, password: password, mfaCode: mfaCode }),
     })
