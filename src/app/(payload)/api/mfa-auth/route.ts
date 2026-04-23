@@ -1,11 +1,11 @@
-import { getPayload } from 'payload'
+import { MFAProps } from '@/admin/types/mfa'
 import config from '@payload-config'
 import { cookies } from 'next/headers'
-import { MFAProps } from '@/admin/types/mfa'
+import { getPayload } from 'payload'
 import speakeasy from 'speakeasy'
 
 export async function POST(request: Request) {
-  const data = await request.json()
+  const data = (await request.json()) as any
   const payload = await getPayload({ config })
   const user = await payload.find({
     collection: 'admins',

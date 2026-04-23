@@ -1,11 +1,11 @@
 'use client'
 
 import { Button, TextInput, toast } from '@payloadcms/ui'
+import Image from 'next/image'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ChangeEvent, useState } from 'react'
 import './index.scss'
-import Image from 'next/image'
-import Link from 'next/link'
 
 export default function MFALoginForm(props: any) {
   const [email, setEmail] = useState('')
@@ -26,7 +26,7 @@ export default function MFALoginForm(props: any) {
       body: JSON.stringify({ email: email, password: password, mfaCode: mfaCode }),
     })
 
-    const response = await resp.json()
+    const response = (await resp.json()) as any
 
     if (response.success) {
       toast.success('Logged in successfully')
@@ -76,7 +76,12 @@ export default function MFALoginForm(props: any) {
     <>
       <div className="login-holder">
         <div className="logo">
-          <Image src="/api/media/file/payload_logo.png" alt="Payload" width={200} height={200} />
+          <Image
+            src="https://uhtfc-cloudflare.vaughn-710.workers.dev/api/media/file/payload_logo.png"
+            alt="Payload"
+            width={200}
+            height={200}
+          />
         </div>
         {!requiresMFA && (
           <>
