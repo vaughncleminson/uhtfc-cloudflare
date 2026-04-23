@@ -3,7 +3,9 @@ import { withPayload } from '@payloadcms/next/withPayload'
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // 1. Bypass TypeScript build errors
-
+  images: {
+    remotePatterns: [new URL('https://uhtfc-cloudflare.vaughn-710.workers.dev/api/media/file/**')],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

@@ -44,7 +44,7 @@ export default function Header(props: Props) {
       <div className="relative h-20 w-64">
         <Link href="/">
           <Image
-            src="/api/media/file/logo_new-300x90.png"
+            src="https://uhtfc-cloudflare.vaughn-710.workers.dev/api/media/file/logo_new-300x90.png"
             alt="Logo"
             fill
             className="object-contain"
