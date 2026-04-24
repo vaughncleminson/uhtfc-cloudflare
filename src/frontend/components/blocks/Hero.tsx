@@ -31,7 +31,10 @@ export default async function Hero(props: HeroBlock) {
           <ButtonGroup buttons={buttons.links} />
         )}
       </div>
-      <Link href={'#details'}>
+      <Link
+        href={props.blockName ? `#${props.blockName}` : '#'}
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20"
+      >
         <div className="flex z-20 flex-col absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer">
           <FontAwesomeIcon
             className="text-white drop-shadow-[0_5px_5px_rgba(0,0,0,1)] w-5 h-6 animate-pulse"

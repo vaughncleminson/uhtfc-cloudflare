@@ -606,8 +606,8 @@ export interface HeroBlock {
         }[]
       | null;
   };
-  id?: string | null;
   blockName?: string | null;
+  id?: string | null;
   blockType: 'hero';
 }
 /**
@@ -1192,8 +1192,8 @@ export interface HeroBlockSelect<T extends boolean = true> {
               id?: T;
             };
       };
-  id?: T;
   blockName?: T;
+  id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
