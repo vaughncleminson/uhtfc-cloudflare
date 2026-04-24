@@ -41,7 +41,7 @@ export default function LoginForm(props: LoginFormProps) {
           },
           body: JSON.stringify(data),
         })
-        const result = await login.json()
+        const result = (await login.json()) as any
         if (result.message == 'Authentication Passed') {
           setUser(result.user)
           router.refresh()

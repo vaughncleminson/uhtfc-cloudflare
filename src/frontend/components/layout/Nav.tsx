@@ -39,13 +39,13 @@ export default function Nav(props: Props) {
 
   const getSettings = async () => {
     try {
-      const req = await fetch(`${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/globals/settings`, {
+      const req = await fetch(`/api/globals/settings`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       })
-      const data = await req.json()
+      const data = (await req.json()) as any
       console.log(data)
       if (data) {
         setSettings(data)

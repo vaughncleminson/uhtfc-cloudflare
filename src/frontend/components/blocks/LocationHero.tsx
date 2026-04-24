@@ -48,7 +48,7 @@ export default async function LocationHero(props: Props) {
           </div>
           <div className="relative w-[24px] rotate-180">
             <Image
-              src="/api/media/file/ribbon.png"
+              src="/assets/ribbon.png"
               alt="arrow down"
               fill
               className="object-contain"

@@ -19,7 +19,7 @@ export const Locations: CollectionConfig<'pages'> = {
   versions: {
     drafts: {
       autosave: {
-        interval: 5000,
+        interval: 1000,
       },
     },
     maxPerDoc: 50,

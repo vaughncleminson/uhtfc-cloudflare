@@ -26,16 +26,13 @@ export default function MapDefault() {
       }
       const queryString = qs.stringify({ where: whereQuery, limit: 0 }, { addQueryPrefix: true })
       try {
-        const req = await fetch(
-          `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/locations${queryString}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+        const req = await fetch(`/api/locations${queryString}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        )
-        const data = await req.json()
+        })
+        const data = (await req.json()) as any
         getMarkers(data.docs)
         console.log(data)
       } catch (err) {
@@ -48,11 +45,14 @@ export default function MapDefault() {
   const getMarkers = async (locations: Location[]) => {
     const locMarkers: Marker[] = []
     locations.forEach((location) => {
-      const locationDetails = location.layout.find((block) => block.blockType === 'map')
+      const locationDetails = location.layout.find(
+        (block) => block.blockType === 'map',
+      ) as unknown as {
+        map: string
+      }
       if (locationDetails) {
-        const m = locationDetails.map as Marker[]
+        const m = JSON.parse(locationDetails.map) as Marker[]
         let mainLocation = m.find((e) => e.type === 'stillwater' || e.type === 'river')
-
         if (mainLocation) {
           mainLocation.slug = location.slug as string
           locMarkers.push(mainLocation)
@@ -72,28 +72,40 @@ export default function MapDefault() {
         zoom: 12,
       })
 
-      markers.forEach((marker, index) => {
+      markers.forEach((marker) => {
         const myMarker = generateMarker(marker)
+
         let popup: mapboxgl.Popup | null = null
+        console.log('Creating popup for marker:', marker)
+        if (marker.description && marker.description.length > 0) {
+          popup = new mapboxgl.Popup({ offset: 25, closeButton: false }).setHTML(
+            `<p style="font-size:15px; z-index:1000; width:100%; text-align:center; margin-bottom:5px;">
+        ${marker.description}
+      </p>
+      <a style="outline:none;" href="/our-water/${marker.type}s/${marker.slug}">
+        <button style="border:1px solid grey; padding:5px 10px; width:100%; outline:none; box-shadow:none; cursor:pointer; background-color:white;">
+          View
+        </button>
+      </a>`,
+          )
+        }
         const m: mapboxgl.Marker = new mapboxgl.Marker(myMarker).setLngLat({
           lng: marker.coords![0],
           lat: marker.coords![1],
         })
-
-        if (marker.description && marker.description.length > 0) {
-          popup = new mapboxgl.Popup({ offset: 25, closeButton: false }).setHTML(
-            `<p style="font-size:15px; width:100%; text-align:center; margin-bottom:5px;">${marker.description}</p><a style="outline:none;" href="our-water/${marker.type}s/${marker.slug}"><button style="border-style:solid; border-width:1px; border-color:grey; padding:5px 10px; width:100%;">View</button></a>`,
-          )
-          m.setPopup(popup)
-        }
-        m.getElement().setAttribute('id', `${marker.id}`)
-        // m.getElement().addEventListener('click', (e) => markerClickHandler(e))
+        console.log(popup)
+        m.setPopup(popup)
         m.addTo(map.current!)
+        // m.getElement().addEventListener('click', (e) => {
+        //   console.log('Marker clicked!')
+        //   m.togglePopup()
+        // })
       })
 
       map.current!.fitBounds(locationBounds(markers), {
         duration: 0,
         padding: { top: 200, bottom: 200, left: 200, right: 200 },
+        zoom: 12,
       })
 
       return () => {
@@ -112,6 +124,7 @@ export default function MapDefault() {
 
   function generateMarker(marker: Marker): HTMLDivElement {
     const myMarker = document.createElement('div')
+    myMarker.id = `${marker.id}`
 
     let markerType = 'stillwater'
     let markerSize = '40px'
@@ -142,10 +155,12 @@ export default function MapDefault() {
     }
     myMarker.style.width = markerSize
     myMarker.style.height = markerSize
-    myMarker.style.backgroundImage = `url(/api/media/file/${markerType}.png)`
+    myMarker.style.backgroundImage = `url(/assets/markers/${markerType}.png)`
     myMarker.style.backgroundSize = 'contain'
     myMarker.style.backgroundPosition = 'center'
     myMarker.style.backgroundRepeat = 'no-repeat'
+    myMarker.style.cursor = 'pointer'
+    myMarker.style.zIndex = '10'
     return myMarker
   }
 

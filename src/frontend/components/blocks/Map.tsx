@@ -26,33 +26,36 @@ export default function Map(props: MapBlock) {
       center: [29.493226, -29.78995],
       zoom: 12,
     })
-    const markers = props.map as any[]
+    const markers: Marker[] =
+      typeof props.map === 'string' ? JSON.parse(props.map) : props.map || []
 
-    markers.forEach((marker, index) => {
-      const myMarker = generateMarker(marker)
-      let popup: mapboxgl.Popup | null = null
-      const m: mapboxgl.Marker = new mapboxgl.Marker(myMarker).setLngLat({
-        lng: marker.coords![0],
-        lat: marker.coords![1],
+    if (Array.isArray(markers)) {
+      markers.forEach((marker, index) => {
+        const myMarker = generateMarker(marker)
+        let popup: mapboxgl.Popup | null = null
+        const m: mapboxgl.Marker = new mapboxgl.Marker(myMarker).setLngLat({
+          lng: marker.coords![0],
+          lat: marker.coords![1],
+        })
+        if (marker.type == 'parking') {
+          setDestinationMarker(marker)
+        }
+        if (marker.description && marker.description.length > 0) {
+          popup = new mapboxgl.Popup({ offset: 25, closeButton: false }).setHTML(
+            `<p style="font-size:15px; width:100%; text-align:center; margin-bottom:5px;">${marker.description}</p>`,
+          )
+          m.setPopup(popup)
+        }
+        m.getElement().setAttribute('id', `${marker.id}`)
+        // m.getElement().addEventListener('click', (e) => markerClickHandler(e))
+        m.addTo(map.current!)
       })
-      if (marker.type == 'parking') {
-        setDestinationMarker(marker)
-      }
-      if (marker.description && marker.description.length > 0) {
-        popup = new mapboxgl.Popup({ offset: 25, closeButton: false }).setHTML(
-          `<p style="font-size:15px; width:100%; text-align:center; margin-bottom:5px;">${marker.description}</p>`,
-        )
-        m.setPopup(popup)
-      }
-      m.getElement().setAttribute('id', `${marker.id}`)
-      // m.getElement().addEventListener('click', (e) => markerClickHandler(e))
-      m.addTo(map.current!)
-    })
-
-    map.current!.fitBounds(locationBounds(markers), {
-      duration: 0,
-      padding: { top: 200, bottom: 200, left: 200, right: 200 },
-    })
+      map.current!.fitBounds(locationBounds(markers), {
+        duration: 0,
+        padding: { top: 50, bottom: 200, left: 200, right: 200 },
+        zoom: 14, // max zoom in
+      })
+    }
 
     return () => {
       map.current!.remove()
@@ -99,7 +102,7 @@ export default function Map(props: MapBlock) {
     }
     myMarker.style.width = markerSize
     myMarker.style.height = markerSize
-    myMarker.style.backgroundImage = `url(/api/media/file/${markerType}.png)`
+    myMarker.style.backgroundImage = `url(/assets/markers/${markerType}.png)`
     myMarker.style.backgroundSize = 'contain'
     myMarker.style.backgroundPosition = 'center'
     myMarker.style.backgroundRepeat = 'no-repeat'

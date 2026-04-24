@@ -1,41 +1,32 @@
 'use client'
+import { Marker } from '@/admin/types/marker'
+import { Button, CheckboxInput, FieldLabel, Select, TextInput, useField } from '@payloadcms/ui'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { ChangeEvent, FC, useEffect, useRef, useState } from 'react'
-import './index.scss'
-import {
-  Button,
-  CheckboxInput,
-  FieldLabel,
-  JSONField,
-  Select,
-  TextInput,
-  useField,
-} from '@payloadcms/ui'
 import { JSONFieldClientProps } from 'payload'
-import { Marker } from '@/admin/types/marker'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import './index.scss'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
 
 export function Map(props: JSONFieldClientProps) {
-  const { value, setValue } = useField<Marker[]>({ path: props.path || props.field.name })
+  const { value, setValue } = useField<string>({ path: props.path || props.field.name })
   const [settingsVisible, setSettingsVisible] = useState(false)
 
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
-  const [newMarkers, setNewMarkers] = useState<Marker[]>(value)
+  const [newMarkers, setNewMarkers] = useState<Marker[]>(() => {
+    try {
+      return value ? JSON.parse(value) : []
+    } catch {
+      return []
+    }
+  })
   const [newMarker, setNewMarker] = useState<Marker | null>(null)
   const [displayMarkers, setDisplayMarkers] = useState<mapboxgl.Marker[]>([])
   const [selectedId, setSelectedId] = useState<number>(0)
   const [method, setMethod] = useState<string>('create')
-  // const [lng, setLng] = useState(29.492799);
-  // const [lat, setLat] = useState(-29.790711);
-  // const [zoom, setZoom] = useState(12);
-  // const detailMarkerArr = useRef<mapboxgl.Marker[]>([]);
-  // const mainMarkerArr = useRef<mapboxgl.Marker[]>([]);
-  // const locations = useRef<Location[] | undefined>();
-  // const detailsAdded = useRef(true);
-  // const [fullscreen, setFullscreen] = useState(false);
+
   useEffect(() => {
     mapboxgl.accessToken = mapboxgl.accessToken
     map.current = new mapboxgl.Map({
@@ -54,6 +45,7 @@ export function Map(props: JSONFieldClientProps) {
 
   useEffect(() => {
     console.log('Refresh Markers')
+    console.log(newMarkers[0])
     if (newMarkers.length) {
       refreshMarkers(newMarkers)
     }
@@ -61,25 +53,45 @@ export function Map(props: JSONFieldClientProps) {
 
   function refreshMarkers(markers: Marker[]) {
     removeAllMarkers()
-    console.log(markers)
-    markers.forEach((marker, index) => {
+
+    if (!Array.isArray(markers)) return
+
+    const newDisplayMarkers: mapboxgl.Marker[] = []
+
+    markers.forEach((marker) => {
+      if (!Array.isArray(marker?.coords) || marker.coords.length < 2) return
+
       const myMarker = generateMarker(marker)
-      const m: mapboxgl.Marker = new mapboxgl.Marker(myMarker).setLngLat({
-        lng: marker.coords![0],
-        lat: marker.coords![1],
+
+      const m = new mapboxgl.Marker(myMarker).setLngLat({
+        lng: marker.coords[0],
+        lat: marker.coords[1],
       })
+
       m.getElement().setAttribute('id', `${marker.id}`)
       m.getElement().addEventListener('click', (e) => markerClickHandler(e))
 
-      displayMarkers.push(m)
       m.addTo(map.current!)
-      setDisplayMarkers(displayMarkers)
+      newDisplayMarkers.push(m)
     })
 
-    if (locationBounds()._ne) {
-      map.current!.fitBounds(locationBounds(), {
+    // ✅ update state ONCE
+    setDisplayMarkers(newDisplayMarkers)
+
+    // ✅ calculate bounds from SAME markers
+    const bounds = new mapboxgl.LngLatBounds()
+
+    markers.forEach((marker) => {
+      if (Array.isArray(marker?.coords) && marker.coords.length >= 2) {
+        bounds.extend([marker.coords[0], marker.coords[1]])
+      }
+    })
+
+    if (!bounds.isEmpty()) {
+      map.current!.fitBounds(bounds, {
         duration: 0,
-        padding: { top: 1000, bottom: 1000, left: 1000, right: 1000 },
+        padding: 50, // 500 is huge, can hide markers
+        zoom: 11, // max zoom in
       })
     }
   }
@@ -116,7 +128,7 @@ export function Map(props: JSONFieldClientProps) {
     }
     myMarker.style.width = markerSize
     myMarker.style.height = markerSize
-    myMarker.style.backgroundImage = `url(/api/media/file/${markerType}.png)`
+    myMarker.style.backgroundImage = `url(/assets/markers/${markerType}.png)`
     myMarker.style.backgroundSize = 'contain'
     myMarker.style.backgroundPosition = 'center'
     myMarker.style.backgroundRepeat = 'no-repeat'
@@ -153,9 +165,19 @@ export function Map(props: JSONFieldClientProps) {
 
   const locationBounds = (): mapboxgl.LngLatBounds => {
     const bounds = new mapboxgl.LngLatBounds()
-    for (let i = 0; i < newMarkers!.length; i++) {
-      bounds.extend([newMarkers![i].coords![0], newMarkers![i].coords![1]])
-    }
+
+    const markersArray = Array.isArray(newMarkers) ? newMarkers : newMarkers ? [newMarkers] : []
+
+    markersArray.forEach((marker) => {
+      const coords = marker?.coords
+
+      // Case 1: [lng, lat]
+      if (coords.length >= 2) {
+        bounds.extend([coords[0], coords[1]])
+      }
+    })
+    console.log('Calculated bounds:', bounds)
+
     return bounds
   }
 
