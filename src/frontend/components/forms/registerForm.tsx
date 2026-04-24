@@ -1,7 +1,12 @@
 'use client'
 
+import { userAtom } from '@/frontend/atoms/userAtom'
 import { registerSchema } from '@/frontend/schemas/authSchema'
+import { User } from '@/payload-types'
+import { useAtom } from 'jotai'
+import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
+import Button from '../ui/Button'
 
 type RegisterFormProps = {
   setAuthType: (authType: string) => void
@@ -9,6 +14,9 @@ type RegisterFormProps = {
 
 export default function RegisterForm(props: RegisterFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [user, setUser] = useAtom<User | null>(userAtom)
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     const form = e.target as HTMLFormElement
@@ -26,6 +34,7 @@ export default function RegisterForm(props: RegisterFormProps) {
       setErrors({})
       try {
         console.log(data)
+        setLoading(true)
         const response = await fetch('/api/register', {
           method: 'POST',
           headers: {
@@ -33,8 +42,13 @@ export default function RegisterForm(props: RegisterFormProps) {
           },
           body: JSON.stringify(data),
         })
-        const result = await response.json()
-        console.log(result)
+        const result = (await response.json()) as any
+        if (result.message == 'Registration Successful') {
+          props.setAuthType('login')
+        } else {
+          setErrors({ submit: result.message || 'Registration failed' })
+        }
+        setLoading(false)
       } catch (error) {
         console.log(error)
       }
@@ -93,8 +107,7 @@ export default function RegisterForm(props: RegisterFormProps) {
         )}
       </label>
       <input name="confirm-password" className={`input`} type="password" />
-
-      <input className="submit" type="submit" value="REGISTER" />
+      <Button type="submit" loading={loading} title="REGISTER" />
     </form>
   )
 }
