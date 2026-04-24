@@ -22,5 +22,10 @@ export const Hero: Block = {
       label: 'Standard Buttons',
       fields: [linkGroup()],
     },
+    {
+      type: 'text',
+      name: 'blockName',
+      label: 'Arrow scroll to block name',
+    },
   ],
 }

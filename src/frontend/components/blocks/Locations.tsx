@@ -7,14 +7,12 @@ import {
   Media,
 } from '@/payload-types'
 import Image from 'next/image'
+import Link from 'next/link'
+import { Where } from 'payload'
+import qs from 'qs'
 import { useEffect, useState } from 'react'
 import Row from '../layout/Row'
 import Button from '../ui/Button'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import path from 'path'
-import { Where } from 'payload'
-import qs from 'qs'
 
 type LocationCard = {
   id: string
@@ -27,15 +25,12 @@ type LocationCard = {
 }
 
 export default function Locations(props: LocationsBlock) {
-  const pathName = usePathname()
   const [locations, setLocations] = useState<LocationCard[]>([])
   useEffect(() => {
     const fetchLocations = async () => {
-      const pathSplit = pathName.split('/')
-      const locationType = pathSplit[pathSplit.length - 1] // Assuming the type is in the 4th segment of the path
       const whereQuery: Where = {
         type: {
-          equals: locationType == 'stillwaters' ? 'stillwater' : 'river',
+          equals: props.title == 'Stillwaters' ? 'stillwater' : 'river',
         },
         enabled: {
           equals: true,
@@ -44,13 +39,14 @@ export default function Locations(props: LocationsBlock) {
       const queryString = qs.stringify({ where: whereQuery, limit: 0 }, { addQueryPrefix: true })
 
       try {
-        const req = await fetch(`${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/locations${queryString}`, {
+        const req = await fetch(`/api/locations${queryString}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
         })
-        const data = await req.json()
+        const data = (await req.json()) as any
+        console.log(data)
         const cards: LocationCard[] = data.docs.map((location: Location) => {
           const hero = location.layout[0] as LocationHeroBlock
           const details = location.layout[1] as LocationDetailsBlock
@@ -74,7 +70,7 @@ export default function Locations(props: LocationsBlock) {
     fetchLocations()
   }, [])
   return (
-    <div className=" bg-amber-50 relative py-6 lg:py-12">
+    <div id={props.blockName} className=" bg-amber-50 relative py-6 lg:py-12">
       <Row>
         <div className="grid grid-cols-1 gap-10 z-50 md:grid-cols-2 lg:grid-cols-3">
           {locations.map((card) => {
