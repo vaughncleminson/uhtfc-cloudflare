@@ -21,7 +21,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const cookieStore = await cookies()
   const token = cookieStore.get('payload-token')?.value
   const isAuthenticated = Boolean(token)
-
+  //test
   return (
     <html lang="en" suppressHydrationWarning className={`${gilda.className}`}>
       <head>
