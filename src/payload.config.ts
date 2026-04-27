@@ -59,7 +59,7 @@ const isProduction = process.env.NODE_ENV === 'production'
 
 const skipRemoteCloudflare = process.env.SKIP_REMOTE_CLOUDFLARE === 'true'
 const emailMode = process.env.EMAIL_MODE || 'test'
-const testEmailAddress = process.env.TEST_EMAIL_ADDRESS || 'admin@uhtfc.org.za'
+const testEmailAddress = process.env.EMAIL_TEST_ADDRESS || 'admin@uhtfc.org.za'
 
 const cloudflare =
   isCLI || !isProduction || skipRemoteCloudflare
@@ -68,7 +68,7 @@ const cloudflare =
 
 const emailAdapter = createResendEmailAdapter({
   apiKey: process.env.RESEND_API_KEY || '',
-  defaultFromAddress: 'admin@uhtfc.org.za',
+  defaultFromAddress: process.env.EMAIL_FROM || 'admin@uhtfc.org.za',
   defaultFromName: 'UHTFC',
 })
 
@@ -78,6 +78,17 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      afterNavLinks: ['@/admin/components/Resend/ResendNavLink#ResendNavLink'],
+      afterDashboard: ['@/admin/components/Resend/ResendDashboardLink#ResendDashboardLink'],
+      views: {
+        resend: {
+          Component: '@/admin/components/Resend/ResendView',
+          path: '/resend',
+        },
+      },
+    },
+
     livePreview: {
       breakpoints: [
         {
@@ -156,10 +167,7 @@ function createResendEmailAdapter(args: {
   defaultFromAddress: string
   defaultFromName: string
 }): EmailAdapter {
-  const adapter = resendAdapter({
-    ...args,
-    overrideRecipientAddress: emailMode === 'production' ? undefined : testEmailAddress,
-  })
+  const adapter = resendAdapter(args)
 
   return (adapterArgs) => {
     const configuredAdapter = adapter(adapterArgs)
@@ -172,6 +180,7 @@ function createResendEmailAdapter(args: {
             ? message
             : {
                 ...message,
+                to: testEmailAddress || message.to,
                 subject: `[TEST-REDIRECT] ${message.subject ?? ''}`,
                 html: `<b>Original Recipient:</b> ${stringifyEmailRecipient(message.to)}<hr>${message.html?.toString() ?? ''}`,
                 text: `Original Recipient: ${stringifyEmailRecipient(message.to)}\n\n${message.text?.toString() ?? ''}`,
