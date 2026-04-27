@@ -1,4 +1,5 @@
 import config from '@payload-config'
+import { cookies } from 'next/headers'
 import { Resend } from 'resend'
 import { getPayload } from 'payload'
 
@@ -21,7 +22,18 @@ const escapeHtml = (value: string): string =>
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
-  const { user } = await payload.auth({ headers: request.headers })
+  const cookieStore = await cookies()
+  const tokenCookieName = `${payload.config.cookiePrefix}-token`
+  const payloadToken =
+    cookieStore.get(tokenCookieName)?.value || cookieStore.get('payload-token')?.value
+  const authHeaders = new Headers(request.headers)
+
+  if (payloadToken) {
+    authHeaders.set('authorization', `Bearer ${payloadToken}`)
+    authHeaders.set('cookie', `${tokenCookieName}=${payloadToken}; payload-token=${payloadToken}`)
+  }
+
+  const { user } = await payload.auth({ headers: authHeaders })
 
   if (!user) {
     return Response.json({ message: 'Unauthorized' }, { status: 401 })
