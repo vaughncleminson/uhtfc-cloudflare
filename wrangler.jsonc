@@ -21,7 +21,7 @@
       "binding": "D1",
       "database_id": "43dd34de-77e9-45b4-a60b-ad5e3733fa84",
       "database_name": "d1-uhtfc-cloudflare",
-      "migrations_dir": "src/migrations",
+      "migrations_dir": "migrations",
       "remote": true,
     },
   ],
@@ -38,12 +38,12 @@
       "enabled": true,
       "head_sampling_rate": 1,
       "persist": true,
-      "invocation_logs": true
+      "invocation_logs": true,
     },
     "traces": {
       "enabled": false,
       "persist": true,
-      "head_sampling_rate": 1
-    }
-  }
+      "head_sampling_rate": 1,
+    },
+  },
 }
