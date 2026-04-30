@@ -8,7 +8,6 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import { GetPlatformProxyOptions } from 'wrangler'
 
-import { migrations } from '../migrations'
 import { Admins } from './admin/collections/Admins'
 import { BookingHistory } from './admin/collections/BookingHistory'
 import { Bookings } from './admin/collections/Bookings'
@@ -107,7 +106,7 @@ export default buildConfig({
   },
   db: sqliteD1Adapter({
     binding: cloudflare.env.D1,
-    prodMigrations: migrations,
+    // prodMigrations: migrations,
   }),
 
   plugins: [

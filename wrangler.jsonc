@@ -19,7 +19,7 @@
   "d1_databases": [
     {
       "binding": "D1",
-      "database_id": "bc4095fd-c32e-44a7-b9ae-d9e9aaa0a8f0",
+      "database_id": "e9a7d312-d24d-4a74-85ed-8767365d8a8b",
       "database_name": "d1-uhtfc-cloudflare",
       "remote": true,
     },
