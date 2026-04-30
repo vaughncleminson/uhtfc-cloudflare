@@ -5,7 +5,7 @@ import { UserRole } from '../fields/UserRole'
 export const Bookings: CollectionConfig = {
   slug: 'bookings',
   admin: {
-    defaultColumns: ['userName', 'date', 'location', 'paymentStatus'],
+    defaultColumns: ['firstName', 'lastName', 'location', 'role', 'date'],
   },
   hooks: {},
   fields: [

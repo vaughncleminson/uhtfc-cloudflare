@@ -5,6 +5,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import Image from 'next/image'
 import { Where } from 'payload'
 import qs from 'qs'
 import { useEffect, useRef, useState } from 'react'
@@ -41,6 +42,14 @@ export default function MapDefault() {
     }
     fetchLocations()
   }, [])
+
+  useEffect(() => {
+    if (map.current) {
+      setTimeout(() => {
+        map.current?.resize()
+      }, 0)
+    }
+  }, [fullscreen])
 
   const getMarkers = async (locations: Location[]) => {
     const locMarkers: Marker[] = []
@@ -103,9 +112,8 @@ export default function MapDefault() {
       })
 
       map.current!.fitBounds(locationBounds(markers), {
-        duration: 0,
-        padding: { top: 200, bottom: 200, left: 200, right: 200 },
-        zoom: 12,
+        padding: 200,
+        zoom: 11,
       })
 
       return () => {
@@ -168,11 +176,13 @@ export default function MapDefault() {
     <div
       id="map"
       onClick={() => setFullscreen(true)}
-      className={`${fullscreen ? 'fixed z-50 top-0' : 'relative'} h-screen w-full`}
+      className={`${fullscreen ? 'fixed z-50 top-0 w-screen' : 'px-5 relative lg:px-40 w-full'} h-[calc(50vh)]`}
     >
       {!fullscreen && (
-        <div className="absolute flex justify-center items-center top-0 left-0 z-20 w-full h-full bg-white bg-opacity-30">
-          <div className="text-slate border border-black bg-white px-4 py-3">Click to Explore</div>
+        <div className="absolute flex justify-center items-center top-0 left-0 z-20 w-full h-full">
+          <div className="text-slate border border-black bg-white bg-opacity-70 px-4 py-3 uppercase cursor-pointer">
+            Click to Explore
+          </div>
         </div>
       )}
       {fullscreen && (
@@ -186,7 +196,19 @@ export default function MapDefault() {
           <FontAwesomeIcon className="text-white text-xl" icon={faTimes} />
         </div>
       )}
-      <div className="relative h-full w-full" id="map-container" ref={mapContainer}></div>
+      <div className={`${fullscreen ? 'absolute w-screen h-screen' : 'relative h-full w-full'}  `}>
+        <div
+          className="absolute top-0 left-0 h-full w-full"
+          id="map-container"
+          ref={mapContainer}
+        ></div>
+        <Image
+          className="absolute z-0 h-full top-0 left-0 object-fill pointer-events-none"
+          src={'/assets/shade_outer.png'}
+          alt="shade"
+          fill
+        />
+      </div>
     </div>
   )
 }

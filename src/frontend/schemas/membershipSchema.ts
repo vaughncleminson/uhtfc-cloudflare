@@ -24,5 +24,7 @@ export const membershipSchema = z.object({
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: 'You must accept the terms and conditions.',
   }),
+  howDidYouHearAboutUs: z.string().optional(),
+  otherMemberships: z.string().optional(),
 })
 export type Membership = z.infer<typeof membershipSchema>

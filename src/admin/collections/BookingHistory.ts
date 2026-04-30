@@ -39,14 +39,14 @@ export const BookingHistory: CollectionConfig = {
       label: 'Members',
     },
     {
+      name: 'memberGuests',
+      type: 'number',
+      label: 'Member Guests',
+    },
+    {
       name: 'nonMembers',
       type: 'number',
       label: 'Non-Members',
-    },
-    {
-      name: 'corporateGuests',
-      type: 'number',
-      label: 'Corporate Guests',
     },
     {
       name: 'date',

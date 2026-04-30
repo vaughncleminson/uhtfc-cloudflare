@@ -18,7 +18,7 @@ export default function Button(props: ButtonProps) {
       disabled={props.loading || props.disabled}
       type={props.type}
       onClick={props.onClick}
-      className={`submit ${props.className} text-nowrap ${props.size === 'small' ? 'h-5 text-sm' : ''}`}
+      className={`submit ${props.className} text-nowrap ${props.size === 'small' ? 'h-5 text-sm' : ''} uppercase`}
     >
       {props.title}
       {props.loading && <FontAwesomeIcon spin icon={faCircleNotch} />}

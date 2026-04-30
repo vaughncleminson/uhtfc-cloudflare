@@ -13,22 +13,27 @@ export default async function Auth(props: AuthBlock) {
   return (
     <>
       {!isAuthenticated && (
-        <div id="login" className="relative py-6 w-screen bg-amber-50 bg-opacity-90 lg:py-12">
+        <div id="login" className="relative w-screen bg-opacity-90">
           <Row>
             <Col>
               <AuthForm />
             </Col>
             <Col>
-              <div>
+              <div className="relative h-[380px]">
                 <Image
                   src={image.url!}
                   alt={image.alt}
-                  width={1024}
-                  height={1024}
-                  className="rounded shadow-lg h-[386px] object-cover object-center"
+                  fill
+                  className="shadow-lg h-[386px] object-cover object-center"
+                />
+                <Image
+                  className="absolute z-0 h-full top-0 left-0 object-fill"
+                  src={'/assets/shade_outer.png'}
+                  alt="shade"
+                  fill
                 />
               </div>
-              <p className="text-center mt-2 text-gray-700">{image.description}</p>
+              {/* <p className="text-center mt-2 text-gray-700">{image.description}</p> */}
             </Col>
           </Row>
         </div>

@@ -44,7 +44,7 @@ type Angler = {
   firstName?: string | null | undefined
   lastName?: string | null | undefined
   email?: string | null | undefined
-  role?: 'non-member' | 'member' | 'member-guest' | 'corporate-guest' | 'admin' | null | undefined
+  role?: 'non-member' | 'member' | 'member-guest' | 'admin' | null | undefined
 }
 
 export default function BookingForm(props: BookingFormProps) {
@@ -131,7 +131,6 @@ export default function BookingForm(props: BookingFormProps) {
           userId: b.userId,
           members: 0,
           nonMembers: 0,
-          corporateGuests: 0,
           date: b.date,
           rodsBooked: 0,
           updatedAt: b.date,
@@ -162,7 +161,7 @@ export default function BookingForm(props: BookingFormProps) {
           displayName: '',
           description: '',
           quantity: 0,
-          pricingDetails: { price: 0 },
+          price: 0,
         },
       ],
       acceptTerms: acceptTerms,
@@ -197,7 +196,7 @@ export default function BookingForm(props: BookingFormProps) {
                 displayName: 'Permit fees',
                 description: `${bookingObject.locationName} (${bookingObject.date})`,
                 quantity: 1,
-                pricingDetails: { price: bookingObject.totalAmount },
+                price: bookingObject.totalAmount,
               },
             ],
           })
@@ -208,7 +207,7 @@ export default function BookingForm(props: BookingFormProps) {
             displayName: 'Permit fees',
             description: `${bookingObject.locationName} (${bookingObject.date})`,
             quantity: 1,
-            pricingDetails: { price: bookingObject.totalAmount },
+            price: bookingObject.totalAmount,
           })
           setOrder(order)
         }
@@ -242,9 +241,9 @@ export default function BookingForm(props: BookingFormProps) {
           displayName: `Day fishing permit for ${angler.role}`,
           description: 'Booking fees',
           quantity: 1,
-          pricingDetails: { price: fees },
+          price: fees,
         }
-        totalAmount += lineItem.pricingDetails.price
+        totalAmount += lineItem.price
         lineItems.push(lineItem)
       }
     })
@@ -410,29 +409,21 @@ export default function BookingForm(props: BookingFormProps) {
   const showOptionsPerRole = (userRole: User['role'], role: User['role']) => {
     if (
       userRole == 'admin' &&
-      (role == 'member' ||
-        role == 'non-member' ||
-        role == 'corporate-guest' ||
-        role == 'member-guest')
+      (role == 'member' || role == 'non-member' || role == 'member-guest')
     ) {
       return true
     } else if (userRole == 'member' && (role == 'member' || role == 'member-guest')) {
       return true
     } else if (userRole == 'non-member' && role == 'non-member') {
       return true
-    } else if (userRole == 'corporate-guest' && role == 'corporate-guest') {
-      return true
     }
     return false
   }
 
   return (
-    <div
-      id="booking"
-      className="relative flex flex-col bg-white p-10 pt-8 gap-2 border rounded shadow-lg"
-    >
+    <div id="booking" className="relative flex flex-col bg-slate-900 p-10 pt-8 gap-2">
       <div className="flex gap-2">
-        <h1 className="text-2xl mb-2">BOOK WATER</h1>
+        <h1 className="text-2xl mb-2 text-white">BOOK WATER</h1>
       </div>
       <div className="relative flex flex-col">
         <label className="label" htmlFor="date">
@@ -446,7 +437,9 @@ export default function BookingForm(props: BookingFormProps) {
           minDate={new Date()}
           maxDate={maxDate()}
           selected={selectedDate}
-          onChange={(date) => onDateChange(date as Date)}
+          onChange={(date: Date | null) => {
+            if (date) onDateChange(date)
+          }}
           dayClassName={highlightFutureDates}
           onMonthMouseLeave={handleDayMouseLeave}
         />
@@ -487,10 +480,10 @@ export default function BookingForm(props: BookingFormProps) {
           <label className="label" htmlFor="anglers">
             ANGLERS
           </label>
-          <div className="flex flex-col border rounded overflow-hidden text-sm">
+          <div className="flex flex-col overflow-hidden text-sm bg-slate-700 text-white">
             {anglers.map((angler, index) => {
               return (
-                <div key={index} className={`flex ${index == 0 ? 'bg-slate-100' : ''}`}>
+                <div key={index} className={`flex ${index == 0 ? 'bg-slate-700 text-white' : ''}`}>
                   <div key={index} className="w-full px-4 py-3">
                     {angler.firstName &&
                       `${index + 1}. ${angler.firstName ?? ''} ${angler.lastName ?? ''} ${index > 0 ? '' : `(${angler.role})`}`}
@@ -500,9 +493,9 @@ export default function BookingForm(props: BookingFormProps) {
                     <div className="flex pr-5 items-center justify-end gap-2">
                       <div
                         onClick={() => removeAngler(index)}
-                        className="flex cursor-pointer border w-6 bg-white h-6 justify-center items-center"
+                        className="flex cursor-pointer w-6 bg-white bg-opacity-70 text-slate-950 h-6 justify-center items-center"
                       >
-                        <FontAwesomeIcon icon={faTimes} />
+                        <FontAwesomeIcon className="text-slate-950" icon={faTimes} />
                       </div>
                     </div>
                   )}
@@ -510,9 +503,9 @@ export default function BookingForm(props: BookingFormProps) {
                     <div className="flex pr-5 items-center justify-end gap-2">
                       <div
                         onClick={() => removeAngler(index)}
-                        className="flex cursor-pointer border w-6 bg-white h-6 justify-center items-center"
+                        className="flex cursor-pointer w-6 bg-white bg-opacity-70 h-6 justify-center items-center"
                       >
-                        <FontAwesomeIcon icon={faTimes} />
+                        <FontAwesomeIcon className="text-slate-950" icon={faTimes} />
                       </div>
                     </div>
                   )}
@@ -520,7 +513,7 @@ export default function BookingForm(props: BookingFormProps) {
               )
             })}
             {user && (
-              <div className="flex overflow-hidden rounded-b">
+              <div className="flex overflow-hidden">
                 <select
                   disabled={!selectedLocation || anglers.length >= selectedLocation!.rodsAvailable}
                   onChange={(e) => {
@@ -534,7 +527,7 @@ export default function BookingForm(props: BookingFormProps) {
                       e.target.value = 'add'
                     }, 100)
                   }}
-                  className={`select text-white w-full border-0 outline-0 bg-slate-700 bg-opacity-50`}
+                  className={`select text-slate-950 w-full border-0 outline-0 bg-slate-500`}
                 >
                   <option value="add">
                     {selectedLocation && anglers.length >= selectedLocation!.rodsAvailable
@@ -550,9 +543,6 @@ export default function BookingForm(props: BookingFormProps) {
                   {showOptionsPerRole(user!.role, 'non-member') && (
                     <option value="non-member">Non-member</option>
                   )}
-                  {showOptionsPerRole(user!.role, 'corporate-guest') && (
-                    <option value="corporate-guest">Corporate member guest</option>
-                  )}
                 </select>
               </div>
             )}
@@ -561,7 +551,7 @@ export default function BookingForm(props: BookingFormProps) {
       )}
       {anglers.length > 0 && (
         <div>
-          <label>
+          <label className="text-white flex items-center gap-2">
             <input
               onChange={(e) => setAcceptTerms(e.target.checked)}
               checked={acceptTerms}

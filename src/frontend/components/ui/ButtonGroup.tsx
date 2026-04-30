@@ -57,7 +57,10 @@ export default function ButtonGroup(props: Props) {
         if (button.link.type == 'reference') {
           return (
             <Link href={button.link.internalLink!} key={button.id}>
-              <div className={`px-3 text-center border-r py-2 w-36 hover:bg-black`} key={button.id}>
+              <div
+                className={`px-3 text-center border-r py-2 w-36 hover:bg-black uppercase`}
+                key={button.id}
+              >
                 {button.link.label}
               </div>
             </Link>
@@ -65,7 +68,10 @@ export default function ButtonGroup(props: Props) {
         } else if (button.link.type == 'custom') {
           return (
             <a href={button.link.url!} key={button.id}>
-              <div className={`px-3 text-center border-r py-2 w-32 hover:bg-black`} key={button.id}>
+              <div
+                className={`px-3 text-center border-r py-2 w-32 hover:bg-black uppercase`}
+                key={button.id}
+              >
                 {button.link.label}
               </div>
             </a>
@@ -88,12 +94,14 @@ export default function ButtonGroup(props: Props) {
             <Link
               href={`/book-now${props.location ? `?location=${props.location.id}#details` : ''}`}
             >
-              <div className={`px-3 text-center border-r py-2 w-36 hover:bg-black`}>Book Now</div>
+              <div className={`px-3 text-center border-r py-2 w-36 hover:bg-black uppercase`}>
+                Book Now
+              </div>
             </Link>
           )}
           {!user && (
             <Link href="/#login">
-              <div className={`px-3 text-center border-r py-2 w-36 hover:bg-black`}>
+              <div className={`px-3 text-center border-r py-2 w-36 hover:bg-black uppercase`}>
                 Login/Sign-up
               </div>
             </Link>

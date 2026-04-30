@@ -55,11 +55,7 @@ export default function RegisterForm(props: RegisterFormProps) {
     }
   }
   return (
-    <form
-      onSubmit={submit}
-      className="flex flex-col bg-white p-10 pt-8 gap-2 border rounded shadow-lg"
-      action=""
-    >
+    <form onSubmit={submit} className="flex flex-col bg-slate-900 p-10 pt-8 gap-2" action="">
       <div className="flex gap-2">
         <h1
           onClick={() => props.setAuthType('login')}
@@ -67,8 +63,8 @@ export default function RegisterForm(props: RegisterFormProps) {
         >
           LOGIN
         </h1>
-        <h1 className="text-2xl mb-2 text-gray-300">/</h1>
-        <h1 className="text-2xl mb-2 ">REGISTER</h1>
+        <h1 className="text-2xl mb-2 text-white">/</h1>
+        <h1 className="text-2xl mb-2 text-white">REGISTER</h1>
       </div>
       <label className="label" htmlFor="firstName">
         FIRST NAME

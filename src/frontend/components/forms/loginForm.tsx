@@ -56,14 +56,10 @@ export default function LoginForm(props: LoginFormProps) {
     }
   }
   return (
-    <form
-      onSubmit={submit}
-      className="flex flex-col bg-white p-10 pt-8 gap-2 border rounded shadow-lg"
-      action=""
-    >
+    <form onSubmit={submit} className="flex flex-col bg-slate-900 p-10 pt-8 gap-2" action="">
       <div className="flex gap-2">
-        <h1 className="text-2xl mb-2">LOGIN</h1>
-        <h1 className="text-2xl mb-2 text-gray-300">/</h1>
+        <h1 className="text-2xl text-white mb-2">LOGIN</h1>
+        <h1 className="text-2xl mb-2 text-white">/</h1>
         <h1
           onClick={() => props.setAuthType('register')}
           className="text-2xl mb-2 text-gray-300 underline cursor-pointer"
@@ -84,7 +80,7 @@ export default function LoginForm(props: LoginFormProps) {
       <input name="password" className={`input`} type="password" />
       {errors.submit && <p className="text-red-500 text-sm">{errors.submit}</p>}
       <Button type="submit" loading={loading} title="LOGIN" />
-      <p className="underline">Forgot password</p>
+      <p className="underline text-white">Forgot password</p>
     </form>
   )
 }
