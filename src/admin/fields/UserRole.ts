@@ -18,10 +18,6 @@ export const UserRole: Field = {
       value: 'member-guest',
     },
     {
-      label: 'Corporate Guest',
-      value: 'corporate-guest',
-    },
-    {
       label: 'Admin',
       value: 'admin',
     },

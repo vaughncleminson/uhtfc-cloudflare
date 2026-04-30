@@ -5,6 +5,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
@@ -17,7 +18,13 @@ export default function Map(props: MapBlock) {
   // const [newMarkers, setNewMarkers] = useState<mapboxgl.Marker[]>([])
 
   // "https://www.google.com/maps/dir/?api=1&destination=${marker.coords![1]},${marker.coords![0]}"
-
+  useEffect(() => {
+    if (map.current) {
+      setTimeout(() => {
+        map.current?.resize()
+      }, 0)
+    }
+  }, [fullscreen])
   useEffect(() => {
     mapboxgl.accessToken = mapboxgl.accessToken
     map.current = new mapboxgl.Map({
@@ -113,28 +120,18 @@ export default function Map(props: MapBlock) {
     <div
       id="map"
       onClick={() => setFullscreen(true)}
-      className={`${fullscreen ? 'fixed z-50 top-0' : 'relative'} h-screen w-full`}
+      className={`${fullscreen ? 'fixed z-50 top-0 w-screen' : 'px-5 relative lg:px-40 w-full'} h-screen `}
     >
       {!fullscreen && (
-        <div className="absolute flex justify-center items-center top-0 left-0 z-20 w-full h-full bg-white bg-opacity-10">
-          <div className="text-slate border border-black bg-white px-4 py-3">Click to Explore</div>
+        <div className="absolute flex justify-center items-center top-0 left-0 z-20 w-full h-full">
+          <div className="text-slate border border-black bg-white bg-opacity-80 px-4 py-3 uppercase">
+            Click to Explore
+          </div>
         </div>
       )}
       {fullscreen && (
         <>
-          {destinationMarker && (
-            <a
-              href={`https://www.google.com/maps/dir/?api=1&destination=${destinationMarker.coords![1]},${destinationMarker.coords![0]}`}
-              target="_blank"
-            >
-              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 bg-white bg-opacity-10">
-                <div className="text-slate border border-black bg-white px-4 py-3">
-                  Directions on Google Maps
-                </div>
-              </div>
-            </a>
-          )}
-
+          {' '}
           <div
             onClick={(e) => {
               e.stopPropagation()
@@ -144,9 +141,34 @@ export default function Map(props: MapBlock) {
           >
             <FontAwesomeIcon className="text-white text-xl" icon={faTimes} />
           </div>
+          {destinationMarker && (
+            <a
+              className="z-20"
+              href={`https://www.google.com/maps/dir/?api=1&destination=${destinationMarker.coords![1]},${destinationMarker.coords![0]}`}
+              target="_blank"
+            >
+              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 bg-white bg-opacity-10">
+                <div className="text-slate border border-black bg-white px-4 py-3 uppercase">
+                  Directions on Google Maps
+                </div>
+              </div>
+            </a>
+          )}
         </>
       )}
-      <div className="relative h-full w-full" id="map-container" ref={mapContainer}></div>
+      <div className={`${fullscreen ? 'absolute w-screen h-screen' : 'relative h-full w-full'}  `}>
+        <div
+          className="absolute top-0 left-0 h-full w-full"
+          id="map-container"
+          ref={mapContainer}
+        ></div>
+        <Image
+          className="absolute z-0 h-full top-0 left-0 object-fill pointer-events-none"
+          src={'/assets/shade_outer.png'}
+          alt="shade"
+          fill
+        />
+      </div>
     </div>
   )
 }

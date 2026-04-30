@@ -37,21 +37,25 @@ export default function Header(props: Props) {
 
   return (
     <header
-      className={`transform h-[120px] top-0 fixed z-50 flex w-full items-center justify-between py-3  bg-black bg-opacity-70  ease-in-out transition-all duration-300 px-6 lg:px-20 ${
+      className={`transform h-[90px] top-0 fixed z-50 flex w-full items-center justify-between py-3  bg-slate-800 ease-in-out transition-all duration-300 px-5 lg:px-40 ${
         scrollPosition < 10 ? 'translate-y-0' : '-translate-y-full'
       }`}
     >
-      <div className="relative h-20 w-64">
-        <Link href="/">
-          <Image
-            src="https://uhtfc-cloudflare.vaughn-710.workers.dev/api/media/file/logo_new-300x90.png"
-            alt="Logo"
-            fill
-            className="object-contain"
-            sizes="(max-width: 768px) 10vw"
-          />
-        </Link>
+      <div className="flex items-center justify-center">
+        <div className="relative h-20 w-28">
+          <Link href="/">
+            <Image
+              src="/assets/UHTFC logo.png"
+              alt="Logo"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 10vw"
+            />
+          </Link>
+        </div>
+        {/* <div className={`${charm.className} text-white text-2xl`}>uhtfc</div> */}
       </div>
+
       <div className="">
         <Nav navigation={nav} isAuthenticated={props.isAuthenticated} />
       </div>

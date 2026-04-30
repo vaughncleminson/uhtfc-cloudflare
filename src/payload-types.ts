@@ -231,7 +231,7 @@ export interface Order {
   firstName: string;
   lastName: string;
   email: string;
-  role?: ('non-member' | 'member' | 'member-guest' | 'corporate-guest' | 'admin') | null;
+  role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
   paymentStatus?: ('not-required' | 'payment-pending' | 'payment-received') | null;
   products:
     | {
@@ -285,7 +285,7 @@ export interface Booking {
   userId: number;
   firstName: string;
   lastName: string;
-  role?: ('non-member' | 'member' | 'member-guest' | 'corporate-guest' | 'admin') | null;
+  role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
   email: string;
   location: number | Location;
   date?: string | null;
@@ -295,7 +295,7 @@ export interface Booking {
     firstName?: string | null;
     lastName?: string | null;
     email?: string | null;
-    role?: ('non-member' | 'member' | 'member-guest' | 'corporate-guest' | 'admin') | null;
+    role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
     id?: string | null;
   }[];
   totalAmount?: number | null;
@@ -442,8 +442,8 @@ export interface BookingHistory {
   email: string;
   userId: number;
   members?: number | null;
+  memberGuests?: number | null;
   nonMembers?: number | null;
-  corporateGuests?: number | null;
   date: string;
   rodsBooked: number;
   updatedAt: string;
@@ -590,6 +590,7 @@ export interface Page {
  */
 export interface HeroBlock {
   title?: string | null;
+  subtitle?: string | null;
   image?: (number | null) | Media;
   btns?: {
     links?:
@@ -606,6 +607,7 @@ export interface HeroBlock {
         }[]
       | null;
   };
+  size?: ('small' | 'large') | null;
   blockName?: string | null;
   id?: string | null;
   blockType: 'hero';
@@ -718,7 +720,7 @@ export interface User {
   province?: string | null;
   postalCode?: string | null;
   country?: string | null;
-  role?: ('non-member' | 'member' | 'member-guest' | 'corporate-guest' | 'admin') | null;
+  role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
   membershipType?: ('OM' | 'OMW' | 'F' | 'J' | 'S' | 'C' | 'COMP' | 'R') | null;
   blocked?: boolean | null;
   subsDue?: boolean | null;
@@ -1023,8 +1025,8 @@ export interface BookingHistorySelect<T extends boolean = true> {
   email?: T;
   userId?: T;
   members?: T;
+  memberGuests?: T;
   nonMembers?: T;
-  corporateGuests?: T;
   date?: T;
   rodsBooked?: T;
   updatedAt?: T;
@@ -1172,6 +1174,7 @@ export interface PagesSelect<T extends boolean = true> {
  */
 export interface HeroBlockSelect<T extends boolean = true> {
   title?: T;
+  subtitle?: T;
   image?: T;
   btns?:
     | T
@@ -1192,6 +1195,7 @@ export interface HeroBlockSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  size?: T;
   blockName?: T;
   id?: T;
 }

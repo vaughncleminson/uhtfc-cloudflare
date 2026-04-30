@@ -12,7 +12,7 @@ export default function AuthForm() {
       ) : (
         <RegisterForm setAuthType={(e) => setAuthType(e)} />
       )}
-      <p className="text-center mt-2 text-gray-700">
+      {/* <p className="text-center mt-2 text-slate-400">
         <span onClick={() => setAuthType('login')} className="underline cursor-pointer">
           Login
         </span>{' '}
@@ -21,7 +21,7 @@ export default function AuthForm() {
           Register
         </span>{' '}
         to book water or become a member
-      </p>
+      </p> */}
     </>
   )
 }

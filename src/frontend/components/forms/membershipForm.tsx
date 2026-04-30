@@ -35,13 +35,13 @@ export default function MembershipForm(props: Props) {
         displayName: `Membership type - ${data.membershipType}`,
         description: `Subscription fee`,
         quantity: 1,
-        pricingDetails: { price: props.settings.subsSettings[data.membershipType] },
+        price: props.settings.subsSettings[data.membershipType],
       },
       {
         displayName: `Joining fee`,
         description: `Joining fee for new members`,
         quantity: 1,
-        pricingDetails: { price: props.settings.subsSettings.joiningFee },
+        price: props.settings.subsSettings.joiningFee,
       },
     ]
     const result = membershipSchema.safeParse(data)

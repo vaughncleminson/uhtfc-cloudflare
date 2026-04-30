@@ -5,8 +5,9 @@ import configPromise from '@payload-config'
 import { Metadata } from 'next'
 import { cookies, draftMode } from 'next/headers'
 import React, { cache } from 'react'
-import { gilda } from './fonts'
+import { oswald } from './fonts'
 
+import Footer from '@/frontend/components/layout/Footer'
 import Header from '@/frontend/components/layout/Header'
 import { ToastProvider } from '@/frontend/components/ui/ToastProvider'
 import { Navigation } from '@/payload-types'
@@ -23,7 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isAuthenticated = Boolean(token)
   //test
   return (
-    <html lang="en" suppressHydrationWarning className={`${gilda.className}`}>
+    <html lang="en" suppressHydrationWarning className={`${oswald.className} bg-slate-800`}>
       <head>
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
@@ -32,6 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <LivePreviewListener />
         <Header navigation={navigation} isAuthenticated={isAuthenticated} />
         <ToastProvider> {children}</ToastProvider>
+        <Footer navigation={navigation} isAuthenticated={isAuthenticated} />
       </body>
     </html>
   )

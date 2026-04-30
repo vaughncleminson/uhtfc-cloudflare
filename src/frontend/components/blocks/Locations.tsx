@@ -1,4 +1,5 @@
 'use client'
+import { crimson } from '@/app/(frontend)/fonts'
 import {
   Location,
   LocationDetailsBlock,
@@ -11,7 +12,6 @@ import Link from 'next/link'
 import { Where } from 'payload'
 import qs from 'qs'
 import { useEffect, useState } from 'react'
-import Row from '../layout/Row'
 import Button from '../ui/Button'
 
 type LocationCard = {
@@ -70,56 +70,49 @@ export default function Locations(props: LocationsBlock) {
     fetchLocations()
   }, [])
   return (
-    <div id={props.blockName} className=" bg-amber-50 relative py-6 lg:py-12">
-      <Row>
-        <div className="grid grid-cols-1 gap-10 z-50 md:grid-cols-2 lg:grid-cols-3">
-          {locations.map((card) => {
-            return (
-              <div
-                key={card.title}
-                className="w-full relative object-cover bg-white shadow-lg rounded overflow-hidden transition-transform duration-300 ease-in-out  hover:scale-105"
-              >
-                <div className="relative">
-                  <Image
-                    src={card.image.url!}
-                    alt={card.title}
-                    width={1024}
-                    height={1024}
-                    className="w-full object-cover h-1/2"
-                  />
-                  <h2 className=" absolute bg-red-700 py-2 px-4 text-white bottom-8 left-0 text-xl font-bold">
-                    {card.title.toUpperCase()}
-                  </h2>
-                </div>
+    <div id={props.blockName} className="relative px-5 lg:px-40">
+      <div className="grid grid-cols-1 gap-5 z-50 md:grid-cols-2 lg:grid-cols-3">
+        {locations.map((card) => {
+          return (
+            <div
+              key={card.title}
+              className="w-full h-[400px] relative object-cover transition-transform duration-300 ease-in-out  hover:scale-105"
+            >
+              <div className="h-full w-full top-0 left-0">
+                <Image
+                  src={card.image.url!}
+                  alt={card.title}
+                  width={1024}
+                  height={1024}
+                  className="w-full object-cover h-full absolute top-0 left-0"
+                />
+                <Image
+                  className="absolute z-0 h-full top-0 left-0 object-fill"
+                  src={'/assets/shade_outer.png'}
+                  alt="shade"
+                  fill
+                />
+                <div className="absolute w-full h-full top-0 left-0 flex flex-col items-center justify-center">
+                  <div className=" drop-shadow-[0_5px_5px_rgba(0,0,0,1)] text-center">
+                    <div className="text-white">{card.rodLimit} rods</div>
+                    <h2 className="text-3xl z-20 text-white uppercase">{card.title}</h2>
+                    <div className={`${crimson.className} text-white`}>
+                      {card.membersOnly ? 'Members only' : 'Members & non-members'}
+                    </div>
 
-                <div className="flex flex-col">
-                  <div className="flex flex-col items-center justify-center h-full  p-3">
-                    <div>{card.membersOnly ? 'Members only' : 'Members & non-members'}</div>
-                    <div>Rod limit : {card.rodLimit}</div>
-                  </div>
-                  <div className="flex flex-col justify-center items-center gap-3 w-full h-full  p-3">
                     <Link href={`/book-now?location=${card.id}#details`} className="w-full">
                       <Button
-                        className="w-full h-11 mt-0 bg-white border border-black text-black text-base hover:bg-slate-800 hover:text-white transition-colors duration-300"
+                        className="w-full rounded-none h-11 mt-3 bg-black bg-opacity-30 border border-white text-white text-base hover:bg-black  transition-colors duration-300"
                         title="Book Now"
-                      />
-                    </Link>
-                    <Link
-                      href={`/our-water/${card.type == 'stillwater' ? 'stillwaters' : 'rivers'}/${card.slug}`}
-                      className="w-full"
-                    >
-                      <Button
-                        className="w-full h-11 mt-0 bg-white border border-black text-black text-base hover:bg-slate-800 hover:text-white transition-colors duration-300"
-                        title="Location Details"
                       />
                     </Link>
                   </div>
                 </div>
               </div>
-            )
-          })}
-        </div>
-      </Row>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

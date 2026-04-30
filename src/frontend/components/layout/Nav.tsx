@@ -2,8 +2,6 @@
 import { orderAtom } from '@/frontend/atoms/orderAtom'
 import { settingsAtom } from '@/frontend/atoms/settingsAtom'
 import { NavigationType } from '@/frontend/types/navigation'
-import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useAtom } from 'jotai'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -74,11 +72,11 @@ export default function Nav(props: Props) {
               )}
             </div>
           ))}
-          {order?.products && order?.products.length > 0 && (
+          {order?.products && order?.products.length > 0 && props.isAuthenticated && (
             <Link href="/checkout">
-              <div className="bg-black bg-opacity-60 border border-white border-opacity-60 px-4 h-[38px] flex items-center gap-2 relative">
-                <FontAwesomeIcon className="w-4 h-4" icon={faCartShopping} />
-                <div className="absolute flex items-center justify-center border border-white px-1 h-4 bg-red-700 text-white -top-2 -right-2 text-xs">
+              <div className="bg-black text-sm bg-opacity-60 border border-white border-opacity-60 px-2 py-1 flex items-center gap-2 relative uppercase">
+                <div className="text-sm">Cart</div>
+                <div className="absolute flex items-center justify-center border border-white border-opacity-60 px-1 h-4 bg-red-700 text-white -top-2 -right-2 text-xs">
                   {order?.products.length}
                 </div>
               </div>

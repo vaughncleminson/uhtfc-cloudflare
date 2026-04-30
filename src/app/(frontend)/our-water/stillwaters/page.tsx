@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
-import React, { cache } from 'react'
+import { getPayload } from 'payload'
+import { cache } from 'react'
 
-import type { Page as PageType } from '@/payload-types'
 import { generateMeta } from '@/admin/utils/generateMeta'
 import RenderBlocks from '@/frontend/components/blocks/RenderBlocks'
+import type { Page as PageType } from '@/payload-types'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -56,7 +56,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   const { layout } = page
   return (
-    <section>
+    <section className="flex flex-col gap-5 pt-[90px]">
       <RenderBlocks blocks={layout} />
     </section>
   )
@@ -92,7 +92,7 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string[] }) => {
     overrideAccess: draft,
     where: {
       slug: {
-        equals: slug.join('/'),
+        equals: '/our-water/stillwaters',
       },
     },
   })
