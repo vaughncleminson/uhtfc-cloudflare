@@ -23,6 +23,7 @@ type LocationCard = {
   rodLimit: number
   slug: string
 }
+//test
 
 export default function Locations(props: LocationsBlock) {
   const [locations, setLocations] = useState<LocationCard[]>([])
