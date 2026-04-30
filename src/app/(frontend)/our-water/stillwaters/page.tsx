@@ -8,7 +8,7 @@ import { cache } from 'react'
 import { generateMeta } from '@/admin/utils/generateMeta'
 import RenderBlocks from '@/frontend/components/blocks/RenderBlocks'
 import type { Page as PageType } from '@/payload-types'
-
+export const dynamic = 'force-dynamic'
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const pages = await payload.find({
