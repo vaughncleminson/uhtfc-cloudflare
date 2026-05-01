@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
-import React, { cache } from 'react'
+import { getPayload } from 'payload'
+import { cache } from 'react'
 
-import type { Page as PageType } from '@/payload-types'
 import { generateMeta } from '@/admin/utils/generateMeta'
 import RenderBlocks from '@/frontend/components/blocks/RenderBlocks'
+import type { Page as PageType } from '@/payload-types'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -44,16 +44,13 @@ export default async function Page({ params: paramsPromise }: Args) {
     slug = ['home']
   }
   //   const url = '/' + slug
-
   let page: PageType | null
-
   page = await queryPageBySlug({
     slug,
   })
   if (!page) {
     return <></>
   }
-
   const { layout } = page
   return (
     <section>
@@ -61,7 +58,6 @@ export default async function Page({ params: paramsPromise }: Args) {
     </section>
   )
 }
-
 export async function generateMetadata({
   params: paramsPromise,
 }: {
@@ -71,11 +67,9 @@ export async function generateMetadata({
   if (!slug) {
     slug = ['home']
   }
-
   const page = await queryPageBySlug({
     slug,
   })
-
   return generateMeta({ doc: page })
 }
 

@@ -8,8 +8,6 @@ import { cache } from 'react'
 import { generateMeta } from '@/admin/utils/generateMeta'
 import RenderBlocks from '@/frontend/components/blocks/RenderBlocks'
 
-export const dynamic = 'force-dynamic'
-
 type Args = {
   params: Promise<{
     slug?: string[]
@@ -22,14 +20,12 @@ export default async function Page({ params: paramsPromise }: Args) {
     slug = ['home']
   }
   //   const url = '/' + slug
-
   const page = await queryPageBySlug({
     slug,
   })
   if (!page) {
     return <></>
   }
-
   const { layout } = page
   return (
     <section className="flex flex-col gap-5 pt-[90px]">
@@ -37,7 +33,6 @@ export default async function Page({ params: paramsPromise }: Args) {
     </section>
   )
 }
-
 export async function generateMetadata({
   params: paramsPromise,
 }: {
@@ -47,11 +42,9 @@ export async function generateMetadata({
   if (!slug) {
     slug = ['home']
   }
-
   const page = await queryPageBySlug({
     slug,
   })
-
   return generateMeta({ doc: page })
 }
 

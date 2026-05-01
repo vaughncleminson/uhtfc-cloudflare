@@ -7,6 +7,8 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import { GetPlatformProxyOptions } from 'wrangler'
+
+import { migrations } from 'migrations'
 import { Admins } from './admin/collections/Admins'
 import { BookingHistory } from './admin/collections/BookingHistory'
 import { Bookings } from './admin/collections/Bookings'
@@ -22,7 +24,6 @@ import { Pages } from './admin/collections/Pages'
 import { Payments } from './admin/collections/Payments'
 import { Settings } from './admin/collections/Settings'
 import { Users } from './admin/collections/Users'
-import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -106,7 +107,6 @@ export default buildConfig({
   },
   db: sqliteD1Adapter({
     binding: cloudflare.env.D1,
-    migrationDir: 'migrations',
     prodMigrations: migrations,
   }),
 

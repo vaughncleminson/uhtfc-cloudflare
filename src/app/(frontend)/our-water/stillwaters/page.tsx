@@ -44,16 +44,13 @@ export default async function Page({ params: paramsPromise }: Args) {
     slug = ['home']
   }
   //   const url = '/' + slug
-
   let page: PageType | null
-
   page = await queryPageBySlug({
     slug,
   })
   if (!page) {
     return <></>
   }
-
   const { layout } = page
   return (
     <section className="flex flex-col gap-5 pt-[90px]">

@@ -1,7 +1,6 @@
 import MFALoginForm from '@/admin/components/MFALoginForm/MFALoginForm'
-
 import './custom.scss'
-
+export const dynamic = 'force-dynamic'
 export default function Login() {
   return (
     <div className="login-container">
