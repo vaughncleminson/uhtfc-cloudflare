@@ -38,28 +38,24 @@ type Args = {
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  let { slug } = await paramsPromise
-
-  if (!slug) {
-    slug = ['home']
-  }
-  //   const url = '/' + slug
-
-  let page: Location | null
-
-  page = await queryPageBySlug({
-    slug,
-  })
-  if (!page) {
-    return <></>
-  }
-
-  const { layout } = page
-  return (
-    <section>
-      <RenderBlocks blocks={layout} page={page} />
-    </section>
-  )
+  // let { slug } = await paramsPromise
+  // if (!slug) {
+  //   slug = ['home']
+  // }
+  // //   const url = '/' + slug
+  // let page: Location | null
+  // page = await queryPageBySlug({
+  //   slug,
+  // })
+  // if (!page) {
+  //   return <></>
+  // }
+  // const { layout } = page
+  // return (
+  //   <section>
+  //     <RenderBlocks blocks={layout} page={page} />
+  //   </section>
+  // )
 }
 
 export async function generateMetadata({
