@@ -1,695 +1,811 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-d1-sqlite'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
-  await db.run(sql`CREATE TABLE \`admins_sessions\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`created_at\` text,
-  	\`expires_at\` text NOT NULL,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`admins\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(sql`CREATE INDEX \`admins_sessions_order_idx\` ON \`admins_sessions\` (\`_order\`);`)
+  // await db.run(sql`CREATE TABLE \`admins_sessions\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`created_at\` text,
+  // 	\`expires_at\` text NOT NULL,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`admins\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(sql`CREATE INDEX \`admins_sessions_order_idx\` ON \`admins_sessions\` (\`_order\`);`)
+  // await db.run(
+  //   sql`CREATE INDEX \`admins_sessions_parent_id_idx\` ON \`admins_sessions\` (\`_parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`admins\` (
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	\`role\` text DEFAULT 'viewer',
+  // 	\`mfa_mfa_settings\` text DEFAULT '{"enabled":false,"mfaSecret":"","mfaURL":""}',
+  // 	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`email\` text NOT NULL,
+  // 	\`reset_password_token\` text,
+  // 	\`reset_password_expiration\` text,
+  // 	\`salt\` text,
+  // 	\`hash\` text,
+  // 	\`login_attempts\` numeric DEFAULT 0,
+  // 	\`lock_until\` text
+  // );
+  // `)
+  // await db.run(sql`CREATE INDEX \`admins_updated_at_idx\` ON \`admins\` (\`updated_at\`);`)
+  // await db.run(sql`CREATE INDEX \`admins_created_at_idx\` ON \`admins\` (\`created_at\`);`)
+  // await db.run(sql`CREATE UNIQUE INDEX \`admins_email_idx\` ON \`admins\` (\`email\`);`)
+  // await db.run(sql`CREATE TABLE \`media\` (
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	\`alt\` text NOT NULL,
+  // 	\`description\` text,
+  // 	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`url\` text,
+  // 	\`thumbnail_u_r_l\` text,
+  // 	\`filename\` text,
+  // 	\`mime_type\` text,
+  // 	\`filesize\` numeric,
+  // 	\`width\` numeric,
+  // 	\`height\` numeric,
+  // 	\`focal_x\` numeric,
+  // 	\`focal_y\` numeric
+  // );
+  // `)
+  // await db.run(sql`CREATE INDEX \`media_updated_at_idx\` ON \`media\` (\`updated_at\`);`)
+  // await db.run(sql`CREATE INDEX \`media_created_at_idx\` ON \`media\` (\`created_at\`);`)
+  // await db.run(sql`CREATE UNIQUE INDEX \`media_filename_idx\` ON \`media\` (\`filename\`);`)
+  // await db.run(sql`CREATE TABLE \`orders_line_items\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`display_name\` text NOT NULL,
+  // 	\`description\` text NOT NULL,
+  // 	\`quantity\` numeric NOT NULL,
+  // 	\`price\` numeric NOT NULL,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`orders\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`orders_line_items_order_idx\` ON \`orders_line_items\` (\`_order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`orders_line_items_parent_id_idx\` ON \`orders_line_items\` (\`_parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`orders\` (
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	\`user_id\` numeric NOT NULL,
+  // 	\`first_name\` text NOT NULL,
+  // 	\`last_name\` text NOT NULL,
+  // 	\`email\` text NOT NULL,
+  // 	\`role\` text,
+  // 	\`payment_status\` text DEFAULT 'not-required',
+  // 	\`products\` text NOT NULL,
+  // 	\`checkout_id\` text,
+  // 	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`total_amount\` numeric DEFAULT 0,
+  // 	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL
+  // );
+  // `)
+  // await db.run(sql`CREATE INDEX \`orders_updated_at_idx\` ON \`orders\` (\`updated_at\`);`)
+  // await db.run(sql`CREATE TABLE \`payments\` (
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	\`payment_id\` text NOT NULL,
+  // 	\`user_name\` text NOT NULL,
+  // 	\`products\` text,
+  // 	\`details\` text,
+  // 	\`amount\` numeric NOT NULL,
+  // 	\`currency\` text,
+  // 	\`type\` text,
+  // 	\`status\` text NOT NULL,
+  // 	\`mode\` text,
+  // 	\`order_id\` integer,
+  // 	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	FOREIGN KEY (\`order_id\`) REFERENCES \`orders\`(\`id\`) ON UPDATE no action ON DELETE set null
+  // );
+  // `)
+  // await db.run(sql`CREATE INDEX \`payments_order_idx\` ON \`payments\` (\`order_id\`);`)
+  // await db.run(sql`CREATE INDEX \`payments_updated_at_idx\` ON \`payments\` (\`updated_at\`);`)
+  // await db.run(sql`CREATE INDEX \`payments_created_at_idx\` ON \`payments\` (\`created_at\`);`)
+  // await db.run(sql`CREATE TABLE \`bookings_anglers\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`user_id\` numeric,
+  // 	\`full_name\` text,
+  // 	\`first_name\` text,
+  // 	\`last_name\` text,
+  // 	\`email\` text,
+  // 	\`role\` text,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`bookings\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`bookings_anglers_order_idx\` ON \`bookings_anglers\` (\`_order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`bookings_anglers_parent_id_idx\` ON \`bookings_anglers\` (\`_parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`bookings_line_items\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`display_name\` text NOT NULL,
+  // 	\`description\` text NOT NULL,
+  // 	\`quantity\` numeric NOT NULL,
+  // 	\`price\` numeric NOT NULL,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`bookings\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`bookings_line_items_order_idx\` ON \`bookings_line_items\` (\`_order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`bookings_line_items_parent_id_idx\` ON \`bookings_line_items\` (\`_parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`bookings\` (
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	\`product_type\` text DEFAULT 'booking' NOT NULL,
+  // 	\`user_id\` numeric NOT NULL,
+  // 	\`first_name\` text NOT NULL,
+  // 	\`last_name\` text NOT NULL,
+  // 	\`role\` text,
+  // 	\`email\` text NOT NULL,
+  // 	\`location_id\` integer NOT NULL,
+  // 	\`date\` text,
+  // 	\`total_amount\` numeric DEFAULT 0,
+  // 	\`accept_terms\` integer DEFAULT false,
+  // 	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	FOREIGN KEY (\`location_id\`) REFERENCES \`locations\`(\`id\`) ON UPDATE no action ON DELETE set null
+  // );
+  // `)
+  // await db.run(sql`CREATE INDEX \`bookings_location_idx\` ON \`bookings\` (\`location_id\`);`)
+  // await db.run(sql`CREATE INDEX \`bookings_updated_at_idx\` ON \`bookings\` (\`updated_at\`);`)
+  // await db.run(sql`CREATE INDEX \`bookings_created_at_idx\` ON \`bookings\` (\`created_at\`);`)
+  // await db.run(sql`CREATE TABLE \`booking_history\` (
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	\`location_id\` numeric NOT NULL,
+  // 	\`first_name\` text NOT NULL,
+  // 	\`last_name\` text NOT NULL,
+  // 	\`email\` text NOT NULL,
+  // 	\`user_id\` numeric NOT NULL,
+  // 	\`members\` numeric,
+  // 	\`member_guests\` numeric,
+  // 	\`non_members\` numeric,
+  // 	\`date\` text NOT NULL,
+  // 	\`rods_booked\` numeric NOT NULL,
+  // 	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`booking_history_updated_at_idx\` ON \`booking_history\` (\`updated_at\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`booking_history_created_at_idx\` ON \`booking_history\` (\`created_at\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`catch_returns_returns\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`species\` text NOT NULL,
+  // 	\`quantity\` numeric NOT NULL,
+  // 	\`length\` numeric NOT NULL,
+  // 	\`released\` integer DEFAULT true,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`catch_returns\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`catch_returns_returns_order_idx\` ON \`catch_returns_returns\` (\`_order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`catch_returns_returns_parent_id_idx\` ON \`catch_returns_returns\` (\`_parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`catch_returns\` (
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	\`booking_id\` integer,
+  // 	\`nil_return\` integer DEFAULT false,
+  // 	\`stats_total\` numeric DEFAULT 0 NOT NULL,
+  // 	\`stats_average_length\` numeric DEFAULT 0 NOT NULL,
+  // 	\`stats_large_fish\` numeric DEFAULT 0 NOT NULL,
+  // 	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	FOREIGN KEY (\`booking_id\`) REFERENCES \`bookings\`(\`id\`) ON UPDATE no action ON DELETE set null
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`catch_returns_booking_idx\` ON \`catch_returns\` (\`booking_id\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`catch_returns_updated_at_idx\` ON \`catch_returns\` (\`updated_at\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`catch_returns_created_at_idx\` ON \`catch_returns\` (\`created_at\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`new_memberships_line_items\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`display_name\` text NOT NULL,
+  // 	\`description\` text NOT NULL,
+  // 	\`quantity\` numeric NOT NULL,
+  // 	\`price\` numeric NOT NULL,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`new_memberships\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`new_memberships_line_items_order_idx\` ON \`new_memberships_line_items\` (\`_order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`new_memberships_line_items_parent_id_idx\` ON \`new_memberships_line_items\` (\`_parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`new_memberships\` (
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	\`product_type\` text DEFAULT 'newMembership' NOT NULL,
+  // 	\`user_id\` numeric NOT NULL,
+  // 	\`membership_type\` text NOT NULL,
+  // 	\`first_name\` text NOT NULL,
+  // 	\`last_name\` text NOT NULL,
+  // 	\`id_number\` text NOT NULL,
+  // 	\`email\` text NOT NULL,
+  // 	\`mobile_number\` text NOT NULL,
+  // 	\`street\` text NOT NULL,
+  // 	\`city\` text NOT NULL,
+  // 	\`province\` text NOT NULL,
+  // 	\`postal_code\` text NOT NULL,
+  // 	\`country\` text NOT NULL,
+  // 	\`other_memberships\` text,
+  // 	\`how_did_you_hear_about_us\` text,
+  // 	\`total_amount\` numeric DEFAULT 0,
+  // 	\`accept_terms\` integer DEFAULT false,
+  // 	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`new_memberships_updated_at_idx\` ON \`new_memberships\` (\`updated_at\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`festivals_give_away_type\` (
+  // 	\`order\` integer NOT NULL,
+  // 	\`parent_id\` integer NOT NULL,
+  // 	\`value\` text,
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	FOREIGN KEY (\`parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_give_away_type_order_idx\` ON \`festivals_give_away_type\` (\`order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_give_away_type_parent_idx\` ON \`festivals_give_away_type\` (\`parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`festivals_garment_sizes\` (
+  // 	\`order\` integer NOT NULL,
+  // 	\`parent_id\` integer NOT NULL,
+  // 	\`value\` text,
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	FOREIGN KEY (\`parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_garment_sizes_order_idx\` ON \`festivals_garment_sizes\` (\`order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_garment_sizes_parent_idx\` ON \`festivals_garment_sizes\` (\`parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`festivals_hat_sizes\` (
+  // 	\`order\` integer NOT NULL,
+  // 	\`parent_id\` integer NOT NULL,
+  // 	\`value\` text,
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	FOREIGN KEY (\`parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_hat_sizes_order_idx\` ON \`festivals_hat_sizes\` (\`order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_hat_sizes_parent_idx\` ON \`festivals_hat_sizes\` (\`parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`festivals_team_members\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`full_name\` text NOT NULL,
+  // 	\`email\` text NOT NULL,
+  // 	\`mobile\` text NOT NULL,
+  // 	\`garment_size\` text NOT NULL,
+  // 	\`hat_size\` text NOT NULL,
+  // 	\`extra_meals\` numeric,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_team_members_order_idx\` ON \`festivals_team_members\` (\`_order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_team_members_parent_id_idx\` ON \`festivals_team_members\` (\`_parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`festivals_line_items\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`display_name\` text NOT NULL,
+  // 	\`description\` text NOT NULL,
+  // 	\`quantity\` numeric NOT NULL,
+  // 	\`price\` numeric NOT NULL,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_line_items_order_idx\` ON \`festivals_line_items\` (\`_order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`festivals_line_items_parent_id_idx\` ON \`festivals_line_items\` (\`_parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`festivals\` (
+  // 	\`id\` integer PRIMARY KEY NOT NULL,
+  // 	\`product_type\` text DEFAULT 'festivalEntry' NOT NULL,
+  // 	\`festival_name\` text NOT NULL,
+  // 	\`bookings_open\` integer DEFAULT false,
+  // 	\`number_of_teams\` numeric,
+  // 	\`entries_per_team\` numeric,
+  // 	\`start_date\` text,
+  // 	\`end_date\` text,
+  // 	\`event_duration\` numeric,
+  // 	\`price\` numeric,
+  // 	\`exta_meals\` numeric,
+  // 	\`total_amount\` numeric DEFAULT 0,
+  // 	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+  // 	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL
+  // );
+  // `)
+  // await db.run(sql`CREATE INDEX \`festivals_updated_at_idx\` ON \`festivals\` (\`updated_at\`);`)
+  // await db.run(sql`CREATE INDEX \`festivals_created_at_idx\` ON \`festivals\` (\`created_at\`);`)
+  // await db.run(sql`CREATE TABLE \`pages_blocks_hero_btns_links\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` text NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`link_type\` text DEFAULT 'reference',
+  // 	\`link_new_tab\` integer,
+  // 	\`link_show\` text DEFAULT 'always',
+  // 	\`link_internal_link\` text,
+  // 	\`link_url\` text,
+  // 	\`link_label\` text,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages_blocks_hero\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`pages_blocks_hero_btns_links_order_idx\` ON \`pages_blocks_hero_btns_links\` (\`_order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`pages_blocks_hero_btns_links_parent_id_idx\` ON \`pages_blocks_hero_btns_links\` (\`_parent_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`pages_blocks_hero\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`_path\` text NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`title\` text,
+  // 	\`subtitle\` text,
+  // 	\`image_id\` integer,
+  // 	\`size\` text DEFAULT 'large',
+  // 	\`block_name\` text,
+  // 	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
+  // await db.run(
+  //   sql`CREATE INDEX \`pages_blocks_hero_order_idx\` ON \`pages_blocks_hero\` (\`_order\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`pages_blocks_hero_parent_id_idx\` ON \`pages_blocks_hero\` (\`_parent_id\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`pages_blocks_hero_path_idx\` ON \`pages_blocks_hero\` (\`_path\`);`,
+  // )
+  // await db.run(
+  //   sql`CREATE INDEX \`pages_blocks_hero_image_idx\` ON \`pages_blocks_hero\` (\`image_id\`);`,
+  // )
+  // await db.run(sql`CREATE TABLE \`pages_blocks_auth\` (
+  // 	\`_order\` integer NOT NULL,
+  // 	\`_parent_id\` integer NOT NULL,
+  // 	\`_path\` text NOT NULL,
+  // 	\`id\` text PRIMARY KEY NOT NULL,
+  // 	\`image_id\` integer,
+  // 	\`block_name\` text,
+  // 	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+  // 	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+  // );
+  // `)
   await db.run(
-    sql`CREATE INDEX \`admins_sessions_parent_id_idx\` ON \`admins_sessions\` (\`_parent_id\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`admins\` (
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`role\` text DEFAULT 'viewer',
-  	\`mfa_mfa_settings\` text DEFAULT '{"enabled":false,"mfaSecret":"","mfaURL":""}',
-  	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`email\` text NOT NULL,
-  	\`reset_password_token\` text,
-  	\`reset_password_expiration\` text,
-  	\`salt\` text,
-  	\`hash\` text,
-  	\`login_attempts\` numeric DEFAULT 0,
-  	\`lock_until\` text
-  );
-  `)
-  await db.run(sql`CREATE INDEX \`admins_updated_at_idx\` ON \`admins\` (\`updated_at\`);`)
-  await db.run(sql`CREATE INDEX \`admins_created_at_idx\` ON \`admins\` (\`created_at\`);`)
-  await db.run(sql`CREATE UNIQUE INDEX \`admins_email_idx\` ON \`admins\` (\`email\`);`)
-  await db.run(sql`CREATE TABLE \`media\` (
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`alt\` text NOT NULL,
-  	\`description\` text,
-  	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`url\` text,
-  	\`thumbnail_u_r_l\` text,
-  	\`filename\` text,
-  	\`mime_type\` text,
-  	\`filesize\` numeric,
-  	\`width\` numeric,
-  	\`height\` numeric,
-  	\`focal_x\` numeric,
-  	\`focal_y\` numeric
-  );
-  `)
-  await db.run(sql`CREATE INDEX \`media_updated_at_idx\` ON \`media\` (\`updated_at\`);`)
-  await db.run(sql`CREATE INDEX \`media_created_at_idx\` ON \`media\` (\`created_at\`);`)
-  await db.run(sql`CREATE UNIQUE INDEX \`media_filename_idx\` ON \`media\` (\`filename\`);`)
-  await db.run(sql`CREATE TABLE \`orders_line_items\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`display_name\` text NOT NULL,
-  	\`description\` text NOT NULL,
-  	\`quantity\` numeric NOT NULL,
-  	\`price\` numeric NOT NULL,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`orders\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`orders_line_items_order_idx\` ON \`orders_line_items\` (\`_order\`);`,
+    sql`CREATE INDEX \`pages_blocks_auth_order_idx\` ON \`pages_blocks_auth\` (\`_order\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`orders_line_items_parent_id_idx\` ON \`orders_line_items\` (\`_parent_id\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`orders\` (
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`user_id\` numeric NOT NULL,
-  	\`first_name\` text NOT NULL,
-  	\`last_name\` text NOT NULL,
-  	\`email\` text NOT NULL,
-  	\`role\` text,
-  	\`payment_status\` text DEFAULT 'not-required',
-  	\`products\` text NOT NULL,
-  	\`checkout_id\` text,
-  	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`total_amount\` numeric DEFAULT 0,
-  	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL
-  );
-  `)
-  await db.run(sql`CREATE INDEX \`orders_updated_at_idx\` ON \`orders\` (\`updated_at\`);`)
-  await db.run(sql`CREATE TABLE \`payments\` (
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`payment_id\` text NOT NULL,
-  	\`user_name\` text NOT NULL,
-  	\`products\` text,
-  	\`details\` text,
-  	\`amount\` numeric NOT NULL,
-  	\`currency\` text,
-  	\`type\` text,
-  	\`status\` text NOT NULL,
-  	\`mode\` text,
-  	\`order_id\` integer,
-  	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	FOREIGN KEY (\`order_id\`) REFERENCES \`orders\`(\`id\`) ON UPDATE no action ON DELETE set null
-  );
-  `)
-  await db.run(sql`CREATE INDEX \`payments_order_idx\` ON \`payments\` (\`order_id\`);`)
-  await db.run(sql`CREATE INDEX \`payments_updated_at_idx\` ON \`payments\` (\`updated_at\`);`)
-  await db.run(sql`CREATE INDEX \`payments_created_at_idx\` ON \`payments\` (\`created_at\`);`)
-  await db.run(sql`CREATE TABLE \`bookings_anglers\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`user_id\` numeric,
-  	\`full_name\` text,
-  	\`first_name\` text,
-  	\`last_name\` text,
-  	\`email\` text,
-  	\`role\` text,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`bookings\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`bookings_anglers_order_idx\` ON \`bookings_anglers\` (\`_order\`);`,
+    sql`CREATE INDEX \`pages_blocks_auth_parent_id_idx\` ON \`pages_blocks_auth\` (\`_parent_id\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`bookings_anglers_parent_id_idx\` ON \`bookings_anglers\` (\`_parent_id\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`bookings_line_items\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`display_name\` text NOT NULL,
-  	\`description\` text NOT NULL,
-  	\`quantity\` numeric NOT NULL,
-  	\`price\` numeric NOT NULL,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`bookings\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`bookings_line_items_order_idx\` ON \`bookings_line_items\` (\`_order\`);`,
+    sql`CREATE INDEX \`pages_blocks_auth_path_idx\` ON \`pages_blocks_auth\` (\`_path\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`bookings_line_items_parent_id_idx\` ON \`bookings_line_items\` (\`_parent_id\`);`,
+    sql`CREATE INDEX \`pages_blocks_auth_image_idx\` ON \`pages_blocks_auth\` (\`image_id\`);`,
   )
-  await db.run(sql`CREATE TABLE \`bookings\` (
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`product_type\` text DEFAULT 'booking' NOT NULL,
-  	\`user_id\` numeric NOT NULL,
-  	\`first_name\` text NOT NULL,
-  	\`last_name\` text NOT NULL,
-  	\`role\` text,
-  	\`email\` text NOT NULL,
-  	\`location_id\` integer NOT NULL,
-  	\`date\` text,
-  	\`total_amount\` numeric DEFAULT 0,
-  	\`accept_terms\` integer DEFAULT false,
-  	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	FOREIGN KEY (\`location_id\`) REFERENCES \`locations\`(\`id\`) ON UPDATE no action ON DELETE set null
-  );
-  `)
-  await db.run(sql`CREATE INDEX \`bookings_location_idx\` ON \`bookings\` (\`location_id\`);`)
-  await db.run(sql`CREATE INDEX \`bookings_updated_at_idx\` ON \`bookings\` (\`updated_at\`);`)
-  await db.run(sql`CREATE INDEX \`bookings_created_at_idx\` ON \`bookings\` (\`created_at\`);`)
-  await db.run(sql`CREATE TABLE \`booking_history\` (
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`location_id\` numeric NOT NULL,
-  	\`first_name\` text NOT NULL,
-  	\`last_name\` text NOT NULL,
-  	\`email\` text NOT NULL,
-  	\`user_id\` numeric NOT NULL,
-  	\`members\` numeric,
-  	\`member_guests\` numeric,
-  	\`non_members\` numeric,
-  	\`date\` text NOT NULL,
-  	\`rods_booked\` numeric NOT NULL,
-  	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL
-  );
-  `)
+  await db.run(sql`CREATE TABLE \`pages_blocks_map_default\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` text PRIMARY KEY NOT NULL,
+    	\`title\` text DEFAULT 'Map all locations',
+    	\`block_name\` text,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
   await db.run(
-    sql`CREATE INDEX \`booking_history_updated_at_idx\` ON \`booking_history\` (\`updated_at\`);`,
+    sql`CREATE INDEX \`pages_blocks_map_default_order_idx\` ON \`pages_blocks_map_default\` (\`_order\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`booking_history_created_at_idx\` ON \`booking_history\` (\`created_at\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`catch_returns_returns\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`species\` text NOT NULL,
-  	\`quantity\` numeric NOT NULL,
-  	\`length\` numeric NOT NULL,
-  	\`released\` integer DEFAULT true,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`catch_returns\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`catch_returns_returns_order_idx\` ON \`catch_returns_returns\` (\`_order\`);`,
+    sql`CREATE INDEX \`pages_blocks_map_default_parent_id_idx\` ON \`pages_blocks_map_default\` (\`_parent_id\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`catch_returns_returns_parent_id_idx\` ON \`catch_returns_returns\` (\`_parent_id\`);`,
+    sql`CREATE INDEX \`pages_blocks_map_default_path_idx\` ON \`pages_blocks_map_default\` (\`_path\`);`,
   )
-  await db.run(sql`CREATE TABLE \`catch_returns\` (
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`booking_id\` integer,
-  	\`nil_return\` integer DEFAULT false,
-  	\`stats_total\` numeric DEFAULT 0 NOT NULL,
-  	\`stats_average_length\` numeric DEFAULT 0 NOT NULL,
-  	\`stats_large_fish\` numeric DEFAULT 0 NOT NULL,
-  	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	FOREIGN KEY (\`booking_id\`) REFERENCES \`bookings\`(\`id\`) ON UPDATE no action ON DELETE set null
-  );
-  `)
+  await db.run(sql`CREATE TABLE \`pages_blocks_map\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` text PRIMARY KEY NOT NULL,
+    	\`map\` text DEFAULT '[]',
+    	\`specific_directions\` text,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
   await db.run(
-    sql`CREATE INDEX \`catch_returns_booking_idx\` ON \`catch_returns\` (\`booking_id\`);`,
-  )
-  await db.run(
-    sql`CREATE INDEX \`catch_returns_updated_at_idx\` ON \`catch_returns\` (\`updated_at\`);`,
+    sql`CREATE INDEX \`pages_blocks_map_order_idx\` ON \`pages_blocks_map\` (\`_order\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`catch_returns_created_at_idx\` ON \`catch_returns\` (\`created_at\`);`,
+    sql`CREATE INDEX \`pages_blocks_map_parent_id_idx\` ON \`pages_blocks_map\` (\`_parent_id\`);`,
   )
-  await db.run(sql`CREATE TABLE \`new_memberships_line_items\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`display_name\` text NOT NULL,
-  	\`description\` text NOT NULL,
-  	\`quantity\` numeric NOT NULL,
-  	\`price\` numeric NOT NULL,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`new_memberships\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
+  await db.run(sql`CREATE INDEX \`pages_blocks_map_path_idx\` ON \`pages_blocks_map\` (\`_path\`);`)
+  await db.run(sql`CREATE TABLE \`pages_blocks_rod_fees_membership\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` text PRIMARY KEY NOT NULL,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
   await db.run(
-    sql`CREATE INDEX \`new_memberships_line_items_order_idx\` ON \`new_memberships_line_items\` (\`_order\`);`,
-  )
-  await db.run(
-    sql`CREATE INDEX \`new_memberships_line_items_parent_id_idx\` ON \`new_memberships_line_items\` (\`_parent_id\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`new_memberships\` (
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`product_type\` text DEFAULT 'newMembership' NOT NULL,
-  	\`user_id\` numeric NOT NULL,
-  	\`membership_type\` text NOT NULL,
-  	\`first_name\` text NOT NULL,
-  	\`last_name\` text NOT NULL,
-  	\`id_number\` text NOT NULL,
-  	\`email\` text NOT NULL,
-  	\`mobile_number\` text NOT NULL,
-  	\`street\` text NOT NULL,
-  	\`city\` text NOT NULL,
-  	\`province\` text NOT NULL,
-  	\`postal_code\` text NOT NULL,
-  	\`country\` text NOT NULL,
-  	\`other_memberships\` text,
-  	\`how_did_you_hear_about_us\` text,
-  	\`total_amount\` numeric DEFAULT 0,
-  	\`accept_terms\` integer DEFAULT false,
-  	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`new_memberships_updated_at_idx\` ON \`new_memberships\` (\`updated_at\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`festivals_give_away_type\` (
-  	\`order\` integer NOT NULL,
-  	\`parent_id\` integer NOT NULL,
-  	\`value\` text,
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	FOREIGN KEY (\`parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`festivals_give_away_type_order_idx\` ON \`festivals_give_away_type\` (\`order\`);`,
+    sql`CREATE INDEX \`pages_blocks_rod_fees_membership_order_idx\` ON \`pages_blocks_rod_fees_membership\` (\`_order\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`festivals_give_away_type_parent_idx\` ON \`festivals_give_away_type\` (\`parent_id\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`festivals_garment_sizes\` (
-  	\`order\` integer NOT NULL,
-  	\`parent_id\` integer NOT NULL,
-  	\`value\` text,
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	FOREIGN KEY (\`parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`festivals_garment_sizes_order_idx\` ON \`festivals_garment_sizes\` (\`order\`);`,
+    sql`CREATE INDEX \`pages_blocks_rod_fees_membership_parent_id_idx\` ON \`pages_blocks_rod_fees_membership\` (\`_parent_id\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`festivals_garment_sizes_parent_idx\` ON \`festivals_garment_sizes\` (\`parent_id\`);`,
+    sql`CREATE INDEX \`pages_blocks_rod_fees_membership_path_idx\` ON \`pages_blocks_rod_fees_membership\` (\`_path\`);`,
   )
-  await db.run(sql`CREATE TABLE \`festivals_hat_sizes\` (
-  	\`order\` integer NOT NULL,
-  	\`parent_id\` integer NOT NULL,
-  	\`value\` text,
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	FOREIGN KEY (\`parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
+  await db.run(sql`CREATE TABLE \`pages_blocks_booking\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` text PRIMARY KEY NOT NULL,
+    	\`image_id\` integer,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
   await db.run(
-    sql`CREATE INDEX \`festivals_hat_sizes_order_idx\` ON \`festivals_hat_sizes\` (\`order\`);`,
-  )
-  await db.run(
-    sql`CREATE INDEX \`festivals_hat_sizes_parent_idx\` ON \`festivals_hat_sizes\` (\`parent_id\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`festivals_team_members\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`full_name\` text NOT NULL,
-  	\`email\` text NOT NULL,
-  	\`mobile\` text NOT NULL,
-  	\`garment_size\` text NOT NULL,
-  	\`hat_size\` text NOT NULL,
-  	\`extra_meals\` numeric,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`festivals_team_members_order_idx\` ON \`festivals_team_members\` (\`_order\`);`,
+    sql`CREATE INDEX \`pages_blocks_booking_order_idx\` ON \`pages_blocks_booking\` (\`_order\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`festivals_team_members_parent_id_idx\` ON \`festivals_team_members\` (\`_parent_id\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`festivals_line_items\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`display_name\` text NOT NULL,
-  	\`description\` text NOT NULL,
-  	\`quantity\` numeric NOT NULL,
-  	\`price\` numeric NOT NULL,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`festivals\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`festivals_line_items_order_idx\` ON \`festivals_line_items\` (\`_order\`);`,
+    sql`CREATE INDEX \`pages_blocks_booking_parent_id_idx\` ON \`pages_blocks_booking\` (\`_parent_id\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`festivals_line_items_parent_id_idx\` ON \`festivals_line_items\` (\`_parent_id\`);`,
-  )
-  await db.run(sql`CREATE TABLE \`festivals\` (
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`product_type\` text DEFAULT 'festivalEntry' NOT NULL,
-  	\`festival_name\` text NOT NULL,
-  	\`bookings_open\` integer DEFAULT false,
-  	\`number_of_teams\` numeric,
-  	\`entries_per_team\` numeric,
-  	\`start_date\` text,
-  	\`end_date\` text,
-  	\`event_duration\` numeric,
-  	\`price\` numeric,
-  	\`exta_meals\` numeric,
-  	\`total_amount\` numeric DEFAULT 0,
-  	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL
-  );
-  `)
-  await db.run(sql`CREATE INDEX \`festivals_updated_at_idx\` ON \`festivals\` (\`updated_at\`);`)
-  await db.run(sql`CREATE INDEX \`festivals_created_at_idx\` ON \`festivals\` (\`created_at\`);`)
-  await db.run(sql`CREATE TABLE \`pages_blocks_hero_btns_links\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` text NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`link_type\` text DEFAULT 'reference',
-  	\`link_new_tab\` integer,
-  	\`link_show\` text DEFAULT 'always',
-  	\`link_internal_link\` text,
-  	\`link_url\` text,
-  	\`link_label\` text,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages_blocks_hero\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(
-    sql`CREATE INDEX \`pages_blocks_hero_btns_links_order_idx\` ON \`pages_blocks_hero_btns_links\` (\`_order\`);`,
+    sql`CREATE INDEX \`pages_blocks_booking_path_idx\` ON \`pages_blocks_booking\` (\`_path\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`pages_blocks_hero_btns_links_parent_id_idx\` ON \`pages_blocks_hero_btns_links\` (\`_parent_id\`);`,
+    sql`CREATE INDEX \`pages_blocks_booking_image_idx\` ON \`pages_blocks_booking\` (\`image_id\`);`,
   )
-  await db.run(sql`CREATE TABLE \`pages_blocks_hero\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`_path\` text NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`title\` text,
-  	\`subtitle\` text,
-  	\`image_id\` integer,
-  	\`size\` text DEFAULT 'large',
-  	\`block_name\` text,
-  	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
+  await db.run(sql`CREATE TABLE \`pages_blocks_locations\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` text PRIMARY KEY NOT NULL,
+    	\`title\` text DEFAULT 'All locations',
+    	\`block_name\` text,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
   await db.run(
-    sql`CREATE INDEX \`pages_blocks_hero_order_idx\` ON \`pages_blocks_hero\` (\`_order\`);`,
+    sql`CREATE INDEX \`pages_blocks_locations_order_idx\` ON \`pages_blocks_locations\` (\`_order\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`pages_blocks_hero_parent_id_idx\` ON \`pages_blocks_hero\` (\`_parent_id\`);`,
+    sql`CREATE INDEX \`pages_blocks_locations_parent_id_idx\` ON \`pages_blocks_locations\` (\`_parent_id\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`pages_blocks_hero_path_idx\` ON \`pages_blocks_hero\` (\`_path\`);`,
+    sql`CREATE INDEX \`pages_blocks_locations_path_idx\` ON \`pages_blocks_locations\` (\`_path\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`pages_blocks_order\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` text PRIMARY KEY NOT NULL,
+    	\`title\` text DEFAULT 'Order',
+    	\`image_id\` integer,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_order_order_idx\` ON \`pages_blocks_order\` (\`_order\`);`,
   )
   await db.run(
-    sql`CREATE INDEX \`pages_blocks_hero_image_idx\` ON \`pages_blocks_hero\` (\`image_id\`);`,
+    sql`CREATE INDEX \`pages_blocks_order_parent_id_idx\` ON \`pages_blocks_order\` (\`_parent_id\`);`,
   )
-  await db.run(sql`CREATE TABLE \`pages_blocks_auth\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`_path\` text NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`image_id\` integer,
-  	\`block_name\` text,
-  	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_auth_order_idx\` ON \`pages_blocks_auth\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_auth_parent_id_idx\` ON \`pages_blocks_auth\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_auth_path_idx\` ON \`pages_blocks_auth\` (\`_path\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_auth_image_idx\` ON \`pages_blocks_auth\` (\`image_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages_blocks_map_default\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` text PRIMARY KEY NOT NULL,
-  //   	\`title\` text DEFAULT 'Map all locations',
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_map_default_order_idx\` ON \`pages_blocks_map_default\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_map_default_parent_id_idx\` ON \`pages_blocks_map_default\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_map_default_path_idx\` ON \`pages_blocks_map_default\` (\`_path\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages_blocks_map\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` text PRIMARY KEY NOT NULL,
-  //   	\`map\` text DEFAULT '[]',
-  //   	\`specific_directions\` text,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_map_order_idx\` ON \`pages_blocks_map\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_map_parent_id_idx\` ON \`pages_blocks_map\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_map_path_idx\` ON \`pages_blocks_map\` (\`_path\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages_blocks_rod_fees_membership\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` text PRIMARY KEY NOT NULL,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_rod_fees_membership_order_idx\` ON \`pages_blocks_rod_fees_membership\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_rod_fees_membership_parent_id_idx\` ON \`pages_blocks_rod_fees_membership\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_rod_fees_membership_path_idx\` ON \`pages_blocks_rod_fees_membership\` (\`_path\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages_blocks_booking\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` text PRIMARY KEY NOT NULL,
-  //   	\`image_id\` integer,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_booking_order_idx\` ON \`pages_blocks_booking\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_booking_parent_id_idx\` ON \`pages_blocks_booking\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_booking_path_idx\` ON \`pages_blocks_booking\` (\`_path\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_booking_image_idx\` ON \`pages_blocks_booking\` (\`image_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages_blocks_locations\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` text PRIMARY KEY NOT NULL,
-  //   	\`title\` text DEFAULT 'All locations',
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_locations_order_idx\` ON \`pages_blocks_locations\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_locations_parent_id_idx\` ON \`pages_blocks_locations\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_locations_path_idx\` ON \`pages_blocks_locations\` (\`_path\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages_blocks_order\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` text PRIMARY KEY NOT NULL,
-  //   	\`title\` text DEFAULT 'Order',
-  //   	\`image_id\` integer,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_order_order_idx\` ON \`pages_blocks_order\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_order_parent_id_idx\` ON \`pages_blocks_order\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_order_path_idx\` ON \`pages_blocks_order\` (\`_path\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_order_image_idx\` ON \`pages_blocks_order\` (\`image_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages_blocks_my_bookings\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` text PRIMARY KEY NOT NULL,
-  //   	\`title\` text DEFAULT 'My Bookings',
-  //   	\`image_id\` integer,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_my_bookings_order_idx\` ON \`pages_blocks_my_bookings\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_my_bookings_parent_id_idx\` ON \`pages_blocks_my_bookings\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_my_bookings_path_idx\` ON \`pages_blocks_my_bookings\` (\`_path\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_my_bookings_image_idx\` ON \`pages_blocks_my_bookings\` (\`image_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages_blocks_catch_returns\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` text PRIMARY KEY NOT NULL,
-  //   	\`title\` text DEFAULT 'Catch Returns',
-  //   	\`image_id\` integer,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_catch_returns_order_idx\` ON \`pages_blocks_catch_returns\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_catch_returns_parent_id_idx\` ON \`pages_blocks_catch_returns\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_catch_returns_path_idx\` ON \`pages_blocks_catch_returns\` (\`_path\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_catch_returns_image_idx\` ON \`pages_blocks_catch_returns\` (\`image_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages_blocks_payments\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` text PRIMARY KEY NOT NULL,
-  //   	\`title\` text DEFAULT 'Payments',
-  //   	\`image_id\` integer,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_payments_order_idx\` ON \`pages_blocks_payments\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_payments_parent_id_idx\` ON \`pages_blocks_payments\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_payments_path_idx\` ON \`pages_blocks_payments\` (\`_path\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_blocks_payments_image_idx\` ON \`pages_blocks_payments\` (\`image_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`pages\` (
-  //   	\`id\` integer PRIMARY KEY NOT NULL,
-  //   	\`title\` text,
-  //   	\`meta_title\` text,
-  //   	\`meta_image_id\` integer,
-  //   	\`meta_description\` text,
-  //   	\`published_at\` text,
-  //   	\`slug\` text,
-  //   	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  //   	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  //   	\`_status\` text DEFAULT 'draft',
-  //   	FOREIGN KEY (\`meta_image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`pages_meta_meta_image_idx\` ON \`pages\` (\`meta_image_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_updated_at_idx\` ON \`pages\` (\`updated_at\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages_created_at_idx\` ON \`pages\` (\`created_at\`);`)
-  //   await db.run(sql`CREATE INDEX \`pages__status_idx\` ON \`pages\` (\`_status\`);`)
-  //   await db.run(sql`CREATE TABLE \`_pages_v_blocks_hero_btns_links\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`id\` integer PRIMARY KEY NOT NULL,
-  //   	\`link_type\` text DEFAULT 'reference',
-  //   	\`link_new_tab\` integer,
-  //   	\`link_show\` text DEFAULT 'always',
-  //   	\`link_internal_link\` text,
-  //   	\`link_url\` text,
-  //   	\`link_label\` text,
-  //   	\`_uuid\` text,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v_blocks_hero\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_hero_btns_links_order_idx\` ON \`_pages_v_blocks_hero_btns_links\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_hero_btns_links_parent_id_idx\` ON \`_pages_v_blocks_hero_btns_links\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`_pages_v_blocks_hero\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` integer PRIMARY KEY NOT NULL,
-  //   	\`title\` text,
-  //   	\`subtitle\` text,
-  //   	\`image_id\` integer,
-  //   	\`size\` text DEFAULT 'large',
-  //   	\`block_name\` text,
-  //   	\`_uuid\` text,
-  //   	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_hero_order_idx\` ON \`_pages_v_blocks_hero\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_hero_parent_id_idx\` ON \`_pages_v_blocks_hero\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_hero_path_idx\` ON \`_pages_v_blocks_hero\` (\`_path\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_hero_image_idx\` ON \`_pages_v_blocks_hero\` (\`image_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`_pages_v_blocks_auth\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` integer PRIMARY KEY NOT NULL,
-  //   	\`image_id\` integer,
-  //   	\`_uuid\` text,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_auth_order_idx\` ON \`_pages_v_blocks_auth\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_auth_parent_id_idx\` ON \`_pages_v_blocks_auth\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_auth_path_idx\` ON \`_pages_v_blocks_auth\` (\`_path\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_auth_image_idx\` ON \`_pages_v_blocks_auth\` (\`image_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`_pages_v_blocks_map_default\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` integer PRIMARY KEY NOT NULL,
-  //   	\`title\` text DEFAULT 'Map all locations',
-  //   	\`_uuid\` text,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_map_default_order_idx\` ON \`_pages_v_blocks_map_default\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_map_default_parent_id_idx\` ON \`_pages_v_blocks_map_default\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_map_default_path_idx\` ON \`_pages_v_blocks_map_default\` (\`_path\`);`)
-  //   await db.run(sql`CREATE TABLE \`_pages_v_blocks_map\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` integer PRIMARY KEY NOT NULL,
-  //   	\`map\` text DEFAULT '[]',
-  //   	\`specific_directions\` text,
-  //   	\`_uuid\` text,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_map_order_idx\` ON \`_pages_v_blocks_map\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_map_parent_id_idx\` ON \`_pages_v_blocks_map\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_map_path_idx\` ON \`_pages_v_blocks_map\` (\`_path\`);`)
-  //   await db.run(sql`CREATE TABLE \`_pages_v_blocks_rod_fees_membership\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` integer PRIMARY KEY NOT NULL,
-  //   	\`_uuid\` text,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_rod_fees_membership_order_idx\` ON \`_pages_v_blocks_rod_fees_membership\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_rod_fees_membership_parent_id_idx\` ON \`_pages_v_blocks_rod_fees_membership\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_rod_fees_membership_path_idx\` ON \`_pages_v_blocks_rod_fees_membership\` (\`_path\`);`)
-  //   await db.run(sql`CREATE TABLE \`_pages_v_blocks_booking\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` integer PRIMARY KEY NOT NULL,
-  //   	\`image_id\` integer,
-  //   	\`_uuid\` text,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_booking_order_idx\` ON \`_pages_v_blocks_booking\` (\`_order\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_booking_parent_id_idx\` ON \`_pages_v_blocks_booking\` (\`_parent_id\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_booking_path_idx\` ON \`_pages_v_blocks_booking\` (\`_path\`);`)
-  //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_booking_image_idx\` ON \`_pages_v_blocks_booking\` (\`image_id\`);`)
-  //   await db.run(sql`CREATE TABLE \`_pages_v_blocks_locations\` (
-  //   	\`_order\` integer NOT NULL,
-  //   	\`_parent_id\` integer NOT NULL,
-  //   	\`_path\` text NOT NULL,
-  //   	\`id\` integer PRIMARY KEY NOT NULL,
-  //   	\`title\` text DEFAULT 'All locations',
-  //   	\`_uuid\` text,
-  //   	\`block_name\` text,
-  //   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  //   );
-  //   `)
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_order_path_idx\` ON \`pages_blocks_order\` (\`_path\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_order_image_idx\` ON \`pages_blocks_order\` (\`image_id\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`pages_blocks_my_bookings\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` text PRIMARY KEY NOT NULL,
+    	\`title\` text DEFAULT 'My Bookings',
+    	\`image_id\` integer,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_my_bookings_order_idx\` ON \`pages_blocks_my_bookings\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_my_bookings_parent_id_idx\` ON \`pages_blocks_my_bookings\` (\`_parent_id\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_my_bookings_path_idx\` ON \`pages_blocks_my_bookings\` (\`_path\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_my_bookings_image_idx\` ON \`pages_blocks_my_bookings\` (\`image_id\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`pages_blocks_catch_returns\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` text PRIMARY KEY NOT NULL,
+    	\`title\` text DEFAULT 'Catch Returns',
+    	\`image_id\` integer,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_catch_returns_order_idx\` ON \`pages_blocks_catch_returns\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_catch_returns_parent_id_idx\` ON \`pages_blocks_catch_returns\` (\`_parent_id\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_catch_returns_path_idx\` ON \`pages_blocks_catch_returns\` (\`_path\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_catch_returns_image_idx\` ON \`pages_blocks_catch_returns\` (\`image_id\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`pages_blocks_payments\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` text PRIMARY KEY NOT NULL,
+    	\`title\` text DEFAULT 'Payments',
+    	\`image_id\` integer,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_payments_order_idx\` ON \`pages_blocks_payments\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_payments_parent_id_idx\` ON \`pages_blocks_payments\` (\`_parent_id\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_payments_path_idx\` ON \`pages_blocks_payments\` (\`_path\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`pages_blocks_payments_image_idx\` ON \`pages_blocks_payments\` (\`image_id\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`pages\` (
+    	\`id\` integer PRIMARY KEY NOT NULL,
+    	\`title\` text,
+    	\`meta_title\` text,
+    	\`meta_image_id\` integer,
+    	\`meta_description\` text,
+    	\`published_at\` text,
+    	\`slug\` text,
+    	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+    	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+    	\`_status\` text DEFAULT 'draft',
+    	FOREIGN KEY (\`meta_image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null
+    );
+    `)
+  await db.run(sql`CREATE INDEX \`pages_meta_meta_image_idx\` ON \`pages\` (\`meta_image_id\`);`)
+  await db.run(sql`CREATE INDEX \`pages_updated_at_idx\` ON \`pages\` (\`updated_at\`);`)
+  await db.run(sql`CREATE INDEX \`pages_created_at_idx\` ON \`pages\` (\`created_at\`);`)
+  await db.run(sql`CREATE INDEX \`pages__status_idx\` ON \`pages\` (\`_status\`);`)
+  await db.run(sql`CREATE TABLE \`_pages_v_blocks_hero_btns_links\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`id\` integer PRIMARY KEY NOT NULL,
+    	\`link_type\` text DEFAULT 'reference',
+    	\`link_new_tab\` integer,
+    	\`link_show\` text DEFAULT 'always',
+    	\`link_internal_link\` text,
+    	\`link_url\` text,
+    	\`link_label\` text,
+    	\`_uuid\` text,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v_blocks_hero\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_hero_btns_links_order_idx\` ON \`_pages_v_blocks_hero_btns_links\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_hero_btns_links_parent_id_idx\` ON \`_pages_v_blocks_hero_btns_links\` (\`_parent_id\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`_pages_v_blocks_hero\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` integer PRIMARY KEY NOT NULL,
+    	\`title\` text,
+    	\`subtitle\` text,
+    	\`image_id\` integer,
+    	\`size\` text DEFAULT 'large',
+    	\`block_name\` text,
+    	\`_uuid\` text,
+    	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_hero_order_idx\` ON \`_pages_v_blocks_hero\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_hero_parent_id_idx\` ON \`_pages_v_blocks_hero\` (\`_parent_id\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_hero_path_idx\` ON \`_pages_v_blocks_hero\` (\`_path\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_hero_image_idx\` ON \`_pages_v_blocks_hero\` (\`image_id\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`_pages_v_blocks_auth\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` integer PRIMARY KEY NOT NULL,
+    	\`image_id\` integer,
+    	\`_uuid\` text,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_auth_order_idx\` ON \`_pages_v_blocks_auth\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_auth_parent_id_idx\` ON \`_pages_v_blocks_auth\` (\`_parent_id\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_auth_path_idx\` ON \`_pages_v_blocks_auth\` (\`_path\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_auth_image_idx\` ON \`_pages_v_blocks_auth\` (\`image_id\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`_pages_v_blocks_map_default\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` integer PRIMARY KEY NOT NULL,
+    	\`title\` text DEFAULT 'Map all locations',
+    	\`_uuid\` text,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_map_default_order_idx\` ON \`_pages_v_blocks_map_default\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_map_default_parent_id_idx\` ON \`_pages_v_blocks_map_default\` (\`_parent_id\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_map_default_path_idx\` ON \`_pages_v_blocks_map_default\` (\`_path\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`_pages_v_blocks_map\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` integer PRIMARY KEY NOT NULL,
+    	\`map\` text DEFAULT '[]',
+    	\`specific_directions\` text,
+    	\`_uuid\` text,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_map_order_idx\` ON \`_pages_v_blocks_map\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_map_parent_id_idx\` ON \`_pages_v_blocks_map\` (\`_parent_id\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_map_path_idx\` ON \`_pages_v_blocks_map\` (\`_path\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`_pages_v_blocks_rod_fees_membership\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` integer PRIMARY KEY NOT NULL,
+    	\`_uuid\` text,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_rod_fees_membership_order_idx\` ON \`_pages_v_blocks_rod_fees_membership\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_rod_fees_membership_parent_id_idx\` ON \`_pages_v_blocks_rod_fees_membership\` (\`_parent_id\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_rod_fees_membership_path_idx\` ON \`_pages_v_blocks_rod_fees_membership\` (\`_path\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`_pages_v_blocks_booking\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` integer PRIMARY KEY NOT NULL,
+    	\`image_id\` integer,
+    	\`_uuid\` text,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_booking_order_idx\` ON \`_pages_v_blocks_booking\` (\`_order\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_booking_parent_id_idx\` ON \`_pages_v_blocks_booking\` (\`_parent_id\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_booking_path_idx\` ON \`_pages_v_blocks_booking\` (\`_path\`);`,
+  )
+  await db.run(
+    sql`CREATE INDEX \`_pages_v_blocks_booking_image_idx\` ON \`_pages_v_blocks_booking\` (\`image_id\`);`,
+  )
+  await db.run(sql`CREATE TABLE \`_pages_v_blocks_locations\` (
+    	\`_order\` integer NOT NULL,
+    	\`_parent_id\` integer NOT NULL,
+    	\`_path\` text NOT NULL,
+    	\`id\` integer PRIMARY KEY NOT NULL,
+    	\`title\` text DEFAULT 'All locations',
+    	\`_uuid\` text,
+    	\`block_name\` text,
+    	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
+    );
+    `)
   //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_locations_order_idx\` ON \`_pages_v_blocks_locations\` (\`_order\`);`)
   //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_locations_parent_id_idx\` ON \`_pages_v_blocks_locations\` (\`_parent_id\`);`)
   //   await db.run(sql`CREATE INDEX \`_pages_v_blocks_locations_path_idx\` ON \`_pages_v_blocks_locations\` (\`_path\`);`)
