@@ -8,8 +8,6 @@ import { cache } from 'react'
 import { generateMeta } from '@/admin/utils/generateMeta'
 import RenderBlocks from '@/frontend/components/blocks/RenderBlocks'
 
-export const dynamic = 'force-dynamic'
-
 type Args = {
   params: Promise<{
     slug?: string[]
@@ -17,37 +15,37 @@ type Args = {
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  //   let { slug } = await paramsPromise
-  //   if (!slug) {
-  //     slug = ['home']
-  //   }
-  //   //   const url = '/' + slug
-  //   const page = await queryPageBySlug({
-  //     slug,
-  //   })
-  //   if (!page) {
-  //     return <></>
-  //   }
-  //   const { layout } = page
-  //   return (
-  //     <section className="flex flex-col gap-5 pt-[90px]">
-  //       <RenderBlocks blocks={layout} />
-  //     </section>
-  //   )
-  // }
-  // export async function generateMetadata({
-  //   params: paramsPromise,
-  // }: {
-  //   params: Promise<{ slug?: string[] }>
-  // }): Promise<Metadata> {
-  //   let { slug } = await paramsPromise
-  //   if (!slug) {
-  //     slug = ['home']
-  //   }
-  //   const page = await queryPageBySlug({
-  //     slug,
-  //   })
-  //   return generateMeta({ doc: page })
+  let { slug } = await paramsPromise
+  if (!slug) {
+    slug = ['home']
+  }
+  //   const url = '/' + slug
+  const page = await queryPageBySlug({
+    slug,
+  })
+  if (!page) {
+    return <></>
+  }
+  const { layout } = page
+  return (
+    <section className="flex flex-col gap-5 pt-[90px]">
+      <RenderBlocks blocks={layout} />
+    </section>
+  )
+}
+export async function generateMetadata({
+  params: paramsPromise,
+}: {
+  params: Promise<{ slug?: string[] }>
+}): Promise<Metadata> {
+  let { slug } = await paramsPromise
+  if (!slug) {
+    slug = ['home']
+  }
+  const page = await queryPageBySlug({
+    slug,
+  })
+  return generateMeta({ doc: page })
 }
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string[] }) => {

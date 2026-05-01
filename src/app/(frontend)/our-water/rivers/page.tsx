@@ -1,36 +1,36 @@
 import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
-import React, { cache } from 'react'
+import { getPayload } from 'payload'
+import { cache } from 'react'
 
-import type { Page as PageType } from '@/payload-types'
 import { generateMeta } from '@/admin/utils/generateMeta'
 import RenderBlocks from '@/frontend/components/blocks/RenderBlocks'
-export const dynamic = 'force-dynamic'
-// export async function generateStaticParams() {
-//   const payload = await getPayload({ config: configPromise })
-//   const pages = await payload.find({
-//     collection: 'pages',
-//     draft: false,
-//     limit: 1000,
-//     overrideAccess: false,
-//     pagination: false,
-//     select: {
-//       slug: true,
-//     },
-//   })
+import type { Page as PageType } from '@/payload-types'
 
-//   const params = pages.docs
-//     ?.filter((doc) => doc.slug && doc.slug !== 'home') // Exclude "home" and check for slug existence
-//     .map((doc) => {
-//       const slugParts = doc.slug!.split('/') // Split the slug into parts for [...slug]
-//       return { slug: slugParts }
-//     })
+export async function generateStaticParams() {
+  const payload = await getPayload({ config: configPromise })
+  const pages = await payload.find({
+    collection: 'pages',
+    draft: false,
+    limit: 1000,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      slug: true,
+    },
+  })
 
-//   return params
-// }
+  const params = pages.docs
+    ?.filter((doc) => doc.slug && doc.slug !== 'home') // Exclude "home" and check for slug existence
+    .map((doc) => {
+      const slugParts = doc.slug!.split('/') // Split the slug into parts for [...slug]
+      return { slug: slugParts }
+    })
+
+  return params
+}
 
 type Args = {
   params: Promise<{
@@ -39,38 +39,38 @@ type Args = {
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  //   let { slug } = await paramsPromise
-  //   if (!slug) {
-  //     slug = ['home']
-  //   }
-  //   //   const url = '/' + slug
-  //   let page: PageType | null
-  //   page = await queryPageBySlug({
-  //     slug,
-  //   })
-  //   if (!page) {
-  //     return <></>
-  //   }
-  //   const { layout } = page
-  //   return (
-  //     <section>
-  //       <RenderBlocks blocks={layout} />
-  //     </section>
-  //   )
-  // }
-  // export async function generateMetadata({
-  //   params: paramsPromise,
-  // }: {
-  //   params: Promise<{ slug?: string[] }>
-  // }): Promise<Metadata> {
-  //   let { slug } = await paramsPromise
-  //   if (!slug) {
-  //     slug = ['home']
-  //   }
-  //   const page = await queryPageBySlug({
-  //     slug,
-  //   })
-  //   return generateMeta({ doc: page })
+  let { slug } = await paramsPromise
+  if (!slug) {
+    slug = ['home']
+  }
+  //   const url = '/' + slug
+  let page: PageType | null
+  page = await queryPageBySlug({
+    slug,
+  })
+  if (!page) {
+    return <></>
+  }
+  const { layout } = page
+  return (
+    <section>
+      <RenderBlocks blocks={layout} />
+    </section>
+  )
+}
+export async function generateMetadata({
+  params: paramsPromise,
+}: {
+  params: Promise<{ slug?: string[] }>
+}): Promise<Metadata> {
+  let { slug } = await paramsPromise
+  if (!slug) {
+    slug = ['home']
+  }
+  const page = await queryPageBySlug({
+    slug,
+  })
+  return generateMeta({ doc: page })
 }
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string[] }) => {
