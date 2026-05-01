@@ -4,20 +4,9 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { r2Storage } from '@payloadcms/storage-r2'
 import fs from 'fs'
 import path from 'path'
-import type { EmailAdapter, SendEmailOptions } from 'payload'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import { GetPlatformProxyOptions } from 'wrangler'
-import { resendAdapter } from '@payloadcms/email-resend' // Official adapter
-
-// Raise listener limits for process and stdio streams to avoid noisy warnings
-// in dev/test when dependencies attach many lifecycle listeners.
-if (typeof process !== 'undefined') {
-  const maxListeners = 20
-  process.setMaxListeners?.(maxListeners)
-  process.stdout?.setMaxListeners?.(maxListeners)
-  process.stderr?.setMaxListeners?.(maxListeners)
-}
 import { Admins } from './admin/collections/Admins'
 import { BookingHistory } from './admin/collections/BookingHistory'
 import { Bookings } from './admin/collections/Bookings'
@@ -58,19 +47,11 @@ const isCLI =
 const isProduction = process.env.NODE_ENV === 'production'
 
 const skipRemoteCloudflare = process.env.SKIP_REMOTE_CLOUDFLARE === 'true'
-const emailMode = process.env.EMAIL_MODE || 'test'
-const testEmailAddress = process.env.EMAIL_TEST_ADDRESS || 'admin@uhtfc.org.za'
 
 const cloudflare =
   isCLI || !isProduction || skipRemoteCloudflare
     ? await getCloudflareContextFromWrangler()
     : await getCloudflareContext({ async: true })
-
-const emailAdapter = createResendEmailAdapter({
-  apiKey: process.env.RESEND_API_KEY || '',
-  defaultFromAddress: process.env.EMAIL_FROM || 'admin@uhtfc.org.za',
-  defaultFromName: 'UHTFC',
-})
 
 export default buildConfig({
   admin: {
@@ -78,17 +59,6 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
-    components: {
-      afterNavLinks: ['@/admin/components/Resend/ResendNavLink#ResendNavLink'],
-      afterDashboard: ['@/admin/components/Resend/ResendDashboardLink#ResendDashboardLink'],
-      views: {
-        resend: {
-          Component: '@/admin/components/Resend/ResendView',
-          path: '/resend',
-        },
-      },
-    },
-
     livePreview: {
       breakpoints: [
         {
@@ -146,7 +116,6 @@ export default buildConfig({
       collections: { media: true },
     }),
   ],
-  email: emailAdapter,
 })
 
 // Adapted from https://github.com/opennextjs/opennextjs-cloudflare/blob/d00b3a13e42e65aad76fba41774815726422cc39/packages/cloudflare/src/api/cloudflare-context.ts#L328C36-L328C46
@@ -158,54 +127,4 @@ function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {
         remoteBindings: isProduction,
       } satisfies GetPlatformProxyOptions),
   )
-}
-
-console.log(`--- emailMode: ${emailMode.toUpperCase()} ---`)
-
-function createResendEmailAdapter(args: {
-  apiKey: string
-  defaultFromAddress: string
-  defaultFromName: string
-}): EmailAdapter {
-  const adapter = resendAdapter(args)
-
-  return (adapterArgs) => {
-    const configuredAdapter = adapter(adapterArgs)
-
-    return {
-      ...configuredAdapter,
-      sendEmail: async (message: SendEmailOptions) => {
-        const modifiedMessage =
-          emailMode === 'production'
-            ? message
-            : {
-                ...message,
-                to: testEmailAddress || message.to,
-                subject: `[TEST-REDIRECT] ${message.subject ?? ''}`,
-                html: `<b>Original Recipient:</b> ${stringifyEmailRecipient(message.to)}<hr>${message.html?.toString() ?? ''}`,
-                text: `Original Recipient: ${stringifyEmailRecipient(message.to)}\n\n${message.text?.toString() ?? ''}`,
-              }
-
-        return configuredAdapter.sendEmail(modifiedMessage)
-      },
-    }
-  }
-}
-
-function stringifyEmailRecipient(recipient: SendEmailOptions['to']): string {
-  if (!recipient) {
-    return ''
-  }
-
-  if (typeof recipient === 'string') {
-    return recipient
-  }
-
-  if (Array.isArray(recipient)) {
-    return recipient
-      .map((address) => (typeof address === 'string' ? address : address.address))
-      .join(', ')
-  }
-
-  return recipient.address
 }

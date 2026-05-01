@@ -32,10 +32,7 @@ import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f
 import { SlugComponent as SlugComponent_8c00dfa3cab730f9087eff476c186d06 } from '@/admin/components/slug/SlugComponent'
 import { ImportCSVButton as ImportCSVButton_933a9ef49d8aeee8c44890bb36054756 } from '@/admin/components/ImportExport/import'
 import { SendBulkMail as SendBulkMail_dc0f05fdfaaccce1ac18114e9f856977 } from '@/admin/components/Mailsend/sendBulkMail'
-import { ResendDashboardLink as ResendDashboardLink_f74404eab3f0189af2deff2d89a2a78d } from '@/admin/components/Resend/ResendDashboardLink'
-import { ResendNavLink as ResendNavLink_7a18b885d87fab8e3cf3855abf61e4cf } from '@/admin/components/Resend/ResendNavLink'
 import { R2ClientUploadHandler as R2ClientUploadHandler_85cc02ed84006fcc91d3aff39dda669d } from '@payloadcms/storage-r2/client'
-import { default as default_b1683d5a0572acd43ad638531c40b208 } from '@/admin/components/Resend/ResendView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -74,9 +71,6 @@ export const importMap = {
   "@/admin/components/slug/SlugComponent#SlugComponent": SlugComponent_8c00dfa3cab730f9087eff476c186d06,
   "@/admin/components/ImportExport/import#ImportCSVButton": ImportCSVButton_933a9ef49d8aeee8c44890bb36054756,
   "@/admin/components/Mailsend/sendBulkMail#SendBulkMail": SendBulkMail_dc0f05fdfaaccce1ac18114e9f856977,
-  "@/admin/components/Resend/ResendDashboardLink#ResendDashboardLink": ResendDashboardLink_f74404eab3f0189af2deff2d89a2a78d,
-  "@/admin/components/Resend/ResendNavLink#ResendNavLink": ResendNavLink_7a18b885d87fab8e3cf3855abf61e4cf,
   "@payloadcms/storage-r2/client#R2ClientUploadHandler": R2ClientUploadHandler_85cc02ed84006fcc91d3aff39dda669d,
-  "@/admin/components/Resend/ResendView#default": default_b1683d5a0572acd43ad638531c40b208,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
