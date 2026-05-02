@@ -34,3 +34,5 @@ npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT COUNT(*) A
 * Nice sqlite browser:
 sudo apt-get install sqlitebrowser
 
+* Watch next.js dev server logfile
+tail -f .next/dev/logs/next-development.log
