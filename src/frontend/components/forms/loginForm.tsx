@@ -7,6 +7,7 @@ import { useAtom } from 'jotai'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 import Button from '../ui/Button'
+import Link from 'next/link'
 
 type LoginFormProps = {
   setAuthType: (authType: string) => void
@@ -80,7 +81,9 @@ export default function LoginForm(props: LoginFormProps) {
       <input name="password" className={`input`} type="password" />
       {errors.submit && <p className="text-red-500 text-sm">{errors.submit}</p>}
       <Button type="submit" loading={loading} title="LOGIN" />
-      <p className="underline text-white">Forgot password</p>
+      <p className="text-white underline">
+        <Link href="/forgot-password">Forgot password?</Link>
+      </p>
     </form>
   )
 }

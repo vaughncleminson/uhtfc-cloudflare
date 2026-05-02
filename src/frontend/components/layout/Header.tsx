@@ -43,7 +43,7 @@ export default function Header(props: Props) {
     >
       <div className="flex items-center justify-center">
         <div className="relative h-20 w-28">
-          <Link href="/">
+          <Link href="/" className="relative block h-full w-full">
             <Image
               src="/assets/UHTFC logo.png"
               alt="Logo"

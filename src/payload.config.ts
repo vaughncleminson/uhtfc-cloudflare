@@ -24,6 +24,7 @@ import { Pages } from './admin/collections/Pages'
 import { Payments } from './admin/collections/Payments'
 import { Settings } from './admin/collections/Settings'
 import { Users } from './admin/collections/Users'
+import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -53,6 +54,8 @@ const cloudflare =
   isCLI || !isProduction || skipRemoteCloudflare
     ? await getCloudflareContextFromWrangler()
     : await getCloudflareContext({ async: true })
+
+const mailerSendToken = process.env.MAILSEND_TOKEN || process.env.NEXT_PUBLIC_MAILSEND_TOKEN || ''
 
 export default buildConfig({
   admin: {
@@ -100,6 +103,14 @@ export default buildConfig({
     EmailSubscribers,
   ],
   editor: lexicalEditor(),
+  email: mailerSendAdapter({
+    apiKey: mailerSendToken,
+    defaultFromAddress: process.env.MAILSEND_FROM_EMAIL || 'no-reply@uhtfc.org.za',
+    defaultFromName: process.env.MAILSEND_FROM_NAME || 'The Underberg-Himeville Trout Fishing Club',
+    defaultReplyToAddress: process.env.MAILSEND_REPLY_TO_EMAIL,
+    defaultReplyToName:
+      process.env.MAILSEND_REPLY_TO_NAME || 'The Underberg-Himeville Trout Fishing Club',
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
   typescript: {
