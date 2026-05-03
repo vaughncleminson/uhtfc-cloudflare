@@ -321,6 +321,8 @@ export interface Location {
   title: string;
   topic: ('trout' | 'bass')[];
   type: 'river' | 'stillwater';
+  contactPerson?: string | null;
+  contactPersonEmail?: string | null;
   enabled?: boolean | null;
   temporarilyClosed?: boolean | null;
   closureReason?: string | null;
@@ -1301,6 +1303,8 @@ export interface LocationsSelect<T extends boolean = true> {
   title?: T;
   topic?: T;
   type?: T;
+  contactPerson?: T;
+  contactPersonEmail?: T;
   enabled?: T;
   temporarilyClosed?: T;
   closureReason?: T;
