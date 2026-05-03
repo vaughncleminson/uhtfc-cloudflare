@@ -9,6 +9,7 @@ import { BookingHistory, Location, Setting } from '@/payload-types'
 import config from '@payload-config'
 import dayjs from 'dayjs'
 import { getPayload } from 'payload'
+import { send } from 'process'
 
 type RequestBody = {
   order: Order
@@ -66,12 +67,18 @@ export async function POST(request: Request) {
       }
     }
   }
+  // if there is no amount to pay (member bookings are free)
+  // and there are bookings in the order, we can skip the checkout
+  // and just create the order entries and return a success response
   if (
     order.totalAmount === 0 &&
     order.products.filter((p) => p.productType === 'booking').length > 0
   ) {
     createOrderEntries(order)
-
+    // call function to send booking emails
+    // we email the user a booking confirmation email
+    // and we email the location owner/contact a new booking notification email
+    sendBookingEmails(order)
     return Response.json({
       success: true,
       checkout: { redirectUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?success=true` },
@@ -79,10 +86,16 @@ export async function POST(request: Request) {
   }
 
   const checkout = await createYocoCheckout(order)
+  //if checkout is created successfully, create the order entries and return success true and the checkout response
   if (checkout) {
     createOrderEntries(order)
+    // call function to send booking emails
+    // we email the user a booking confirmation email
+    // and we email the location owner/contact a new booking notification email
+    sendBookingEmails(order)
     return Response.json({ success: true, checkout })
   } else {
+    //if checkout creation failed, return success false and a redirect url to the checkout page with success false
     return Response.json({
       success: false,
       checkout: { redirectUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?success=false` },
@@ -207,6 +220,8 @@ const createOrderEntries = async (order: Order) => {
   for (let product of products) {
     switch (product.productType) {
       case 'booking':
+        //create a booking entry for each booking in the order
+        //also create a booking history entry for each booking in the order
         for (let booking of order.products.filter(
           (p) => p.productType === 'booking',
         ) as Booking[]) {
@@ -265,6 +280,54 @@ const createOrderEntries = async (order: Order) => {
         break
       default:
         break
+    }
+  }
+}
+
+// function to send booking confirmation email to user and booking notification email to location owner/contact
+const sendBookingEmails = async (order: Order) => {
+  const payload = await getPayload({ config })
+  const products = order.products as (Booking | Membership)[]
+  const bookings = products.filter((p) => p.productType === 'booking') as Booking[]
+  for (let booking of bookings) {
+    // send email to user
+    await payload.sendEmail({
+      to: order.email,
+      subject: `Booking Confirmation - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
+      html: `<p>Dear ${order.firstName},</p>
+      <p>Thank you for your booking at ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}.</p>
+      <p>Your booking details:</p>
+      <ul>
+        <li>Location: ${booking.locationName}</li>
+        <li>Date: ${dayjs(booking.date).format('MMMM D, YYYY')}</li>
+        <li>Anglers: ${booking.anglers.map((a) => a.fullName).join(', ')}</li>
+      </ul>
+      <p>Tight lines!</p>
+      <p>Best regards,</p>
+      <p>The UHTFC Team</p>`,
+    })
+
+    // send email to location owner/contact
+    // first we need to get the location details to get the contact email
+    const location = await payload.findByID({
+      collection: 'locations',
+      id: booking.location,
+    })
+    if (location && location.contactPersonEmail) {
+      await payload.sendEmail({
+        to: location.contactPersonEmail,
+        subject: `New Booking - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
+        html: `<p>Dear ${location.contactPerson || 'Location Owner/Contact'},</p>
+        <p>A new booking has been made for ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}.</p>
+        <p>Booking details:</p>
+        <ul>
+          <li>Name: ${booking.firstName} ${booking.lastName}</li>
+          <li>Email: ${booking.email}</li>
+          <li>Anglers: ${booking.anglers.map((a) => a.fullName).join(', ')}</li>
+        </ul>        
+        <p>Best regards,</p>
+        <p>The UHTFC Team</p>`,
+      })
     }
   }
 }
