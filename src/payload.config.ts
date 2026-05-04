@@ -127,6 +127,21 @@ export default buildConfig({
   ],
   // Scheduled jobs below
   jobs: {
+    jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
+      ...defaultJobsCollection,
+      admin: {
+        ...defaultJobsCollection.admin,
+        hidden: false,
+        defaultColumns: ['taskSlug', 'queue', 'hasError', 'createdAt', 'completedAt'],
+        components: {
+          ...defaultJobsCollection.admin?.components,
+          beforeListTable: [
+            ...(defaultJobsCollection.admin?.components?.beforeListTable || []),
+            '@/admin/components/Jobs/quickFilters#JobsQuickFilters',
+          ],
+        },
+      },
+    }),
     tasks: [
       {
         // This task will send an email for each booking that occurs today
@@ -153,11 +168,16 @@ export default buildConfig({
         ],
 
         handler: async ({ req, input }) => {
+          const jobName = 'emailCatchReturnLinks'
+          const ranAt = new Date().toISOString()
+
           // Send daily catch return emails
           const users = await req.payload.find({
             collection: 'users',
             where: { subscribed: { equals: true } },
           })
+
+          const catchReturnsToSend = users.docs.length
 
           for (const user of users.docs) {
             await req.payload.sendEmail({
@@ -167,8 +187,16 @@ export default buildConfig({
             })
           }
 
+          //add a note to the job log with the number of emails sent and the date the job ran
+          const note = `${jobName} ran. number of catch returns to send: ${catchReturnsToSend}`
+          req.payload.logger.info(note)
+
           return {
             output: {
+              jobName,
+              ranAt,
+              note,
+              catchReturnsToSend,
               emailsSent: users.docs.length,
               date: input.date || new Date().toISOString(),
             },

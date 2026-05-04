@@ -36,3 +36,6 @@ sudo apt-get install sqlitebrowser
 
 * Watch next.js dev server logfile
 tail -f .next/dev/logs/next-development.log
+
+* To verify types in project are ok, eg after adding a collection
+pnpm -s tsc --noEmit
