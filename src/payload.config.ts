@@ -4,7 +4,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { r2Storage } from '@payloadcms/storage-r2'
 import fs from 'fs'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, TaskConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import { GetPlatformProxyOptions } from 'wrangler'
 
@@ -127,6 +127,61 @@ export default buildConfig({
       collections: { media: true },
     }),
   ],
+  // Scheduled jobs below
+  jobs: {
+    tasks: [
+      {
+        // This task will send an email for each booking that occurs today
+        // So each record in the Bookings collection with the date field == today will trigger an email to be sent
+        // Bookings.first_name, Bookings.email, Bookings.date fields will be used in the email content
+        // In the body of the email we will include a hyperlink to "Submit Catch Return" which will link to a page on the frontend
+        // where the user can submit their catch return details
+        // The hyperlink will include a query parameter with the booking ID so that we can associate the catch return with the correct booking
+        slug: 'emailCatchReturnLinks',
+
+        // This automatically queues the task every day at 8 AM
+        schedule: [
+          {
+            cron: '0 8 * * *', // Every day at 8:00 AM
+            queue: 'daily', // Queue to add the job to
+          },
+        ],
+
+        inputSchema: [
+          {
+            name: 'date',
+            type: 'date',
+          },
+        ],
+
+        handler: async ({ req, input }) => {
+          // Send daily catch return emails
+          const users = await req.payload.find({
+            collection: 'users',
+            where: { subscribed: { equals: true } },
+          })
+
+          for (const user of users.docs) {
+            await req.payload.sendEmail({
+              to: user.email,
+              subject: `Your Catch Return for ${input.date || new Date().toISOString()}`,
+              html: 'Test', //generateCatchReturnHTML(user),
+            })
+          }
+
+          return {
+            output: {
+              emailsSent: users.docs.length,
+              date: input.date || new Date().toISOString(),
+            },
+          }
+        },
+      } as TaskConfig<'emailCatchReturnLinks'>,
+    ],
+
+    // On Cloudflare Workers, scheduled jobs are triggered by the worker's
+    // scheduled() handler instead of Payload's in-process autoRun cron.
+  },
 })
 
 // Adapted from https://github.com/opennextjs/opennextjs-cloudflare/blob/d00b3a13e42e65aad76fba41774815726422cc39/packages/cloudflare/src/api/cloudflare-context.ts#L328C36-L328C46

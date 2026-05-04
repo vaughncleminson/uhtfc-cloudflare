@@ -1,9 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
+  "main": "worker.ts",
   "name": "uhtfc-cloudflare",
   "compatibility_date": "2026-01-30",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "triggers": {
+    "crons": ["* * * * *"],
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS",
