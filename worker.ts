@@ -1,9 +1,12 @@
 // @ts-ignore .open-next/worker.js is generated at build time
 import { default as handler } from './.open-next/worker.js'
-import config from './src/payload.config'
-import { getPayload } from 'payload'
 
 async function runPayloadJobs() {
+  const [{ getPayload }, { default: config }] = await Promise.all([
+    import('payload'),
+    import('./src/payload.config'),
+  ])
+
   const payload = await getPayload({ config })
 
   await payload.jobs.handleSchedules({

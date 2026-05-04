@@ -5,7 +5,6 @@ import { r2Storage } from '@payloadcms/storage-r2'
 import fs from 'fs'
 import path from 'path'
 import { buildConfig, TaskConfig } from 'payload'
-import { fileURLToPath } from 'url'
 import { GetPlatformProxyOptions } from 'wrangler'
 
 import { migrations } from 'migrations'
@@ -26,8 +25,7 @@ import { Settings } from './admin/collections/Settings'
 import { Users } from './admin/collections/Users'
 import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
 
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+const dirname = path.resolve(process.cwd(), 'src')
 
 // Define realpath safely
 const realpath = (value: string) => {
