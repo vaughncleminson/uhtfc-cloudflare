@@ -181,6 +181,7 @@ export default buildConfig({
 
     // On Cloudflare Workers, scheduled jobs are triggered by the worker's
     // scheduled() handler instead of Payload's in-process autoRun cron.
+    // See https://developers.cloudflare.com/workers/configuration/cron-triggers/
   },
 })
 

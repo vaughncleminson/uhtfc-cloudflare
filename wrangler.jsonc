@@ -11,6 +11,9 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS",
   },
+  "alias": {
+    "@opentelemetry/api": "./src/opentelemetry-stub.js",
+  },
   "vars": {
     "PAYLOAD_SECRET": "9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23",
     "NEXT_PUBLIC_SERVER_URL": "https://uhtfc-cloudflare.vaughn-710.workers.dev",
