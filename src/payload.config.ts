@@ -4,8 +4,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { r2Storage } from '@payloadcms/storage-r2'
 import fs from 'fs'
 import path from 'path'
-import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
+import { buildConfig, TaskConfig } from 'payload'
 import { GetPlatformProxyOptions } from 'wrangler'
 
 import { migrations } from 'migrations'
@@ -26,8 +25,7 @@ import { Settings } from './admin/collections/Settings'
 import { Users } from './admin/collections/Users'
 import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
 
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+const dirname = path.resolve(process.cwd(), 'src')
 
 // Define realpath safely
 const realpath = (value: string) => {
@@ -111,6 +109,42 @@ export default buildConfig({
     defaultReplyToName:
       process.env.MAILSEND_REPLY_TO_NAME || 'The Underberg-Himeville Trout Fishing Club',
   }),
+  endpoints: [
+    {
+      path: '/jobs/trigger-catch-return-links',
+      method: 'post',
+      handler: async (req) => {
+        if (!req.user || req.user.collection !== 'admins') {
+          return Response.json(
+            {
+              errors: [{ message: 'You are not allowed to perform this action.' }],
+            },
+            { status: 401 },
+          )
+        }
+
+        const now = new Date().toISOString()
+
+        await req.payload.jobs.queue({
+          task: 'emailCatchReturnLinks',
+          queue: 'daily',
+          input: { date: now },
+          req,
+          overrideAccess: true,
+        })
+
+        await req.payload.jobs.run({
+          queue: 'daily',
+          req,
+          overrideAccess: true,
+        })
+
+        return Response.json({
+          message: 'emailCatchReturnLinks queued and run successfully.',
+        })
+      },
+    },
+  ],
   secret: process.env.PAYLOAD_SECRET || '',
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
   typescript: {
@@ -127,6 +161,93 @@ export default buildConfig({
       collections: { media: true },
     }),
   ],
+  // Scheduled jobs below
+  jobs: {
+    // Keep completed job records so run history is visible in admin
+    deleteJobOnComplete: false,
+    jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
+      ...defaultJobsCollection,
+      admin: {
+        ...defaultJobsCollection.admin,
+        hidden: false,
+        defaultColumns: ['taskSlug', 'queue', 'hasError', 'createdAt', 'completedAt'],
+        components: {
+          ...defaultJobsCollection.admin?.components,
+          beforeListTable: [
+            ...(defaultJobsCollection.admin?.components?.beforeListTable || []),
+            '@/admin/components/Jobs/triggerNow#TriggerCatchReturnJobButton',
+            '@/admin/components/Jobs/quickFilters#JobsQuickFilters',
+          ],
+        },
+      },
+    }),
+    tasks: [
+      {
+        // This task will send an email for each booking that occurs today
+        // So each record in the Bookings collection with the date field == today will trigger an email to be sent
+        // Bookings.first_name, Bookings.email, Bookings.date fields will be used in the email content
+        // In the body of the email we will include a hyperlink to "Submit Catch Return" which will link to a page on the frontend
+        // where the user can submit their catch return details
+        // The hyperlink will include a query parameter with the booking ID so that we can associate the catch return with the correct booking
+        slug: 'emailCatchReturnLinks',
+
+        // This automatically queues the task every day at 8 AM
+        schedule: [
+          {
+            cron: '0 8 * * *', // Every day at 8:00 AM
+            queue: 'daily', // Queue to add the job to
+          },
+        ],
+
+        inputSchema: [
+          {
+            name: 'date',
+            type: 'date',
+          },
+        ],
+
+        handler: async ({ req, input }) => {
+          const jobName = 'emailCatchReturnLinks'
+          const ranAt = new Date().toISOString()
+
+          // Send daily catch return emails
+          const users = await req.payload.find({
+            collection: 'users',
+            where: { subscribed: { equals: true } },
+          })
+
+          const catchReturnsToSend = users.docs.length
+
+          for (const user of users.docs) {
+            await req.payload.sendEmail({
+              to: user.email,
+              subject: `Your Catch Return for ${input.date || new Date().toISOString()}`,
+              html: 'Test', //generateCatchReturnHTML(user),
+            })
+          }
+
+          //add a note to the job log with the number of emails sent and the date the job ran
+          const note = `${jobName} ran. number of catch returns to send: ${catchReturnsToSend}`
+          req.payload.logger.info(note)
+
+          return {
+            output: {
+              jobName,
+              ranAt,
+              note,
+              catchReturnsToSend,
+              emailsSent: users.docs.length,
+              date: input.date || new Date().toISOString(),
+            },
+          }
+        },
+      } as TaskConfig<'emailCatchReturnLinks'>,
+    ],
+
+    // On Cloudflare Workers, scheduled jobs are triggered by the worker's
+    // scheduled() handler instead of Payload's in-process autoRun cron.
+    // See https://developers.cloudflare.com/workers/configuration/cron-triggers/
+  },
 })
 
 // Adapted from https://github.com/opennextjs/opennextjs-cloudflare/blob/d00b3a13e42e65aad76fba41774815726422cc39/packages/cloudflare/src/api/cloudflare-context.ts#L328C36-L328C46

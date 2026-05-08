@@ -1,12 +1,19 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
+  "main": "worker.ts",
   "name": "uhtfc-cloudflare",
   "compatibility_date": "2026-01-30",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "triggers": {
+    "crons": ["* * * * *"],
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS",
+  },
+  "alias": {
+    "@opentelemetry/api": "./src/opentelemetry-stub.js",
+    "file-type": "./node_modules/file-type/index.js",
   },
   "vars": {
     "PAYLOAD_SECRET": "9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23",
