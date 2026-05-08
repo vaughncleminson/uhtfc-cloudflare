@@ -109,6 +109,42 @@ export default buildConfig({
     defaultReplyToName:
       process.env.MAILSEND_REPLY_TO_NAME || 'The Underberg-Himeville Trout Fishing Club',
   }),
+  endpoints: [
+    {
+      path: '/jobs/trigger-catch-return-links',
+      method: 'post',
+      handler: async (req) => {
+        if (!req.user || req.user.collection !== 'admins') {
+          return Response.json(
+            {
+              errors: [{ message: 'You are not allowed to perform this action.' }],
+            },
+            { status: 401 },
+          )
+        }
+
+        const now = new Date().toISOString()
+
+        await req.payload.jobs.queue({
+          task: 'emailCatchReturnLinks',
+          queue: 'daily',
+          input: { date: now },
+          req,
+          overrideAccess: true,
+        })
+
+        await req.payload.jobs.run({
+          queue: 'daily',
+          req,
+          overrideAccess: true,
+        })
+
+        return Response.json({
+          message: 'emailCatchReturnLinks queued and run successfully.',
+        })
+      },
+    },
+  ],
   secret: process.env.PAYLOAD_SECRET || '',
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
   typescript: {
@@ -139,6 +175,7 @@ export default buildConfig({
           ...defaultJobsCollection.admin?.components,
           beforeListTable: [
             ...(defaultJobsCollection.admin?.components?.beforeListTable || []),
+            '@/admin/components/Jobs/triggerNow#TriggerCatchReturnJobButton',
             '@/admin/components/Jobs/quickFilters#JobsQuickFilters',
           ],
         },
