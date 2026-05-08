@@ -93,6 +93,18 @@ export const Locations: CollectionConfig<'pages'> = {
       ],
     },
     {
+      name: 'contactPerson',
+      label: 'Contact Person',
+      type: 'text',
+      required: false,
+    },
+    {
+      name: 'contactPersonEmail',
+      label: 'Contact Person Email',
+      type: 'email',
+      required: false,
+    },
+    {
       name: 'enabled',
       label: 'Location Enabled',
       type: 'checkbox',

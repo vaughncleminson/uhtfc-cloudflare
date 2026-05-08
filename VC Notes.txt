@@ -6,7 +6,7 @@ npx wrangler login
 npx wrangler tail uhtfc-cloudflare
 
 * How to Export database from cloudflare D1
-npx wrangler d1 export d1-uhtfc-cloudflare --remote --output=./database-exports/export2May2026_0813.sql
+npx wrangler d1 export d1-uhtfc-cloudflare --remote --output=./database-exports/export3May2026_1537.sql
 
 * Steps to import db to local:
 * Note sqlite3 must be installed
@@ -33,6 +33,13 @@ npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT COUNT(*) A
 
 * Nice sqlite browser:
 sudo apt-get install sqlitebrowser
+
+* How to generate Payload types
+npm run generate:types
+
+* How to create a migration after db/collection changes
+pnpm payload migrate:create
+pnpm generate:types
 
 * Watch next.js dev server logfile
 tail -f .next/dev/logs/next-development.log
