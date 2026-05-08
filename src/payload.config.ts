@@ -127,6 +127,8 @@ export default buildConfig({
   ],
   // Scheduled jobs below
   jobs: {
+    // Keep completed job records so run history is visible in admin
+    deleteJobOnComplete: false,
     jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
       ...defaultJobsCollection,
       admin: {
