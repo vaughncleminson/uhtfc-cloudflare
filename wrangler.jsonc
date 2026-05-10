@@ -5,7 +5,10 @@
   "compatibility_date": "2026-01-30",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "triggers": {
-    "crons": ["* * * * *"],
+    // Fire at 08:00 UTC daily (matches the emailCatchReturnLinks task schedule).
+    // Previously "* * * * *" caused 1440 D1 write cycles per day, competing with
+    // live user traffic and causing SQLite busy/locked errors.
+    "crons": ["0 8 * * *"],
   },
   "assets": {
     "directory": ".open-next/assets",
