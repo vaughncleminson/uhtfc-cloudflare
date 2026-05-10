@@ -1,23 +1,10 @@
 import packageJson from '../../../../package.json'
 
 const getBuildDetails = () => {
-  const branch =
-    process.env.NEXT_PUBLIC_GIT_BRANCH ||
-    process.env.CF_PAGES_BRANCH ||
-    process.env.VERCEL_GIT_COMMIT_REF ||
-    process.env.GIT_BRANCH ||
-    'unknown-branch'
-
-  const commitSha =
-    process.env.CF_PAGES_COMMIT_SHA ||
-    process.env.VERCEL_GIT_COMMIT_SHA ||
-    process.env.GIT_COMMIT_SHA ||
-    ''
-
   return {
     version: packageJson.version,
-    branch,
-    shortSha: commitSha ? commitSha.slice(0, 7) : '',
+    branch: process.env.NEXT_PUBLIC_GIT_BRANCH || '',
+    shortSha: process.env.NEXT_PUBLIC_GIT_SHA || '',
   }
 }
 
@@ -36,10 +23,12 @@ export const AdminBuildInfo = () => {
       }}
     >
       <div>v{version}</div>
-      <div>
-        {branch}
-        {shortSha ? ` (${shortSha})` : ''}
-      </div>
+      {branch && (
+        <div>
+          {branch}
+          {shortSha ? ` (${shortSha})` : ''}
+        </div>
+      )}
     </div>
   )
 }
