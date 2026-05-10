@@ -46,6 +46,12 @@ const isCLI =
   })
 const isProduction = process.env.NODE_ENV === 'production'
 
+// In development, let Payload infer the origin from the incoming request.
+// Forcing a production URL here can cause admin server-actions to lose auth context.
+const payloadServerURL = isProduction
+  ? process.env.PAYLOAD_PUBLIC_SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL || ''
+  : undefined
+
 const skipRemoteCloudflare = process.env.SKIP_REMOTE_CLOUDFLARE === 'true'
 
 const cloudflare =
@@ -149,7 +155,7 @@ export default buildConfig({
     },
   ],
   secret: process.env.PAYLOAD_SECRET || '',
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
+  serverURL: payloadServerURL,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

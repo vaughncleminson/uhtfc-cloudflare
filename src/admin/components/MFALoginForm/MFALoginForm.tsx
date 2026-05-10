@@ -97,16 +97,17 @@ export default function MFALoginForm(props: any) {
               readOnly={false}
             />
 
-            <TextInput
-              showError={passwordErr}
-              label={'Password'}
-              required={true}
+            <label htmlFor="admin-password-input">Password</label>
+            <input
+              id="admin-password-input"
+              name="password"
+              type="password"
+              aria-invalid={passwordErr}
+              required
               value={password}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 setPassword(e.target.value)
               }}
-              path={props.path}
-              readOnly={false}
             />
             <Link href="/admin/forgot">Forgot password?</Link>
           </>

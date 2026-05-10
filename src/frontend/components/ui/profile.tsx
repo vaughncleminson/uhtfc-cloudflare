@@ -14,7 +14,7 @@ export default function Profile(props: Props) {
     <>
       {user && props.isAuthenticated && (
         <div className="bg-black bg-opacity-60 border border-white border-opacity-60 px-2 py-1 flex items-center gap-2">
-          <div className="text-sm uppercase">
+          <div className="text-sm uppercase" id="profile-name">
             {user.firstName} ({user.role})
           </div>
         </div>
