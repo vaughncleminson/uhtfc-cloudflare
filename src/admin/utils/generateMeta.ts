@@ -25,8 +25,8 @@ export const generateMeta = async (args: { doc: Partial<Page | Location> }): Pro
   const ogImage = getImageURL(doc?.meta?.image)
 
   const title = doc?.meta?.title
-    ? doc?.meta?.title + ' | Payload Website Template'
-    : 'Payload Website Template'
+    ? doc?.meta?.title + ' | Underberg-Himeville Trout Fishing Club'
+    : 'Underberg-Himeville Trout Fishing Club'
 
   return {
     description: doc?.meta?.description,
