@@ -55,3 +55,6 @@ node_modules/
 
 # Database exports (may contain sensitive user data)
 database-exports/
+
+# Temp file that holds the current version of the app during the build process
+.env.build
