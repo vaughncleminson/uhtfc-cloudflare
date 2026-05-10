@@ -34,6 +34,7 @@ import { ImportCSVButton as ImportCSVButton_933a9ef49d8aeee8c44890bb36054756 } f
 import { SendBulkMail as SendBulkMail_dc0f05fdfaaccce1ac18114e9f856977 } from '@/admin/components/Mailsend/sendBulkMail'
 import { TriggerCatchReturnJobButton as TriggerCatchReturnJobButton_c306faa3eb1c291296b3e481a612936a } from '@/admin/components/Jobs/triggerNow'
 import { JobsQuickFilters as JobsQuickFilters_f88cf0aef388fef7e253a56606013935 } from '@/admin/components/Jobs/quickFilters'
+import { AdminBuildInfo as AdminBuildInfo_cbfc96e976ee74b2e56f53c715ef9644 } from '@/admin/components/BuildInfo/AdminBuildInfo'
 import { R2ClientUploadHandler as R2ClientUploadHandler_85cc02ed84006fcc91d3aff39dda669d } from '@payloadcms/storage-r2/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -75,6 +76,7 @@ export const importMap = {
   "@/admin/components/Mailsend/sendBulkMail#SendBulkMail": SendBulkMail_dc0f05fdfaaccce1ac18114e9f856977,
   "@/admin/components/Jobs/triggerNow#TriggerCatchReturnJobButton": TriggerCatchReturnJobButton_c306faa3eb1c291296b3e481a612936a,
   "@/admin/components/Jobs/quickFilters#JobsQuickFilters": JobsQuickFilters_f88cf0aef388fef7e253a56606013935,
+  "@/admin/components/BuildInfo/AdminBuildInfo#AdminBuildInfo": AdminBuildInfo_cbfc96e976ee74b2e56f53c715ef9644,
   "@payloadcms/storage-r2/client#R2ClientUploadHandler": R2ClientUploadHandler_85cc02ed84006fcc91d3aff39dda669d,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
