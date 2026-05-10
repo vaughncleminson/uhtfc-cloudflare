@@ -6,7 +6,7 @@ npx wrangler login
 npx wrangler tail uhtfc-cloudflare
 
 * How to Export database from cloudflare D1
-npx wrangler d1 export d1-uhtfc-cloudflare --remote --output=./database-exports/export3May2026_1537.sql
+npx wrangler d1 export d1-uhtfc-cloudflare --remote --output=./database-exports/export10May2026_1321.sql
 
 * Steps to import db to local:
 * Note sqlite3 must be installed
@@ -20,7 +20,7 @@ db_file=$(ls .wrangler/state/v3/d1/miniflare-D1DatabaseObject/*.sqlite | grep -v
 
 { 
   printf 'PRAGMA foreign_keys=OFF;\n'
-  cat database-exports/export2May2026_0813.sql
+  cat database-exports/export10May2026_1321.sql
   printf '\nPRAGMA foreign_keys=ON;\n'
 } | sqlite3 "$db_file"
 
