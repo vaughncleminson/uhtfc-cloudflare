@@ -220,18 +220,20 @@ export default buildConfig({
           const ranAt = new Date().toISOString()
 
           // Send daily catch return emails
-          const users = await req.payload.find({
-            collection: 'users',
-            where: { subscribed: { equals: true } },
+          //we send an email to each user with a booking for the current day
+          // with a link to submit their catch return details
+          const bookingsToday = await req.payload.find({
+            collection: 'bookings',
+            where: { date: { equals: input.date || new Date().toISOString() } },
           })
 
-          const catchReturnsToSend = users.docs.length
+          const catchReturnsToSend = bookingsToday.docs.length
 
-          for (const user of users.docs) {
+          for (const booking of bookingsToday.docs) {
             await req.payload.sendEmail({
-              to: user.email,
+              to: booking.email,
               subject: `Your Catch Return for ${input.date || new Date().toISOString()}`,
-              html: 'Test', //generateCatchReturnHTML(user),
+              html: 'Test', //generateCatchReturnHTML(booking),
             })
           }
 
@@ -245,7 +247,7 @@ export default buildConfig({
               ranAt,
               note,
               catchReturnsToSend,
-              emailsSent: users.docs.length,
+              emailsSent: bookingsToday.docs.length,
               date: input.date || new Date().toISOString(),
             },
           }

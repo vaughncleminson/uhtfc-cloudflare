@@ -1,6 +1,7 @@
 import { AuthBlock, Media } from '@/payload-types'
 import { cookies } from 'next/headers'
 import Image from 'next/image'
+import { FRONTEND_AUTH_COOKIE_NAME } from '../../constants/auth'
 import AuthForm from '../forms/authForm'
 import Col from '../layout/Col'
 import Row from '../layout/Row'
@@ -8,7 +9,7 @@ import Row from '../layout/Row'
 export default async function Auth(props: AuthBlock) {
   const image = props.image as Media
   const cookieStore = await cookies()
-  const token = cookieStore.get('payload-token')?.value
+  const token = cookieStore.get(FRONTEND_AUTH_COOKIE_NAME)?.value
   const isAuthenticated = Boolean(token)
   return (
     <>
@@ -31,6 +32,7 @@ export default async function Auth(props: AuthBlock) {
                   src={'/assets/shade_outer.png'}
                   alt="shade"
                   fill
+                  sizes="100vw"
                 />
               </div>
               {/* <p className="text-center mt-2 text-gray-700">{image.description}</p> */}
