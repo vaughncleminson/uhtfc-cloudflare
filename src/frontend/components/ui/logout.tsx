@@ -19,7 +19,6 @@ export default function Logout() {
       })
       const result = await response.json()
       if (result) {
-        // document.cookie = 'payload-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT'
         setUser(null)
         router.push('/')
       }

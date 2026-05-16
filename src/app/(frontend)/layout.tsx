@@ -9,6 +9,7 @@ import { oswald } from './fonts'
 
 import Footer from '@/frontend/components/layout/Footer'
 import Header from '@/frontend/components/layout/Header'
+import { FRONTEND_AUTH_COOKIE_NAME } from '@/frontend/constants/auth'
 import { ToastProvider } from '@/frontend/components/ui/ToastProvider'
 import { Navigation } from '@/payload-types'
 import { getPayload } from 'payload'
@@ -24,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const navigation = (await queryNavigation()) as Navigation
 
   const cookieStore = await cookies()
-  const token = cookieStore.get('payload-token')?.value
+  const token = cookieStore.get(FRONTEND_AUTH_COOKIE_NAME)?.value
   const isAuthenticated = Boolean(token)
   //test
   return (
