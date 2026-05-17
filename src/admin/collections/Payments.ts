@@ -2,6 +2,8 @@ import type { CollectionConfig } from 'payload'
 
 export const Payments: CollectionConfig = {
   slug: 'payments',
+  // Sets the default order for the Admin UI list view
+  defaultSort: 'userName',
   admin: {},
   hooks: {},
   fields: [

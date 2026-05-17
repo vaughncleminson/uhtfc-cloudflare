@@ -3,6 +3,8 @@ import { UserRole } from '../fields/UserRole'
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  // Sets the default order for the Admin UI list view
+  defaultSort: 'email',
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role'],

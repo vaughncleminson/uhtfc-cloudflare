@@ -4,6 +4,8 @@ import { UserRole } from '../fields/UserRole'
 
 export const Bookings: CollectionConfig = {
   slug: 'bookings',
+  // Sets the default order for the Admin UI list view
+  defaultSort: 'date',
   admin: {
     defaultColumns: ['firstName', 'lastName', 'location', 'role', 'date'],
   },

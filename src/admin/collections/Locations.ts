@@ -16,6 +16,8 @@ import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
 
 export const Locations: CollectionConfig<'pages'> = {
   slug: 'locations',
+  // Sets the default order for the Admin UI list view
+  defaultSort: 'title',
   versions: {
     drafts: {
       autosave: {
@@ -31,7 +33,7 @@ export const Locations: CollectionConfig<'pages'> = {
     title: true,
   },
   admin: {
-    defaultColumns: ['title', 'type', 'enabled'],
+    defaultColumns: ['title', 'type', 'enabled', '_status'],
     useAsTitle: 'title',
     livePreview: {
       url: ({ data }) => {

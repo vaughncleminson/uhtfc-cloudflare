@@ -2,6 +2,8 @@ import type { CollectionConfig } from 'payload'
 
 export const Admins: CollectionConfig = {
   slug: 'admins',
+  // Sets the default order for the Admin UI list view
+  defaultSort: 'email',
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role'],

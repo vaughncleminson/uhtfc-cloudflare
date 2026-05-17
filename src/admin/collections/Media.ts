@@ -6,6 +6,8 @@ const dirname = path.dirname(filename)
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  // Sets the default order for the Admin UI list view
+  defaultSort: 'alt',
   access: {
     read: () => true,
   },

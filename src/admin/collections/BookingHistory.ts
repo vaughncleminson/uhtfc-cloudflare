@@ -2,6 +2,8 @@ import { CollectionConfig } from 'payload'
 
 export const BookingHistory: CollectionConfig = {
   slug: 'bookingHistory',
+  // Sets the default order for the Admin UI list view
+  defaultSort: 'date',
   fields: [
     {
       name: 'locationId',

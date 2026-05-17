@@ -4,6 +4,8 @@ import { UserRole } from '../fields/UserRole'
 
 export const Orders: CollectionConfig = {
   slug: 'orders',
+  // Sets the default order for the Admin UI list view
+  defaultSort: '-createdAt',
   admin: {
     useAsTitle: 'firstName',
     defaultColumns: ['firstName', 'lastName', 'paymentStatus', 'createdAt'],
