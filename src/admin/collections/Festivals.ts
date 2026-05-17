@@ -3,6 +3,8 @@ import { LineItems } from '../fields/LineItems'
 
 export const Festivals: CollectionConfig = {
   slug: 'festivals',
+  // Sets the default order for the Admin UI list view
+  defaultSort: 'festivalName',
   admin: {},
   hooks: {},
   fields: [
