@@ -20,7 +20,7 @@ export const POST = async (request: Request) => {
   try {
     const newUser = await payload.create({
       collection: 'users',
-      data,
+      data: { ...data, role: 'non-member' },
     })
     return Response.json({ success: true, data: newUser, message: 'Registration Successful' })
   } catch (e) {

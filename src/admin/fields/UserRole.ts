@@ -3,6 +3,8 @@ import type { Field } from 'payload'
 export const UserRole: Field = {
   type: 'select',
   name: 'role',
+  required: true,
+  defaultValue: 'non-member',
   label: 'User Role',
   options: [
     {

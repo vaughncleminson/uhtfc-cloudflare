@@ -241,7 +241,7 @@ export interface Order {
   firstName: string;
   lastName: string;
   email: string;
-  role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
+  role: 'non-member' | 'member' | 'member-guest' | 'admin';
   paymentStatus?: ('not-required' | 'payment-pending' | 'payment-received') | null;
   products:
     | {
@@ -295,7 +295,7 @@ export interface Booking {
   userId: number;
   firstName: string;
   lastName: string;
-  role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
+  role: 'non-member' | 'member' | 'member-guest' | 'admin';
   email: string;
   location: number | Location;
   date?: string | null;
@@ -305,7 +305,7 @@ export interface Booking {
     firstName?: string | null;
     lastName?: string | null;
     email?: string | null;
-    role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
+    role: 'non-member' | 'member' | 'member-guest' | 'admin';
     id?: string | null;
   }[];
   totalAmount?: number | null;
@@ -732,7 +732,7 @@ export interface User {
   province?: string | null;
   postalCode?: string | null;
   country?: string | null;
-  role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
+  role: 'non-member' | 'member' | 'member-guest' | 'admin';
   membershipType?: ('OM' | 'OMW' | 'F' | 'J' | 'S' | 'C' | 'COMP' | 'R') | null;
   blocked?: boolean | null;
   subsDue?: boolean | null;
