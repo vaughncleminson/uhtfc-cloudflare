@@ -69,18 +69,18 @@ export interface Config {
   blocks: {};
   collections: {
     admins: Admin;
-    media: Media;
-    orders: Order;
-    payments: Payment;
     bookings: Booking;
     bookingHistory: BookingHistory;
     catchReturns: CatchReturn;
-    newMemberships: NewMembership;
-    festivals: Festival;
-    pages: Page;
-    locations: Location;
-    users: User;
     emailSubscribers: EmailSubscriber;
+    festivals: Festival;
+    locations: Location;
+    media: Media;
+    newMemberships: NewMembership;
+    orders: Order;
+    payments: Payment;
+    pages: Page;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -90,18 +90,18 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     admins: AdminsSelect<false> | AdminsSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    orders: OrdersSelect<false> | OrdersSelect<true>;
-    payments: PaymentsSelect<false> | PaymentsSelect<true>;
     bookings: BookingsSelect<false> | BookingsSelect<true>;
     bookingHistory: BookingHistorySelect<false> | BookingHistorySelect<true>;
     catchReturns: CatchReturnsSelect<false> | CatchReturnsSelect<true>;
-    newMemberships: NewMembershipsSelect<false> | NewMembershipsSelect<true>;
-    festivals: FestivalsSelect<false> | FestivalsSelect<true>;
-    pages: PagesSelect<false> | PagesSelect<true>;
-    locations: LocationsSelect<false> | LocationsSelect<true>;
-    users: UsersSelect<false> | UsersSelect<true>;
     emailSubscribers: EmailSubscribersSelect<false> | EmailSubscribersSelect<true>;
+    festivals: FestivalsSelect<false> | FestivalsSelect<true>;
+    locations: LocationsSelect<false> | LocationsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    newMemberships: NewMembershipsSelect<false> | NewMembershipsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    payments: PaymentsSelect<false> | PaymentsSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -213,80 +213,6 @@ export interface Admin {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  description?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders".
- */
-export interface Order {
-  id: number;
-  userId: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
-  paymentStatus?: ('not-required' | 'payment-pending' | 'payment-received') | null;
-  products:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  checkoutId?: string | null;
-  createdAt: string;
-  totalAmount?: number | null;
-  lineItems?:
-    | {
-        displayName: string;
-        description: string;
-        quantity: number;
-        price: number;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payments".
- */
-export interface Payment {
-  id: number;
-  paymentId: string;
-  userName: string;
-  products?: string | null;
-  details?: string | null;
-  amount: number;
-  currency?: string | null;
-  type?: string | null;
-  status: string;
-  mode?: string | null;
-  order?: (number | null) | Order;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "bookings".
  */
 export interface Booking {
@@ -379,6 +305,26 @@ export interface LocationHeroBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'locationHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -488,37 +434,16 @@ export interface CatchReturn {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "newMemberships".
+ * via the `definition` "emailSubscribers".
  */
-export interface NewMembership {
+export interface EmailSubscriber {
   id: number;
-  productType: string;
-  userId: number;
-  membershipType: 'OM' | 'OMW' | 'F' | 'J' | 'S';
+  email: string;
   firstName: string;
   lastName: string;
-  idNumber: string;
-  email: string;
-  mobileNumber: string;
-  street: string;
-  city: string;
-  province: string;
-  postalCode: string;
-  country: string;
-  otherMemberships?: string | null;
-  howDidYouHearAboutUs?: string | null;
-  totalAmount?: number | null;
-  acceptTerms?: boolean | null;
+  subscribed: boolean;
+  unsubscribeToken: string;
   createdAt: string;
-  lineItems?:
-    | {
-        displayName: string;
-        description: string;
-        quantity: number;
-        price: number;
-        id?: string | null;
-      }[]
-    | null;
   updatedAt: string;
 }
 /**
@@ -559,6 +484,95 @@ export interface Festival {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newMemberships".
+ */
+export interface NewMembership {
+  id: number;
+  productType: string;
+  userId: number;
+  membershipType: 'OM' | 'OMW' | 'F' | 'J' | 'S';
+  firstName: string;
+  lastName: string;
+  idNumber: string;
+  email: string;
+  mobileNumber: string;
+  street: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  country: string;
+  otherMemberships?: string | null;
+  howDidYouHearAboutUs?: string | null;
+  totalAmount?: number | null;
+  acceptTerms?: boolean | null;
+  createdAt: string;
+  lineItems?:
+    | {
+        displayName: string;
+        description: string;
+        quantity: number;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
+  paymentStatus?: ('not-required' | 'payment-pending' | 'payment-received') | null;
+  products:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  checkoutId?: string | null;
+  createdAt: string;
+  totalAmount?: number | null;
+  lineItems?:
+    | {
+        displayName: string;
+        description: string;
+        quantity: number;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments".
+ */
+export interface Payment {
+  id: number;
+  paymentId: string;
+  userName: string;
+  products?: string | null;
+  details?: string | null;
+  amount: number;
+  currency?: string | null;
+  type?: string | null;
+  status: string;
+  mode?: string | null;
+  order?: (number | null) | Order;
   updatedAt: string;
   createdAt: string;
 }
@@ -757,20 +771,6 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "emailSubscribers".
- */
-export interface EmailSubscriber {
-  id: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  subscribed: boolean;
-  unsubscribeToken: string;
-  createdAt: string;
-  updatedAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -899,18 +899,6 @@ export interface PayloadLockedDocument {
         value: number | Admin;
       } | null)
     | ({
-        relationTo: 'media';
-        value: number | Media;
-      } | null)
-    | ({
-        relationTo: 'orders';
-        value: number | Order;
-      } | null)
-    | ({
-        relationTo: 'payments';
-        value: number | Payment;
-      } | null)
-    | ({
         relationTo: 'bookings';
         value: number | Booking;
       } | null)
@@ -923,28 +911,40 @@ export interface PayloadLockedDocument {
         value: number | CatchReturn;
       } | null)
     | ({
-        relationTo: 'newMemberships';
-        value: number | NewMembership;
+        relationTo: 'emailSubscribers';
+        value: number | EmailSubscriber;
       } | null)
     | ({
         relationTo: 'festivals';
         value: number | Festival;
       } | null)
     | ({
-        relationTo: 'pages';
-        value: number | Page;
-      } | null)
-    | ({
         relationTo: 'locations';
         value: number | Location;
       } | null)
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'media';
+        value: number | Media;
       } | null)
     | ({
-        relationTo: 'emailSubscribers';
-        value: number | EmailSubscriber;
+        relationTo: 'newMemberships';
+        value: number | NewMembership;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'payments';
+        value: number | Payment;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user:
@@ -1025,69 +1025,6 @@ export interface AdminsSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  description?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders_select".
- */
-export interface OrdersSelect<T extends boolean = true> {
-  userId?: T;
-  firstName?: T;
-  lastName?: T;
-  email?: T;
-  role?: T;
-  paymentStatus?: T;
-  products?: T;
-  checkoutId?: T;
-  createdAt?: T;
-  totalAmount?: T;
-  lineItems?:
-    | T
-    | {
-        displayName?: T;
-        description?: T;
-        quantity?: T;
-        price?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payments_select".
- */
-export interface PaymentsSelect<T extends boolean = true> {
-  paymentId?: T;
-  userName?: T;
-  products?: T;
-  details?: T;
-  amount?: T;
-  currency?: T;
-  type?: T;
-  status?: T;
-  mode?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1173,36 +1110,15 @@ export interface CatchReturnsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "newMemberships_select".
+ * via the `definition` "emailSubscribers_select".
  */
-export interface NewMembershipsSelect<T extends boolean = true> {
-  productType?: T;
-  userId?: T;
-  membershipType?: T;
+export interface EmailSubscribersSelect<T extends boolean = true> {
+  email?: T;
   firstName?: T;
   lastName?: T;
-  idNumber?: T;
-  email?: T;
-  mobileNumber?: T;
-  street?: T;
-  city?: T;
-  province?: T;
-  postalCode?: T;
-  country?: T;
-  otherMemberships?: T;
-  howDidYouHearAboutUs?: T;
-  totalAmount?: T;
-  acceptTerms?: T;
+  subscribed?: T;
+  unsubscribeToken?: T;
   createdAt?: T;
-  lineItems?:
-    | T
-    | {
-        displayName?: T;
-        description?: T;
-        quantity?: T;
-        price?: T;
-        id?: T;
-      };
   updatedAt?: T;
 }
 /**
@@ -1246,165 +1162,6 @@ export interface FestivalsSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages_select".
- */
-export interface PagesSelect<T extends boolean = true> {
-  title?: T;
-  layout?:
-    | T
-    | {
-        hero?: T | HeroBlockSelect<T>;
-        auth?: T | AuthBlockSelect<T>;
-        mapDefault?: T | MapDefaultBlockSelect<T>;
-        map?: T | MapBlockSelect<T>;
-        rodFeesMembership?: T | RodFeesMembershipBlockSelect<T>;
-        booking?: T | BookingBlockSelect<T>;
-        locations?: T | LocationsBlockSelect<T>;
-        order?: T | OrderBlockSelect<T>;
-        myBookings?: T | MyBookingsBlockSelect<T>;
-        catchReturns?: T | CatchReturnsBlockSelect<T>;
-        payments?: T | PaymentsBlockSelect<T>;
-      };
-  meta?:
-    | T
-    | {
-        title?: T;
-        image?: T;
-        description?: T;
-      };
-  publishedAt?: T;
-  slug?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "HeroBlock_select".
- */
-export interface HeroBlockSelect<T extends boolean = true> {
-  title?: T;
-  subtitle?: T;
-  image?: T;
-  btns?:
-    | T
-    | {
-        links?:
-          | T
-          | {
-              link?:
-                | T
-                | {
-                    type?: T;
-                    newTab?: T;
-                    show?: T;
-                    internalLink?: T;
-                    url?: T;
-                    label?: T;
-                  };
-              id?: T;
-            };
-      };
-  size?: T;
-  blockName?: T;
-  id?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "AuthBlock_select".
- */
-export interface AuthBlockSelect<T extends boolean = true> {
-  image?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MapDefaultBlock_select".
- */
-export interface MapDefaultBlockSelect<T extends boolean = true> {
-  title?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MapBlock_select".
- */
-export interface MapBlockSelect<T extends boolean = true> {
-  map?: T;
-  specificDirections?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "RodFeesMembershipBlock_select".
- */
-export interface RodFeesMembershipBlockSelect<T extends boolean = true> {
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "BookingBlock_select".
- */
-export interface BookingBlockSelect<T extends boolean = true> {
-  image?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LocationsBlock_select".
- */
-export interface LocationsBlockSelect<T extends boolean = true> {
-  title?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "OrderBlock_select".
- */
-export interface OrderBlockSelect<T extends boolean = true> {
-  title?: T;
-  image?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MyBookingsBlock_select".
- */
-export interface MyBookingsBlockSelect<T extends boolean = true> {
-  title?: T;
-  image?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CatchReturnsBlock_select".
- */
-export interface CatchReturnsBlockSelect<T extends boolean = true> {
-  title?: T;
-  image?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "PaymentsBlock_select".
- */
-export interface PaymentsBlockSelect<T extends boolean = true> {
-  title?: T;
-  image?: T;
-  id?: T;
-  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1493,6 +1250,262 @@ export interface LocationDetailsBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapBlock_select".
+ */
+export interface MapBlockSelect<T extends boolean = true> {
+  map?: T;
+  specificDirections?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newMemberships_select".
+ */
+export interface NewMembershipsSelect<T extends boolean = true> {
+  productType?: T;
+  userId?: T;
+  membershipType?: T;
+  firstName?: T;
+  lastName?: T;
+  idNumber?: T;
+  email?: T;
+  mobileNumber?: T;
+  street?: T;
+  city?: T;
+  province?: T;
+  postalCode?: T;
+  country?: T;
+  otherMemberships?: T;
+  howDidYouHearAboutUs?: T;
+  totalAmount?: T;
+  acceptTerms?: T;
+  createdAt?: T;
+  lineItems?:
+    | T
+    | {
+        displayName?: T;
+        description?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  userId?: T;
+  firstName?: T;
+  lastName?: T;
+  email?: T;
+  role?: T;
+  paymentStatus?: T;
+  products?: T;
+  checkoutId?: T;
+  createdAt?: T;
+  totalAmount?: T;
+  lineItems?:
+    | T
+    | {
+        displayName?: T;
+        description?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments_select".
+ */
+export interface PaymentsSelect<T extends boolean = true> {
+  paymentId?: T;
+  userName?: T;
+  products?: T;
+  details?: T;
+  amount?: T;
+  currency?: T;
+  type?: T;
+  status?: T;
+  mode?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  layout?:
+    | T
+    | {
+        hero?: T | HeroBlockSelect<T>;
+        auth?: T | AuthBlockSelect<T>;
+        mapDefault?: T | MapDefaultBlockSelect<T>;
+        map?: T | MapBlockSelect<T>;
+        rodFeesMembership?: T | RodFeesMembershipBlockSelect<T>;
+        booking?: T | BookingBlockSelect<T>;
+        locations?: T | LocationsBlockSelect<T>;
+        order?: T | OrderBlockSelect<T>;
+        myBookings?: T | MyBookingsBlockSelect<T>;
+        catchReturns?: T | CatchReturnsBlockSelect<T>;
+        payments?: T | PaymentsBlockSelect<T>;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  publishedAt?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock_select".
+ */
+export interface HeroBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  image?: T;
+  btns?:
+    | T
+    | {
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    show?: T;
+                    internalLink?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+      };
+  size?: T;
+  blockName?: T;
+  id?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AuthBlock_select".
+ */
+export interface AuthBlockSelect<T extends boolean = true> {
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapDefaultBlock_select".
+ */
+export interface MapDefaultBlockSelect<T extends boolean = true> {
+  title?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RodFeesMembershipBlock_select".
+ */
+export interface RodFeesMembershipBlockSelect<T extends boolean = true> {
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BookingBlock_select".
+ */
+export interface BookingBlockSelect<T extends boolean = true> {
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationsBlock_select".
+ */
+export interface LocationsBlockSelect<T extends boolean = true> {
+  title?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OrderBlock_select".
+ */
+export interface OrderBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MyBookingsBlock_select".
+ */
+export interface MyBookingsBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CatchReturnsBlock_select".
+ */
+export interface CatchReturnsBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PaymentsBlock_select".
+ */
+export interface PaymentsBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -1525,19 +1538,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "emailSubscribers_select".
- */
-export interface EmailSubscribersSelect<T extends boolean = true> {
-  email?: T;
-  firstName?: T;
-  lastName?: T;
-  subscribed?: T;
-  unsubscribeToken?: T;
-  createdAt?: T;
-  updatedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
