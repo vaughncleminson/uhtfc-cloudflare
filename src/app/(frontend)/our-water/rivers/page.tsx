@@ -86,7 +86,7 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string[] }) => {
     overrideAccess: draft,
     where: {
       slug: {
-        equals: slug.join('/'),
+        equals: '/our-water/rivers',
       },
     },
   })

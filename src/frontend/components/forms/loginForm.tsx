@@ -35,7 +35,7 @@ export default function LoginForm(props: LoginFormProps) {
       setErrors({})
       try {
         setLoading(true)
-        const login = await fetch('/api/users/login', {
+        const login = await fetch('/api/frontend-auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -3,6 +3,8 @@ import { LineItems } from '../fields/LineItems'
 
 export const NewMemberships: CollectionConfig = {
   slug: 'newMemberships',
+  // Sets the default order for the Admin UI list view
+  defaultSort: 'email',
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['firstName', 'lastName', 'membershipType', 'createdAt'],
