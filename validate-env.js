@@ -1,5 +1,11 @@
 // validate-env.js
-const REQUIRED_VARS = ['PAYLOAD_SECRET', 'NEXT_PUBLIC_SERVER_URL']
+const REQUIRED_VARS = [
+  'PAYLOAD_SECRET',
+  'NEXT_PUBLIC_SERVER_URL',
+  'NEXT_PUBLIC_PAYLOAD_URL',
+  'PAYLOAD_PUBLIC_SERVER_URL',
+  'VERCEL_PROJECT_PRODUCTION_URL',
+]
 
 console.log('🔍 Validating environment variables...')
 
