@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
+import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 
@@ -24,7 +25,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     slug,
   })
   if (!page) {
-    return <></>
+    notFound()
   }
   const { layout } = page
   return (

@@ -2,7 +2,7 @@
 import { orderAtom } from '@/frontend/atoms/orderAtom'
 import { userAtom } from '@/frontend/atoms/userAtom'
 import { Membership, membershipSchema } from '@/frontend/schemas/membershipSchema'
-import { Order } from '@/frontend/schemas/orderScema'
+import { Order } from '@/frontend/schemas/orderSchema'
 import { Setting, User } from '@/payload-types'
 import { useAtom } from 'jotai'
 import { FormEvent, useState } from 'react'

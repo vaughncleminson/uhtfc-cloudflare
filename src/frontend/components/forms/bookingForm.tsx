@@ -6,7 +6,7 @@ import { userAtom } from '@/frontend/atoms/userAtom'
 import { Booking, bookingSchema } from '@/frontend/schemas/bookingSchema'
 import { LineItem } from '@/frontend/schemas/lineItemSchema'
 import { Membership } from '@/frontend/schemas/membershipSchema'
-import { Order } from '@/frontend/schemas/orderScema'
+import { Order } from '@/frontend/schemas/orderSchema'
 import { BookingHistory, Location, Setting, User } from '@/payload-types'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -87,11 +87,11 @@ export default function BookingForm(props: BookingFormProps) {
       }
       setAnglers(initAnglers)
       if (props.locations) {
-        console.log(selectedDate)
-        console.log(props.locations)
-        console.log(user)
-        console.log(props.bookingSettings)
-        console.log(selectedLocationId)
+        console.log('selectedDate: ' + selectedDate)
+        console.log('locations: ', props.locations)
+        console.log('user: ', user)
+        console.log('bookingSettings: ', props.bookingSettings)
+        console.log('selectedLocationId: ', selectedLocationId)
         const locationOps = validateBookingDates({
           date: selectedDate,
           locations: props.locations,
