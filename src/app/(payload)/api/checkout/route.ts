@@ -74,11 +74,12 @@ export async function POST(request: Request) {
     order.totalAmount === 0 &&
     order.products.filter((p) => p.productType === 'booking').length > 0
   ) {
-    createOrderEntries(order)
+    await createOrderEntries(order)
     // call function to send booking emails
     // we email the user a booking confirmation email
     // and we email the location owner/contact a new booking notification email
-    sendBookingEmails(order)
+    // we must await this function to ensure the emails are sent before we return the response and end the function execution
+    await sendBookingEmails(order)
     return Response.json({
       success: true,
       checkout: { redirectUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?success=true` },
@@ -88,11 +89,12 @@ export async function POST(request: Request) {
   const checkout = await createYocoCheckout(order)
   //if checkout is created successfully, create the order entries and return success true and the checkout response
   if (checkout) {
-    createOrderEntries(order)
+    await createOrderEntries(order)
     // call function to send booking emails
     // we email the user a booking confirmation email
     // and we email the location owner/contact a new booking notification email
-    sendBookingEmails(order)
+    // we must await this function to ensure the emails are sent before we return the response and end the function execution
+    await sendBookingEmails(order)
     return Response.json({ success: true, checkout })
   } else {
     //if checkout creation failed, return success false and a redirect url to the checkout page with success false
