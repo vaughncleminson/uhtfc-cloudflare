@@ -177,7 +177,7 @@ export default function OrderForm() {
             <div className="w-10"></div>
             <div className="overflow-hidden w-full"></div>
             <div className=" w-1/2">TOTAL</div>
-            <div className=" w-36">{order?.totalAmount}.00</div>
+            <div className=" w-36">{order?.totalAmount ?? 0}.00</div>
           </div>
         </div>
       </div>
@@ -187,7 +187,7 @@ export default function OrderForm() {
           className="w-full"
           type="button"
           loading={loading}
-          title={order.totalAmount > 0 ? 'Pay now' : 'Submit order'}
+          title={(order?.totalAmount ?? 0) > 0 ? 'Pay now' : 'Submit order'}
         />
         <Button
           type="button"

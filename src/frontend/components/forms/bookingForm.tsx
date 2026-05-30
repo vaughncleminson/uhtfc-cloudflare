@@ -87,11 +87,11 @@ export default function BookingForm(props: BookingFormProps) {
       }
       setAnglers(initAnglers)
       if (props.locations) {
-        console.log(selectedDate)
-        console.log(props.locations)
-        console.log(user)
-        console.log(props.bookingSettings)
-        console.log(selectedLocationId)
+        console.log('selectedDate: ' + selectedDate)
+        console.log('locations: ', props.locations)
+        console.log('user: ', user)
+        console.log('bookingSettings: ', props.bookingSettings)
+        console.log('selectedLocationId: ', selectedLocationId)
         const locationOps = validateBookingDates({
           date: selectedDate,
           locations: props.locations,
