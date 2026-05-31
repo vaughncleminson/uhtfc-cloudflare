@@ -16,7 +16,7 @@
   },
   "alias": {
     "@opentelemetry/api": "./src/opentelemetry-stub.js",
-    "file-type": "./node_modules/file-type/index.js",
+    "file-type": "file-type/node",
   },
   "vars": {
     "PAYLOAD_SECRET": "9b9c737ea63b90b243ff1c94394fb2aba7812e979e77fe7282d2abdd687e5a23",
