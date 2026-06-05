@@ -69,7 +69,8 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
 
     //log email SendEmailOptions for debugging
     payload.logger.info({ msg: 'MailerSend adapter initialized.', hasApiKey })
-    payload.logger.info({ msg: 'MailerSend adapter options:', options })
+    // removed detailed logging of options to avoid exposing sensitive information like API keys in logs
+    //payload.logger.info({ msg: 'MailerSend adapter options:', options })
 
     return {
       name: 'mailersend',
