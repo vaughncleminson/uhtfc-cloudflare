@@ -9,10 +9,23 @@ import { BookingHistory, Location, Setting } from '@/payload-types'
 import config from '@payload-config'
 import dayjs from 'dayjs'
 import { getPayload } from 'payload'
-import { send } from 'process'
 
 type RequestBody = {
   order: Order
+}
+
+const getLocationNotificationEmail = (location: Location): string | null => {
+  for (const block of location.layout) {
+    if (block.blockType !== 'locationDetails') {
+      continue
+    }
+
+    if (block.sendLandownerEmail && block.landownerEmail) {
+      return block.landownerEmail
+    }
+  }
+
+  return null
 }
 
 export async function POST(request: Request) {
@@ -315,11 +328,13 @@ const sendBookingEmails = async (order: Order) => {
       collection: 'locations',
       id: booking.location,
     })
-    if (location && location.contactPersonEmail) {
+    const locationNotificationEmail = location ? getLocationNotificationEmail(location) : null
+
+    if (locationNotificationEmail) {
       await payload.sendEmail({
-        to: location.contactPersonEmail,
+        to: locationNotificationEmail,
         subject: `New Booking - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
-        html: `<p>Dear ${location.contactPerson || 'Location Owner/Contact'},</p>
+        html: `<p>Dear Location Owner/Contact,</p>
         <p>A new booking has been made for ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}.</p>
         <p>Booking details:</p>
         <ul>

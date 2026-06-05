@@ -100,7 +100,12 @@ export default function Locations(props: LocationsBlock) {
                     <div className={`${crimson.className} text-white`}>
                       {card.membersOnly ? 'Members only' : 'Members & non-members'}
                     </div>
-
+                    <Link href={`${card.type}s/${card.slug}`} className="w-full">
+                      <Button
+                        className="w-full rounded-none h-11 mt-3 bg-black bg-opacity-30 border border-white text-white text-base hover:bg-black  transition-colors duration-300"
+                        title="View Details"
+                      />
+                    </Link>
                     <Link href={`/book-now?location=${card.id}#details`} className="w-full">
                       <Button
                         className="w-full rounded-none h-11 mt-3 bg-black bg-opacity-30 border border-white text-white text-base hover:bg-black  transition-colors duration-300"
