@@ -1,8 +1,8 @@
-import * as migration_20260501_080655 from './20260501_080655'
-import * as migration_20260502_062500 from './20260502_062500'
-import * as migration_20260503_133320 from './20260503_133320'
-import * as migration_20260516_153311 from './20260516_153311'
-import * as migration_20260516_173500_repair_locations_version_columns from './20260516_173500_repair_locations_version_columns'
+import * as migration_20260501_080655 from './20260501_080655';
+import * as migration_20260502_062500 from './20260502_062500';
+import * as migration_20260503_133320 from './20260503_133320';
+import * as migration_20260516_153311 from './20260516_153311';
+import * as migration_20260606_152854 from './20260606_152854';
 
 export const migrations = [
   {
@@ -26,8 +26,8 @@ export const migrations = [
     name: '20260516_153311',
   },
   {
-    up: migration_20260516_173500_repair_locations_version_columns.up,
-    down: migration_20260516_173500_repair_locations_version_columns.down,
-    name: '20260516_173500_repair_locations_version_columns',
+    up: migration_20260606_152854.up,
+    down: migration_20260606_152854.down,
+    name: '20260606_152854'
   },
-]
+];
