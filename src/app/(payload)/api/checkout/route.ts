@@ -88,34 +88,40 @@ export async function POST(request: Request) {
     order.products.filter((p) => p.productType === 'booking').length > 0
   ) {
     order.paymentStatus = 'not-required'
-    await createOrderEntries(order)
+    const newOrder = await createOrderEntries(order)
     // call function to send booking emails
     // we email the user a booking confirmation email
     // and we email the location owner/contact a new booking notification email
     // we must await this function to ensure the emails are sent before we return the response and end the function execution
-    await sendBookingEmails(order)
+    await sendBookingEmails(newOrder)
     return Response.json({
       success: true,
-      checkout: { redirectUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?success=true` },
+      checkout: {
+        redirectUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?status=success&orderId=${newOrder.id}`,
+      },
     })
   }
 
-  const checkout = await createYocoCheckout(order)
   //if checkout is created successfully, create the order entries and return success true and the checkout response
+
+  const newOrder = await createOrderEntries(order)
+  order.paymentStatus = 'payment-pending'
+  const checkout = await createYocoCheckout(newOrder)
+  // call function to send booking emails
+  // we email the user a booking confirmation email
+  // and we email the location owner/contact a new booking notification email
+  // we must await this function to ensure the emails are sent before we return the response and end the function execution
+
   if (checkout) {
-    order.paymentStatus = 'payment-pending'
-    await createOrderEntries(order)
-    // call function to send booking emails
-    // we email the user a booking confirmation email
-    // and we email the location owner/contact a new booking notification email
-    // we must await this function to ensure the emails are sent before we return the response and end the function execution
     await sendBookingEmails(order)
     return Response.json({ success: true, checkout })
   } else {
     //if checkout creation failed, return success false and a redirect url to the checkout page with success false
     return Response.json({
       success: false,
-      checkout: { redirectUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?success=false` },
+      checkout: {
+        redirectUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?status=failure&orderId=${order.id}`,
+      },
     })
   }
 }
@@ -181,9 +187,9 @@ async function createYocoCheckout(order: Order): Promise<CheckoutResponse | null
   const checkout: CheckoutInitiate = {
     amount: order.totalAmount * 100,
     currency: 'ZAR',
-    successUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout`,
-    cancelUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout`,
-    failureUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout`,
+    successUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?status=success&orderId=${order.id}`,
+    cancelUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?status=cancel&orderId=${order.id}`,
+    failureUrl: `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/checkout?status=failure&orderId=${order.id}`,
     lineItems: lineItems,
   }
 
@@ -206,7 +212,7 @@ async function createYocoCheckout(order: Order): Promise<CheckoutResponse | null
   return null
 }
 
-const createOrderEntries = async (order: Order) => {
+const createOrderEntries = async (order: Order): Promise<Order> => {
   const payload = await getPayload({ config })
   if (!order.userId) {
     throw new Error('userId is required')
@@ -217,7 +223,7 @@ const createOrderEntries = async (order: Order) => {
     quantity: item.quantity ?? 1,
     price: item.price ?? 0,
   }))
-  await payload.create({
+  const newOrder = await payload.create({
     collection: 'orders',
     data: {
       userId: order.userId,
@@ -245,10 +251,12 @@ const createOrderEntries = async (order: Order) => {
           if (order.paymentStatus == 'not-required') {
             booking.active = true
           }
+          booking.orderId = newOrder.id as number
           await payload.create({
             collection: 'bookings',
             data: booking as any,
           })
+
           await payload.create({
             collection: 'bookingHistory',
             data: {
@@ -257,6 +265,7 @@ const createOrderEntries = async (order: Order) => {
               lastName: booking.lastName,
               email: booking.email,
               userId: booking.userId,
+              orderId: newOrder.id as number,
               members: booking.anglers.filter((a) => a.role == 'member').length,
               memberGuests: booking.anglers.filter((a) => a.role == 'member-guest').length,
               nonMembers: booking.anglers.filter((a) => a.role == 'non-member').length,
@@ -278,6 +287,7 @@ const createOrderEntries = async (order: Order) => {
           collection: 'newMemberships',
           data: {
             productType: 'newMembership',
+            orderId: newOrder.id as number,
             userId: order.userId,
             membershipType: prod.membershipType,
             firstName: prod.firstName,
@@ -302,6 +312,7 @@ const createOrderEntries = async (order: Order) => {
         break
     }
   }
+  return newOrder as Order
 }
 
 // function to send booking confirmation email to user and booking notification email to location owner/contact

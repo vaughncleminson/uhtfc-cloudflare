@@ -219,6 +219,7 @@ export interface Booking {
   id: number;
   productType: string;
   userId: number;
+  orderId?: number | null;
   firstName: string;
   lastName: string;
   role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
@@ -397,6 +398,7 @@ export interface BookingHistory {
   firstName: string;
   lastName: string;
   email: string;
+  orderId?: number | null;
   userId: number;
   members?: number | null;
   memberGuests?: number | null;
@@ -493,6 +495,7 @@ export interface Festival {
 export interface NewMembership {
   id: number;
   productType: string;
+  orderId?: number | null;
   userId: number;
   membershipType: 'OM' | 'OMW' | 'F' | 'J' | 'S';
   firstName: string;
@@ -1032,6 +1035,7 @@ export interface AdminsSelect<T extends boolean = true> {
 export interface BookingsSelect<T extends boolean = true> {
   productType?: T;
   userId?: T;
+  orderId?: T;
   firstName?: T;
   lastName?: T;
   role?: T;
@@ -1073,6 +1077,7 @@ export interface BookingHistorySelect<T extends boolean = true> {
   firstName?: T;
   lastName?: T;
   email?: T;
+  orderId?: T;
   userId?: T;
   members?: T;
   memberGuests?: T;
@@ -1281,6 +1286,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface NewMembershipsSelect<T extends boolean = true> {
   productType?: T;
+  orderId?: T;
   userId?: T;
   membershipType?: T;
   firstName?: T;

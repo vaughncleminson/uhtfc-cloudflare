@@ -4,6 +4,7 @@ export const BookingHistory: CollectionConfig = {
   slug: 'bookingHistory',
   // Sets the default order for the Admin UI list view
   defaultSort: 'date',
+
   fields: [
     {
       name: 'locationId',
@@ -28,6 +29,11 @@ export const BookingHistory: CollectionConfig = {
       type: 'email',
       label: 'Email',
       required: true,
+    },
+    {
+      type: 'number',
+      name: 'orderId',
+      label: 'Order ID',
     },
     {
       name: 'userId',

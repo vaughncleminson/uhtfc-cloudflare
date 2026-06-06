@@ -7,6 +7,7 @@ const roleEnum = z.enum(['admin', 'non-member', 'member', 'member-guest'])
 const paymentStatusEnum = z.enum(['not-required', 'payment-pending', 'payment-received'])
 
 export const orderSchema = z.object({
+  id: z.number().optional(),
   userId: z.number(),
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
