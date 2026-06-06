@@ -54,11 +54,7 @@ const payloadServerURL = isProduction
 
 const skipRemoteCloudflare = process.env.SKIP_REMOTE_CLOUDFLARE === 'true'
 
-const cloudflare =
-  isCLI || !isProduction || skipRemoteCloudflare
-    ? await getCloudflareContextFromWrangler()
-    : await getCloudflareContext({ async: true })
-
+const cloudflare = await getCloudflareContextSafe()
 const mailerSendToken = process.env.MAILSEND_TOKEN || process.env.NEXT_PUBLIC_MAILSEND_TOKEN || ''
 
 export default buildConfig({
@@ -273,4 +269,17 @@ function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {
         remoteBindings: isProduction,
       } satisfies GetPlatformProxyOptions),
   )
+}
+async function getCloudflareContextSafe() {
+  // In production, skip wrangler entirely
+  if (process.env.CF_DEPLOYMENT === 'true' || process.env.NODE_ENV === 'production') {
+    return getCloudflareContext({ async: true })
+  }
+
+  // Dev/CLI only
+  try {
+    return await getCloudflareContextFromWrangler()
+  } catch {
+    return getCloudflareContext({ async: true })
+  }
 }
