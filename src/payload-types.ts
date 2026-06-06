@@ -225,6 +225,7 @@ export interface Booking {
   email: string;
   location: number | Location;
   date?: string | null;
+  active?: boolean | null;
   anglers: {
     userId?: number | null;
     fullName?: string | null;
@@ -1037,6 +1038,7 @@ export interface BookingsSelect<T extends boolean = true> {
   email?: T;
   location?: T;
   date?: T;
+  active?: T;
   anglers?:
     | T
     | {
