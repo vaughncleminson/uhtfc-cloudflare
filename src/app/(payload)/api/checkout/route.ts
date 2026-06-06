@@ -87,6 +87,7 @@ export async function POST(request: Request) {
     order.totalAmount === 0 &&
     order.products.filter((p) => p.productType === 'booking').length > 0
   ) {
+    order.paymentStatus = 'not-required'
     await createOrderEntries(order)
     // call function to send booking emails
     // we email the user a booking confirmation email
@@ -102,6 +103,7 @@ export async function POST(request: Request) {
   const checkout = await createYocoCheckout(order)
   //if checkout is created successfully, create the order entries and return success true and the checkout response
   if (checkout) {
+    order.paymentStatus = 'payment-pending'
     await createOrderEntries(order)
     // call function to send booking emails
     // we email the user a booking confirmation email
@@ -223,7 +225,7 @@ const createOrderEntries = async (order: Order) => {
       lastName: order.lastName ?? '',
       email: order.email ?? '',
       role: order.role ?? 'non-member',
-      paymentStatus: 'not-required',
+      paymentStatus: order.paymentStatus ?? 'not-required',
       products: order.products ?? {},
       checkoutId: order.checkoutId ?? null,
       totalAmount: order.totalAmount ?? 0,
@@ -240,6 +242,9 @@ const createOrderEntries = async (order: Order) => {
         for (let booking of order.products.filter(
           (p) => p.productType === 'booking',
         ) as Booking[]) {
+          if (order.paymentStatus == 'not-required') {
+            booking.active = true
+          }
           await payload.create({
             collection: 'bookings',
             data: booking as any,

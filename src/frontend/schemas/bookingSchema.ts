@@ -26,6 +26,7 @@ export const bookingSchema = z.object({
   location: z.number().min(0, { message: 'Please select a location' }),
   locationName: z.string(),
   date: dateSchema,
+  active: z.boolean().default(false),
   anglers: array(anglerSchema).min(1, { message: 'At least 1 angler required' }),
   totalAmount: z.number().default(0),
   lineItems: array(lineItemSchema).min(1, { message: 'At least 1 line item is required' }),

@@ -60,6 +60,12 @@ export const Bookings: CollectionConfig = {
       label: 'Date',
     },
     {
+      type: 'checkbox',
+      name: 'active',
+      label: 'Active',
+      defaultValue: false,
+    },
+    {
       type: 'array',
       name: 'anglers',
       label: 'Anglers',
