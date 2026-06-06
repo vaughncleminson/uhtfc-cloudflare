@@ -1,9 +1,7 @@
-import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
 import { withPayload } from '@payloadcms/next/withPayload'
 import { config as loadDotenv } from 'dotenv'
 import { existsSync } from 'fs'
 import path from 'path'
-initOpenNextCloudflareForDev()
 
 // Load build-time git vars written by scripts/set-build-env.mjs
 // override:true so the script's resolved branch wins over any stale env var

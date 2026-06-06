@@ -22,7 +22,7 @@ async function runPayloadJobs() {
     })
 
     await payload.jobs.run({
-      limit: 10,
+      limit: 1,
       queue: 'daily',
       silent: true,
     })
