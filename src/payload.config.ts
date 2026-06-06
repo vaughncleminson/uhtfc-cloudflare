@@ -218,6 +218,9 @@ export default buildConfig({
         handler: async ({ req, input }) => {
           const jobName = 'emailCatchReturnLinks'
           const ranAt = new Date().toISOString()
+          console.log(`${jobName} started at ${ranAt}`)
+          console.log('serverURL:', req.payload.config.serverURL)
+          console.log('input:', input)
 
           // Send daily catch return emails
           //we send an email to each user with a booking for the current day
