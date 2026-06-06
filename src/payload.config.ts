@@ -159,7 +159,6 @@ export default buildConfig({
     binding: cloudflare.env.D1,
     prodMigrations: migrations,
   }),
-
   plugins: [
     r2Storage({
       bucket: cloudflare.env.R2 as any,
