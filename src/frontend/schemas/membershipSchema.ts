@@ -4,6 +4,7 @@ import { lineItemSchema } from './lineItemSchema'
 export const membershipSchema = z.object({
   productType: z.string(),
   userId: z.number(),
+  orderId: z.number().optional(),
   membershipType: z
     .enum(['select', 'OM', 'OMW', 'F', 'J', 'S', 'C'])
     .refine((val) => val !== 'select', {

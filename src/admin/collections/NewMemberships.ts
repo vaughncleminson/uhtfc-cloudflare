@@ -21,6 +21,7 @@ export const NewMemberships: CollectionConfig = {
         readOnly: true,
       },
     },
+    { type: 'number', name: 'orderId', label: 'Order ID' },
     {
       type: 'number',
       name: 'userId',

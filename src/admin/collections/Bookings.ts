@@ -27,7 +27,9 @@ export const Bookings: CollectionConfig = {
       label: 'User ID',
       required: true,
     },
-
+    { type: 'number', 
+      name: 'orderId', 
+      label: 'Order ID' },
     {
       type: 'text',
       name: 'firstName',

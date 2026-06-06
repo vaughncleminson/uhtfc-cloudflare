@@ -19,6 +19,7 @@ const anglerSchema = z.object({
 export const bookingSchema = z.object({
   productType: z.string(),
   userId: z.number(),
+  orderId: z.number().optional(),
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   role: z.string(),
