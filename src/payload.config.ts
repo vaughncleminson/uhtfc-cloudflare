@@ -24,7 +24,6 @@ import { Payments } from './admin/collections/Payments'
 import { Settings } from './admin/collections/Settings'
 import { Users } from './admin/collections/Users'
 import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
-import { console } from 'inspector/promises'
 
 const dirname = path.resolve(process.cwd(), 'src')
 
