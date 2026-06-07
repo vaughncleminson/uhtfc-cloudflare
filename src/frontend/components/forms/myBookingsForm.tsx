@@ -31,6 +31,7 @@ export default function MyBookingsForm() {
       <div className="flex flex-col gap-5">
         <div className="flex justify-between items-center">
           <div className="text-sm">
+            test
             <div>
               {user?.firstName} {user?.lastName}
             </div>
