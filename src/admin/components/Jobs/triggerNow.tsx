@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from '@payloadcms/ui'
 
 export function TriggerCatchReturnJobButton() {
   const [isRunning, setIsRunning] = useState(false)
@@ -23,11 +24,12 @@ export function TriggerCatchReturnJobButton() {
         throw new Error(triggerResult || 'Failed to trigger task')
       }
 
-      window.alert('emailCatchReturnLinks queued and run successfully.')
+      toast.success('emailCatchReturnLinks task triggered successfully.')
+
       window.location.reload()
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to run task'
-      window.alert(`Could not trigger task: ${message}`)
+      toast.error(`Could not trigger task: ${message}`)
     } finally {
       setIsRunning(false)
     }

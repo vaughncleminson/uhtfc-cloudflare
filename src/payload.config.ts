@@ -169,22 +169,63 @@ export default buildConfig({
   jobs: {
     // Keep completed job records so run history is visible in admin
     deleteJobOnComplete: false,
-    jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
-      ...defaultJobsCollection,
-      admin: {
-        ...defaultJobsCollection.admin,
-        hidden: false,
-        defaultColumns: ['taskSlug', 'queue', 'hasError', 'createdAt', 'completedAt'],
-        components: {
-          ...defaultJobsCollection.admin?.components,
-          beforeListTable: [
-            ...(defaultJobsCollection.admin?.components?.beforeListTable || []),
-            '@/admin/components/Jobs/triggerNow#TriggerCatchReturnJobButton',
-            '@/admin/components/Jobs/quickFilters#JobsQuickFilters',
-          ],
+    jobsCollectionOverrides: ({ defaultJobsCollection }) => {
+      const updateLogField = (fields: any[] = []): any[] =>
+        fields.map((field) => {
+          if (field?.name === 'log') {
+            return {
+              ...field,
+              label: 'Note',
+              admin: {
+                ...field.admin,
+                components: {
+                  ...field.admin?.components,
+                  Cell: '@/admin/components/Jobs/noteCell#JobsNoteCell',
+                },
+              },
+            }
+          }
+
+          if (field?.type === 'tabs' && Array.isArray(field.tabs)) {
+            return {
+              ...field,
+              tabs: field.tabs.map((tab: any) => ({
+                ...tab,
+                fields: updateLogField(tab.fields || []),
+              })),
+            }
+          }
+
+          if (Array.isArray(field?.fields)) {
+            return {
+              ...field,
+              fields: updateLogField(field.fields),
+            }
+          }
+
+          return field
+        })
+
+      const fields = updateLogField(defaultJobsCollection.fields as any[])
+
+      return {
+        ...defaultJobsCollection,
+        fields,
+        admin: {
+          ...defaultJobsCollection.admin,
+          hidden: false,
+          defaultColumns: ['taskSlug', 'queue', 'hasError', 'createdAt', 'log'],
+          components: {
+            ...defaultJobsCollection.admin?.components,
+            beforeListTable: [
+              ...(defaultJobsCollection.admin?.components?.beforeListTable || []),
+              '@/admin/components/Jobs/triggerNow#TriggerCatchReturnJobButton',
+              '@/admin/components/Jobs/quickFilters#JobsQuickFilters',
+            ],
+          },
         },
-      },
-    }),
+      }
+    },
     tasks: [
       {
         // This task will send an email for each booking that occurs today
@@ -213,16 +254,29 @@ export default buildConfig({
         handler: async ({ req, input }) => {
           const jobName = 'emailCatchReturnLinks'
           const ranAt = new Date().toISOString()
-          console.log(`${jobName} started at ${ranAt}`)
-          console.log('serverURL:', req.payload.config.serverURL)
+          console.log(`Job ${jobName} started at ${ranAt}`)
           console.log('input:', input)
+          const normalizedInputDate = input.date ? new Date(input.date) : new Date()
+          const dateForQuery = Number.isNaN(normalizedInputDate.getTime())
+            ? new Date().toISOString().slice(0, 10)
+            : normalizedInputDate.toISOString().slice(0, 10)
+          const startOfDayUTC = `${dateForQuery}T00:00:00.000Z`
+          const nextDay = new Date(startOfDayUTC)
+          nextDay.setUTCDate(nextDay.getUTCDate() + 1)
+          const startOfNextDayUTC = nextDay.toISOString()
+          console.log('Date range:', { startOfDayUTC, startOfNextDayUTC })
 
           // Send daily catch return emails
           //we send an email to each user with a booking for the current day
           // with a link to submit their catch return details
           const bookingsToday = await req.payload.find({
             collection: 'bookings',
-            where: { date: { equals: input.date || new Date().toISOString() } },
+            where: {
+              and: [
+                { date: { greater_than_equal: startOfDayUTC } },
+                { date: { less_than: startOfNextDayUTC } },
+              ],
+            },
           })
 
           const catchReturnsToSend = bookingsToday.docs.length
@@ -230,13 +284,13 @@ export default buildConfig({
           for (const booking of bookingsToday.docs) {
             await req.payload.sendEmail({
               to: booking.email,
-              subject: `Your Catch Return for ${input.date || new Date().toISOString()}`,
+              subject: `Your Catch Return for ${dateForQuery}`,
               html: 'Test', //generateCatchReturnHTML(booking),
             })
           }
 
           //add a note to the job log with the number of emails sent and the date the job ran
-          const note = `${jobName} ran. number of catch returns to send: ${catchReturnsToSend}`
+          const note = `${jobName} ran. Catch returns: ${catchReturnsToSend}`
           req.payload.logger.info(note)
 
           return {
@@ -246,7 +300,7 @@ export default buildConfig({
               note,
               catchReturnsToSend,
               emailsSent: bookingsToday.docs.length,
-              date: input.date || new Date().toISOString(),
+              date: dateForQuery,
             },
           }
         },

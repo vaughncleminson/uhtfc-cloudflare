@@ -32,6 +32,7 @@ import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c08
 import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { SlugComponent as SlugComponent_8c00dfa3cab730f9087eff476c186d06 } from '@/admin/components/slug/SlugComponent'
+import { JobsNoteCell as JobsNoteCell_b9693af6fe304d3ca687ac134de7918b } from '@/admin/components/Jobs/noteCell'
 import { TriggerCatchReturnJobButton as TriggerCatchReturnJobButton_c306faa3eb1c291296b3e481a612936a } from '@/admin/components/Jobs/triggerNow'
 import { JobsQuickFilters as JobsQuickFilters_f88cf0aef388fef7e253a56606013935 } from '@/admin/components/Jobs/quickFilters'
 import { AdminBuildInfo as AdminBuildInfo_cbfc96e976ee74b2e56f53c715ef9644 } from '@/admin/components/BuildInfo/AdminBuildInfo'
@@ -74,6 +75,7 @@ export const importMap = {
   "@payloadcms/plugin-seo/client#MetaDescriptionComponent": MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@/admin/components/slug/SlugComponent#SlugComponent": SlugComponent_8c00dfa3cab730f9087eff476c186d06,
+  "@/admin/components/Jobs/noteCell#JobsNoteCell": JobsNoteCell_b9693af6fe304d3ca687ac134de7918b,
   "@/admin/components/Jobs/triggerNow#TriggerCatchReturnJobButton": TriggerCatchReturnJobButton_c306faa3eb1c291296b3e481a612936a,
   "@/admin/components/Jobs/quickFilters#JobsQuickFilters": JobsQuickFilters_f88cf0aef388fef7e253a56606013935,
   "@/admin/components/BuildInfo/AdminBuildInfo#AdminBuildInfo": AdminBuildInfo_cbfc96e976ee74b2e56f53c715ef9644,
