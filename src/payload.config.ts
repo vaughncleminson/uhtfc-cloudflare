@@ -24,6 +24,7 @@ import { Payments } from './admin/collections/Payments'
 import { Settings } from './admin/collections/Settings'
 import { Users } from './admin/collections/Users'
 import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
+import type { Booking as PayloadBooking } from './payload-types'
 
 const dirname = path.resolve(process.cwd(), 'src')
 
@@ -284,8 +285,8 @@ export default buildConfig({
           for (const booking of bookingsToday.docs) {
             await req.payload.sendEmail({
               to: booking.email,
-              subject: `Your Catch Return for ${dateForQuery}`,
-              html: 'Test', //generateCatchReturnHTML(booking),
+              subject: `Your ${returnBookingLocation(booking)} Catch Return for ${returnBookingDate(booking)}`,
+              html: generateCatchReturnHTML(booking),
             })
           }
 
@@ -335,4 +336,30 @@ async function getCloudflareContextSafe() {
   } catch {
     return getCloudflareContext({ async: true })
   }
+}
+
+function generateCatchReturnHTML(booking: PayloadBooking) {
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const catchReturnURL = `${baseURL}/submit-catch-return?bookingId=${booking.id}`
+  const locationLabel = returnBookingLocation(booking)
+  const bookingDate = returnBookingDate(booking)
+
+  return `
+    <p>Hi ${booking.firstName},</p>
+    <p>Thank you for your booking at ${locationLabel} on ${bookingDate}.</p>
+    <p>Please submit your catch return details by clicking the link below:</p>
+    <p><a href="${catchReturnURL}">Submit Catch Return</a></p>
+    <p>Best regards,<br/>The Underberg-Himeville Trout Fishing Club</p>
+  `
+}
+
+function returnBookingDate(booking: PayloadBooking): string {
+  return booking.date ? booking.date.slice(0, 10) : 'Unknown date'
+}
+
+function returnBookingLocation(booking: PayloadBooking): string {
+  if (typeof booking.location === 'object' && booking.location !== null) {
+    return booking.location.title || 'Unknown location'
+  }
+  return `${booking.location}`
 }
