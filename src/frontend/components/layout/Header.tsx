@@ -42,10 +42,10 @@ export default function Header(props: Props) {
       }`}
     >
       <div className="flex items-center justify-center">
-        <div className="relative h-20 w-28">
+        <div className="relative h-20 w-60">
           <Link href="/" className="relative block h-full w-full">
             <Image
-              src="/assets/UHTFC logo.png"
+              src="/assets/UHTFC-logo.png"
               alt="Logo"
               fill
               className="object-contain"
