@@ -8,30 +8,30 @@ import { generateMeta } from '@/admin/utils/generateMeta'
 import RenderBlocks from '@/frontend/components/blocks/RenderBlocks'
 import { Metadata } from 'next'
 
-export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const locations = await payload.find({
-    collection: 'locations',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-    where: {
-      type: {
-        equals: 'river',
-      },
-    },
-  })
+// export async function generateStaticParams() {
+//   const payload = await getPayload({ config: configPromise })
+//   const locations = await payload.find({
+//     collection: 'locations',
+//     draft: false,
+//     limit: 1000,
+//     overrideAccess: false,
+//     pagination: false,
+//     select: {
+//       slug: true,
+//     },
+//     where: {
+//       type: {
+//         equals: 'river',
+//       },
+//     },
+//   })
 
-  const params = locations.docs
-    ?.filter((doc) => typeof doc.slug === 'string' && doc.slug.length > 0)
-    .map((doc) => ({ slug: doc.slug as string }))
+//   const params = locations.docs
+//     ?.filter((doc) => typeof doc.slug === 'string' && doc.slug.length > 0)
+//     .map((doc) => ({ slug: doc.slug as string }))
 
-  return params
-}
+//   return params
+// }
 
 type Args = {
   params: Promise<{

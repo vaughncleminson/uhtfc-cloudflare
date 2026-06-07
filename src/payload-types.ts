@@ -220,7 +220,6 @@ export interface Booking {
   productType: string;
   userId: number;
   orderId?: number | null;
-  test?: string | null;
   firstName: string;
   lastName: string;
   role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
@@ -1037,7 +1036,6 @@ export interface BookingsSelect<T extends boolean = true> {
   productType?: T;
   userId?: T;
   orderId?: T;
-  test?: T;
   firstName?: T;
   lastName?: T;
   role?: T;
