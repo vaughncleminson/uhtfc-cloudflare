@@ -105,7 +105,7 @@ export async function POST(request: Request) {
   //if checkout is created successfully, create the order entries and return success true and the checkout response
 
   const newOrder = await createOrderEntries(order)
-  order.paymentStatus = 'payment-pending'
+  newOrder.paymentStatus = 'payment-pending'
   const checkout = await createYocoCheckout(newOrder)
   // call function to send booking emails
   // we email the user a booking confirmation email
@@ -205,6 +205,28 @@ async function createYocoCheckout(order: Order): Promise<CheckoutResponse | null
     })
 
     const data = await response.json()
+    // create payment
+    const payload = await getPayload({ config })
+    await payload.create({
+      collection: 'payments',
+      data: {
+        date: dayjs().toISOString(),
+        firstName: order.firstName,
+        lastName: order.lastName,
+        summary: order.lineItems
+          .map((item) => `${item.displayName} - ${item.description}`)
+          .join(', '),
+        totalAmount: order.totalAmount,
+        status: 'pending',
+        lineItems: (order.lineItems ?? []).map((item) => ({
+          displayName: item.displayName ?? '',
+          description: item.description ?? '',
+          quantity: item.quantity ?? 0,
+          price: item.price ?? 0,
+        })),
+        orderId: order.id as number,
+      },
+    })
     return data as CheckoutResponse
   } catch (error) {
     console.error(error)
@@ -223,6 +245,9 @@ const createOrderEntries = async (order: Order): Promise<Order> => {
     quantity: item.quantity ?? 1,
     price: item.price ?? 0,
   }))
+  if (order.totalAmount > 0) {
+    order.paymentStatus = 'payment-pending'
+  }
   const newOrder = await payload.create({
     collection: 'orders',
     data: {
@@ -250,9 +275,11 @@ const createOrderEntries = async (order: Order): Promise<Order> => {
         ) as Booking[]) {
           if (order.paymentStatus == 'not-required') {
             booking.active = true
+          } else {
+            booking.active = false
           }
           booking.orderId = newOrder.id as number
-          await payload.create({
+          const newBooking = await payload.create({
             collection: 'bookings',
             data: booking as any,
           })
@@ -260,6 +287,7 @@ const createOrderEntries = async (order: Order): Promise<Order> => {
           await payload.create({
             collection: 'bookingHistory',
             data: {
+              bookingId: newBooking.id,
               locationId: booking.location,
               firstName: booking.firstName,
               lastName: booking.lastName,

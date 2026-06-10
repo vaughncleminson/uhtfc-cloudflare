@@ -1,66 +1,57 @@
 import type { CollectionConfig } from 'payload'
+import { LineItems } from '../fields/LineItems'
 
 export const Payments: CollectionConfig = {
   slug: 'payments',
   // Sets the default order for the Admin UI list view
-  defaultSort: 'userName',
-  admin: {},
+  defaultSort: 'date',
+  admin: {
+    defaultColumns: ['date', 'firstName', 'lastName', 'summary', 'totalAmount', 'status'],
+  },
   hooks: {},
   fields: [
     {
-      type: 'text',
-      name: 'paymentId',
-      label: 'Payment ID',
+      type: 'date',
+      name: 'date',
+      label: 'Date',
       required: true,
     },
     {
       type: 'text',
-      name: 'userName',
-      label: 'User Name',
+      name: 'firstName',
+      label: 'First Name',
       required: true,
     },
     {
       type: 'text',
-      name: 'products',
-      label: 'Products',
+      name: 'lastName',
+      label: 'Last Name',
+      required: true,
     },
     {
       type: 'text',
-      name: 'details',
-      label: 'Details',
+      name: 'summary',
+      label: 'Summary',
     },
     {
       type: 'number',
-      name: 'amount',
-      label: 'Amount',
+      name: 'totalAmount',
+      label: 'Total Amount',
       required: true,
-    },
-    {
-      type: 'text',
-      name: 'currency',
-      label: 'Currency',
-    },
-    {
-      type: 'text',
-      name: 'type',
-      label: 'Type',
     },
     {
       type: 'text',
       name: 'status',
       label: 'Status',
       required: true,
+      defaultValue: 'pending',
     },
+    LineItems,
     {
-      type: 'text',
-      name: 'mode',
-      label: 'Mode',
-    },
-    {
-      type: 'relationship',
-      name: 'order',
-      label: 'Order',
-      relationTo: 'orders',
+      type: 'number',
+      name: 'orderId',
+      label: 'Order ID',
+      required: true,
     },
   ],
 }

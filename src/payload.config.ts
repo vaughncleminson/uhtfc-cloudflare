@@ -61,6 +61,7 @@ const mailerSendToken = process.env.MAILSEND_TOKEN || process.env.NEXT_PUBLIC_MA
 export default buildConfig({
   admin: {
     user: Admins.slug,
+    autoRefresh: true,
     importMap: {
       baseDir: path.resolve(dirname),
     },

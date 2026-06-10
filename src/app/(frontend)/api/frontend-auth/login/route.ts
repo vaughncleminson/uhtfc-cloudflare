@@ -1,4 +1,3 @@
-import { FRONTEND_AUTH_COOKIE_NAME } from '@/frontend/constants/auth'
 import configPromise from '@payload-config'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
@@ -32,19 +31,11 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({ message: 'Authentication Passed', user: result.user })
 
-    response.cookies.set(FRONTEND_AUTH_COOKIE_NAME, result.token!, {
+    response.cookies.set('payload-token', result.token!, {
       path: '/',
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
-    })
-
-    // Ensure frontend login never leaves an admin cookie behind.
-    response.cookies.set('payload-token', '', {
-      path: '/',
-      expires: new Date(0),
-      httpOnly: true,
-      sameSite: 'lax',
     })
 
     return response

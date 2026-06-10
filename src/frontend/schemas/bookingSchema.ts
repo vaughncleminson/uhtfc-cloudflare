@@ -17,6 +17,7 @@ const anglerSchema = z.object({
 })
 
 export const bookingSchema = z.object({
+  id: z.number().optional(),
   productType: z.string(),
   userId: z.number(),
   orderId: z.number().optional(),
