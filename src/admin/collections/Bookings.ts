@@ -52,7 +52,11 @@ export const Bookings: CollectionConfig = {
       name: 'location',
       label: 'Location',
       relationTo: 'locations',
-      required: true,
+    },
+    {
+      type: 'text',
+      name: 'locationName',
+      label: 'Location Name',
     },
     {
       type: 'date',

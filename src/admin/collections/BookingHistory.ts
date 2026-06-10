@@ -7,6 +7,11 @@ export const BookingHistory: CollectionConfig = {
 
   fields: [
     {
+      name: 'bookingId',
+      type: 'number',
+      label: 'Booking ID',
+    },
+    {
       name: 'locationId',
       type: 'number',
       label: 'Location ID',

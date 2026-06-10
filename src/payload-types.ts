@@ -224,7 +224,8 @@ export interface Booking {
   lastName: string;
   role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
   email: string;
-  location: number | Location;
+  location?: (number | null) | Location;
+  locationName?: string | null;
   date?: string | null;
   active?: boolean | null;
   anglers: {
@@ -394,6 +395,7 @@ export interface MapBlock {
  */
 export interface BookingHistory {
   id: number;
+  bookingId?: number | null;
   locationId: number;
   firstName: string;
   lastName: string;
@@ -565,16 +567,22 @@ export interface Order {
  */
 export interface Payment {
   id: number;
-  paymentId: string;
-  userName: string;
-  products?: string | null;
-  details?: string | null;
-  amount: number;
-  currency?: string | null;
-  type?: string | null;
+  date: string;
+  firstName: string;
+  lastName: string;
+  summary?: string | null;
+  totalAmount: number;
   status: string;
-  mode?: string | null;
-  order?: (number | null) | Order;
+  lineItems?:
+    | {
+        displayName: string;
+        description: string;
+        quantity: number;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
+  orderId: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -1041,6 +1049,7 @@ export interface BookingsSelect<T extends boolean = true> {
   role?: T;
   email?: T;
   location?: T;
+  locationName?: T;
   date?: T;
   active?: T;
   anglers?:
@@ -1073,6 +1082,7 @@ export interface BookingsSelect<T extends boolean = true> {
  * via the `definition` "bookingHistory_select".
  */
 export interface BookingHistorySelect<T extends boolean = true> {
+  bookingId?: T;
   locationId?: T;
   firstName?: T;
   lastName?: T;
@@ -1346,16 +1356,22 @@ export interface OrdersSelect<T extends boolean = true> {
  * via the `definition` "payments_select".
  */
 export interface PaymentsSelect<T extends boolean = true> {
-  paymentId?: T;
-  userName?: T;
-  products?: T;
-  details?: T;
-  amount?: T;
-  currency?: T;
-  type?: T;
+  date?: T;
+  firstName?: T;
+  lastName?: T;
+  summary?: T;
+  totalAmount?: T;
   status?: T;
-  mode?: T;
-  order?: T;
+  lineItems?:
+    | T
+    | {
+        displayName?: T;
+        description?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
+  orderId?: T;
   updatedAt?: T;
   createdAt?: T;
 }

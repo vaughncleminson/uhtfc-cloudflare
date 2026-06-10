@@ -5,6 +5,9 @@ import { getPayload } from 'payload'
 
 export async function GET() {
   const payload = await getPayload({ config })
+  const h = await headers()
+
+  const result = await payload.auth({ headers: h })
 
   const { user } = await payload.auth({ headers: await headers() })
 
@@ -28,8 +31,9 @@ export async function GET() {
         },
       ],
     },
-    sort: 'bookingDate',
+    sort: 'date',
   })
+  console.log(bookings)
 
   return NextResponse.json(bookings.docs)
 }
