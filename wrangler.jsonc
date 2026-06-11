@@ -3,7 +3,11 @@
   "main": "worker.ts",
   "name": "uhtfc-cloudflare",
   "compatibility_date": "2026-01-30",
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "compatibility_flags": [
+    "nodejs_compat",
+    "enable_nodejs_http_modules",
+    "global_fetch_strictly_public",
+  ],
   "triggers": {
     // Fire at 08:00 UTC daily (matches the emailCatchReturnLinks task schedule).
     // Previously "* * * * *" caused 1440 D1 write cycles per day, competing with
