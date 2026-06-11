@@ -169,10 +169,6 @@ export default buildConfig({
       collections: [
         {
           slug: 'previousUsers',
-          import: {
-            disableJobsQueue: true,
-            limit: 2000, // Override global importLimit for this collection
-          },
         },
       ],
       overrideImportCollection: ({ collection }) => ({
@@ -182,7 +178,6 @@ export default buildConfig({
           group: 'Data Management',
         },
       }),
-      // see below for a list of available options
     }),
 
     r2Storage({
@@ -193,6 +188,13 @@ export default buildConfig({
   // Scheduled jobs below
   jobs: {
     // Keep completed job records so run history is visible in admin
+    autoRun: [
+      {
+        cron: '*/5 * * * *', // Check every 5 minutes
+        queue: 'default',
+      },
+    ],
+
     deleteJobOnComplete: false,
     jobsCollectionOverrides: ({ defaultJobsCollection }) => {
       const updateLogField = (fields: any[] = []): any[] =>
