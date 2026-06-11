@@ -166,6 +166,7 @@ export default buildConfig({
   }),
   plugins: [
     importExportPlugin({
+      debug: true,
       collections: [
         {
           slug: 'previousUsers',
