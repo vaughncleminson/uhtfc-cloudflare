@@ -4,6 +4,12 @@ import { tasks } from '../tasks'
 
 export const jobs: JobsConfig = {
   // Keep completed job records so run history is visible in admin
+  autoRun: [
+    {
+      cron: '*/5 * * * *', // Check every 5 minutes
+      queue: 'default',
+    },
+  ],
   deleteJobOnComplete: false,
   jobsCollectionOverrides: ({ defaultJobsCollection }) => {
     const updateLogField = (fields: any[] = []): any[] =>
