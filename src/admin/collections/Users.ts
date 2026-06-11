@@ -33,31 +33,32 @@ export const Users: CollectionConfig = {
       name: 'idNumber',
       label: 'ID Number',
     },
-
     {
-      type: 'text',
-      name: 'street',
-      label: 'Street Address',
+      type: 'array',
+      name: 'vehicles',
+      label: 'Vehicles',
+      fields: [
+        {
+          type: 'text',
+          name: 'vehicleRegistration',
+          label: 'Vehicle Registration',
+        },
+        {
+          type: 'text',
+          name: 'vehicleModel',
+          label: 'Vehicle Model',
+        },
+        {
+          type: 'text',
+          name: 'vehicleColour',
+          label: 'Vehicle Colour',
+        },
+      ],
     },
     {
       type: 'text',
-      name: 'city',
-      label: 'City',
-    },
-    {
-      type: 'text',
-      name: 'province',
-      label: 'Province',
-    },
-    {
-      type: 'text',
-      name: 'postalCode',
-      label: 'Postal Code',
-    },
-    {
-      type: 'text',
-      name: 'country',
-      label: 'Country',
+      name: 'physicalAddress',
+      label: 'Physical Address',
     },
     UserRole,
     {
@@ -110,6 +111,17 @@ export const Users: CollectionConfig = {
       name: 'subsDue',
       label: 'Subs Due',
       defaultValue: false,
+    },
+    {
+      type: 'number',
+      name: 'arrearsAmount',
+      label: 'Arrears Amount',
+      defaultValue: 0,
+      admin: {
+        condition: (data, siblingData) => {
+          return siblingData?.subsDue === true
+        },
+      },
     },
   ],
 }

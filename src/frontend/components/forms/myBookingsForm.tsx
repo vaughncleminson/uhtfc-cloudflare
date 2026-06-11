@@ -29,7 +29,11 @@ export default function MyBookingsForm() {
   }, [])
 
   const handleCancel = async (bookingId: number) => {
-    const confirmed = await confirm({ message: 'Are you sure you want to cancel this booking?' })
+    const confirmed = await confirm({
+      message: 'Are you sure you want to cancel this booking?',
+      cancelTitle: 'CLOSE',
+      confirmTitle: 'YES, CANCEL',
+    })
     if (!confirmed) return
     setLoading(true)
     try {

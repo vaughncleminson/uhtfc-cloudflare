@@ -1,18 +1,14 @@
 'use client'
 
-import { userAtom } from '@/frontend/atoms/userAtom'
-import { useAtom } from 'jotai'
+import { User } from '@/payload-types'
+import { useAuth } from './AuthProvider'
 
-type Props = {
-  isAuthenticated: boolean
-}
-
-export default function Profile(props: Props) {
-  const [user, setUser] = useAtom(userAtom)
+export default function Profile() {
+  const { user } = useAuth() as { user: User }
 
   return (
     <>
-      {user && props.isAuthenticated && (
+      {user && (
         <div className="bg-black bg-opacity-60 border border-white border-opacity-60 px-2 py-1 flex items-center gap-2">
           <div className="text-sm uppercase" id="profile-name">
             {user.firstName} ({user.role})

@@ -96,19 +96,24 @@ export default function MFALoginForm(props: any) {
               path={props.path}
               readOnly={false}
             />
+            <div className="field-type text">
+              <label className="field-label" htmlFor="admin-password-input">
+                Password
+              </label>
+              <input
+                id="admin-password-input"
+                name="password"
+                type="password"
+                className=""
+                aria-invalid={passwordErr}
+                required
+                value={password}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setPassword(e.target.value)
+                }}
+              />
+            </div>
 
-            <label htmlFor="admin-password-input">Password</label>
-            <input
-              id="admin-password-input"
-              name="password"
-              type="password"
-              aria-invalid={passwordErr}
-              required
-              value={password}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setPassword(e.target.value)
-              }}
-            />
             <Link href="/admin/forgot">Forgot password?</Link>
           </>
         )}

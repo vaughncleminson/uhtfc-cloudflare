@@ -12,6 +12,7 @@ import Locations from './Locations'
 import Map from './Map'
 import MapDefault from './MapDefault'
 import MyBookings from './MyBookings'
+import Onboard from './Onboard'
 import Order from './Order'
 import Paymments from './Payments'
 import RodFeesMembership from './RodFeesMembership'
@@ -30,6 +31,7 @@ const blockComponents: any = {
   myBookings: MyBookings,
   catchReturns: CatchReturns,
   payments: Paymments,
+  onboard: Onboard,
 }
 
 type Props = {

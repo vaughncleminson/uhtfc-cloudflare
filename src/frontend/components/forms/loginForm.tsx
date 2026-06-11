@@ -1,13 +1,11 @@
 'use client'
 
-import { userAtom } from '@/frontend/atoms/userAtom'
 import { loginSchema } from '@/frontend/schemas/authSchema'
-import { User } from '@/payload-types'
-import { useAtom } from 'jotai'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 import Button from '../ui/Button'
-import Link from 'next/link'
+import { useConfirm } from '../ui/ModalProvider'
 
 type LoginFormProps = {
   setAuthType: (authType: string) => void
@@ -15,9 +13,10 @@ type LoginFormProps = {
 
 export default function LoginForm(props: LoginFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [user, setUser] = useAtom<User | null>(userAtom)
+
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const confirm = useConfirm()
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     const form = e.target as HTMLFormElement
@@ -44,8 +43,20 @@ export default function LoginForm(props: LoginFormProps) {
         })
         const result = (await login.json()) as any
         if (result.message == 'Authentication Passed') {
-          setUser(result.user)
+          router.push('/')
           router.refresh()
+        } else if (result.message == 'Reset email sent') {
+          setLoading(false)
+          const confirmed = await confirm({
+            title: 'Required information',
+            message: `An email has been sent to ${data.email}. You are required to click the link in the email to reset your password and supply other information before continuing. If you haven't received the email within a few minutes, please check your spam folder or contact us directly.`,
+            confirmTitle: 'OK',
+            cancelTitle: 'Cancel',
+            confirmUrl: '/',
+            cancelUrl: '/',
+          })
+          if (!confirmed) return
+          form.reset()
         } else {
           setErrors({ submit: 'Username or password incorrect' })
         }

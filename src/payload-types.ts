@@ -81,6 +81,9 @@ export interface Config {
     payments: Payment;
     pages: Page;
     users: User;
+    previousUsers: PreviousUser;
+    exports: Export;
+    imports: Import;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -102,6 +105,9 @@ export interface Config {
     payments: PaymentsSelect<false> | PaymentsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    previousUsers: PreviousUsersSelect<false> | PreviousUsersSelect<true>;
+    exports: ExportsSelect<false> | ExportsSelect<true>;
+    imports: ImportsSelect<false> | ImportsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -130,6 +136,8 @@ export interface Config {
   jobs: {
     tasks: {
       emailCatchReturnLinks: TaskEmailCatchReturnLinks;
+      createCollectionExport: TaskCreateCollectionExport;
+      createCollectionImport: TaskCreateCollectionImport;
       inline: {
         input: unknown;
         output: unknown;
@@ -605,6 +613,7 @@ export interface Page {
     | MyBookingsBlock
     | CatchReturnsBlock
     | PaymentsBlock
+    | OnboardBlock
   )[];
   meta?: {
     title?: string | null;
@@ -743,6 +752,16 @@ export interface PaymentsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OnboardBlock".
+ */
+export interface OnboardBlock {
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'onboard';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -751,15 +770,20 @@ export interface User {
   lastName: string;
   mobileNumber: string;
   idNumber?: string | null;
-  street?: string | null;
-  city?: string | null;
-  province?: string | null;
-  postalCode?: string | null;
-  country?: string | null;
+  vehicles?:
+    | {
+        vehicleRegistration?: string | null;
+        vehicleModel?: string | null;
+        vehicleColour?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  physicalAddress?: string | null;
   role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
   membershipType?: ('OM' | 'OMW' | 'F' | 'J' | 'S' | 'C' | 'COMP' | 'R') | null;
   blocked?: boolean | null;
   subsDue?: boolean | null;
+  arrearsAmount?: number | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -778,6 +802,94 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "previousUsers".
+ */
+export interface PreviousUser {
+  id: number;
+  email: string;
+  fullName: string;
+  role: string;
+  resetUuid?: string | null;
+  reset?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exports".
+ */
+export interface Export {
+  id: number;
+  name?: string | null;
+  format: 'csv' | 'json';
+  limit?: number | null;
+  page?: number | null;
+  sort?: string | null;
+  sortOrder?: ('asc' | 'desc') | null;
+  drafts?: ('yes' | 'no') | null;
+  selectionToUse?: ('currentSelection' | 'currentFilters' | 'all') | null;
+  fields?: string[] | null;
+  collectionSlug: string;
+  where?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "imports".
+ */
+export interface Import {
+  id: number;
+  collectionSlug: string;
+  importMode?: ('create' | 'update' | 'upsert') | null;
+  matchField?: string | null;
+  status?: ('pending' | 'completed' | 'partial' | 'failed') | null;
+  summary?: {
+    imported?: number | null;
+    updated?: number | null;
+    total?: number | null;
+    issues?: number | null;
+    issueDetails?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -848,7 +960,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'emailCatchReturnLinks';
+        taskSlug: 'inline' | 'emailCatchReturnLinks' | 'createCollectionExport' | 'createCollectionImport';
         taskID: string;
         input?:
           | {
@@ -881,7 +993,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'emailCatchReturnLinks') | null;
+  taskSlug?: ('inline' | 'emailCatchReturnLinks' | 'createCollectionExport' | 'createCollectionImport') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -955,6 +1067,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'previousUsers';
+        value: number | PreviousUser;
       } | null);
   globalSlug?: string | null;
   user:
@@ -1395,6 +1511,7 @@ export interface PagesSelect<T extends boolean = true> {
         myBookings?: T | MyBookingsBlockSelect<T>;
         catchReturns?: T | CatchReturnsBlockSelect<T>;
         payments?: T | PaymentsBlockSelect<T>;
+        onboard?: T | OnboardBlockSelect<T>;
       };
   meta?:
     | T
@@ -1526,6 +1643,15 @@ export interface PaymentsBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OnboardBlock_select".
+ */
+export interface OnboardBlockSelect<T extends boolean = true> {
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -1533,15 +1659,20 @@ export interface UsersSelect<T extends boolean = true> {
   lastName?: T;
   mobileNumber?: T;
   idNumber?: T;
-  street?: T;
-  city?: T;
-  province?: T;
-  postalCode?: T;
-  country?: T;
+  vehicles?:
+    | T
+    | {
+        vehicleRegistration?: T;
+        vehicleModel?: T;
+        vehicleColour?: T;
+        id?: T;
+      };
+  physicalAddress?: T;
   role?: T;
   membershipType?: T;
   blocked?: T;
   subsDue?: T;
+  arrearsAmount?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1558,6 +1689,77 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "previousUsers_select".
+ */
+export interface PreviousUsersSelect<T extends boolean = true> {
+  email?: T;
+  fullName?: T;
+  role?: T;
+  resetUuid?: T;
+  reset?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exports_select".
+ */
+export interface ExportsSelect<T extends boolean = true> {
+  name?: T;
+  format?: T;
+  limit?: T;
+  page?: T;
+  sort?: T;
+  sortOrder?: T;
+  drafts?: T;
+  selectionToUse?: T;
+  fields?: T;
+  collectionSlug?: T;
+  where?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "imports_select".
+ */
+export interface ImportsSelect<T extends boolean = true> {
+  collectionSlug?: T;
+  importMode?: T;
+  matchField?: T;
+  status?: T;
+  summary?:
+    | T
+    | {
+        imported?: T;
+        updated?: T;
+        total?: T;
+        issues?: T;
+        issueDetails?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1820,6 +2022,72 @@ export interface CollectionsWidget {
 export interface TaskEmailCatchReturnLinks {
   input: {
     date?: string | null;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreateCollectionExport".
+ */
+export interface TaskCreateCollectionExport {
+  input: {
+    id: string;
+    name: string;
+    batchSize?: number | null;
+    collectionSlug:
+      | 'admins'
+      | 'bookings'
+      | 'bookingHistory'
+      | 'catchReturns'
+      | 'emailSubscribers'
+      | 'festivals'
+      | 'locations'
+      | 'media'
+      | 'newMemberships'
+      | 'orders'
+      | 'payments'
+      | 'pages'
+      | 'users'
+      | 'previousUsers'
+      | 'exports'
+      | 'imports';
+    drafts?: ('yes' | 'no') | null;
+    exportCollection: string;
+    fields?: string[] | null;
+    format: 'csv' | 'json';
+    limit?: number | null;
+    locale?: string | null;
+    maxLimit?: number | null;
+    page?: number | null;
+    sort?: string | null;
+    userCollection?: string | null;
+    userID?: string | null;
+    where?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreateCollectionImport".
+ */
+export interface TaskCreateCollectionImport {
+  input: {
+    importId: string;
+    importCollection: string;
+    userID?: string | null;
+    userCollection?: string | null;
+    batchSize?: number | null;
+    debug?: boolean | null;
+    defaultVersionStatus?: ('draft' | 'published') | null;
+    maxLimit?: number | null;
   };
   output?: unknown;
 }
