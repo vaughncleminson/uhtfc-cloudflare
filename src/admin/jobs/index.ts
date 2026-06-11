@@ -6,7 +6,7 @@ export const jobs: JobsConfig = {
   // Keep completed job records so run history is visible in admin
   autoRun: [
     {
-      cron: '*/5 * * * *', // Check every 5 minutes
+      cron: '*/2 * * * *', // Check every 2 minutes
       queue: 'default',
     },
   ],
