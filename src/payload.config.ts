@@ -169,10 +169,6 @@ export default buildConfig({
       collections: [
         {
           slug: 'previousUsers',
-          import: {
-            disableJobsQueue: true,
-            limit: 2000, // Override global importLimit for this collection
-          },
         },
       ],
       overrideImportCollection: ({ collection }) => ({
@@ -182,7 +178,6 @@ export default buildConfig({
           group: 'Data Management',
         },
       }),
-      // see below for a list of available options
     }),
 
     r2Storage({
@@ -190,7 +185,6 @@ export default buildConfig({
       collections: { media: true },
     }),
   ],
-  // Scheduled jobs — defined in src/admin/jobs/
   jobs,
 })
 
