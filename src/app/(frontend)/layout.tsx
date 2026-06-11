@@ -3,12 +3,13 @@ import { getServerSideURL } from '@/admin/utils/getURL'
 import { mergeOpenGraph } from '@/admin/utils/mergeOpenGraph'
 import configPromise from '@payload-config'
 import { Metadata } from 'next'
-import { cookies, draftMode } from 'next/headers'
+import { draftMode, headers } from 'next/headers'
 import React, { cache } from 'react'
 import { oswald } from './fonts'
 
 import Footer from '@/frontend/components/layout/Footer'
 import Header from '@/frontend/components/layout/Header'
+import { AuthProvider } from '@/frontend/components/ui/AuthProvider'
 import { ConfirmProvider } from '@/frontend/components/ui/ModalProvider'
 import { ToastProvider } from '@/frontend/components/ui/ToastProvider'
 import { Navigation } from '@/payload-types'
@@ -24,9 +25,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { isEnabled } = await draftMode()
   const navigation = (await queryNavigation()) as Navigation
 
-  const cookieStore = await cookies()
-  const token = cookieStore.get('payload-token')?.value
-  const isAuthenticated = Boolean(token)
+  const payload = await getPayload({ config: configPromise })
+
+  const { user } = await payload.auth({
+    headers: await headers(),
+  })
   //test
   return (
     <html lang="en" suppressHydrationWarning className={`${oswald.className} bg-slate-800`}>
@@ -36,11 +39,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <LivePreviewListener />
-        <Header navigation={navigation} isAuthenticated={isAuthenticated} />
-        <ConfirmProvider>
-          <ToastProvider> {children}</ToastProvider>
-        </ConfirmProvider>
-        <Footer navigation={navigation} isAuthenticated={isAuthenticated} />
+        <AuthProvider user={user}>
+          <Header navigation={navigation} />
+          <ConfirmProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </ConfirmProvider>
+          <Footer navigation={navigation} />
+        </AuthProvider>
       </body>
     </html>
   )

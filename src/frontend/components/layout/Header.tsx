@@ -7,14 +7,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Nav from './Nav'
+import { useAuth } from '../ui/AuthProvider'
 
 type Props = {
   navigation: Navigation
-  isAuthenticated: boolean
 }
 export default function Header(props: Props) {
   const [scrollPosition, setScrollPosition] = useState(0)
-  const [user, setUser] = useAtom(userAtom)
+  const { user } = useAuth()
+
   const handleScroll = () => {
     const position = window.scrollY || document.documentElement.scrollTop
     setScrollPosition(position)
@@ -26,12 +27,6 @@ export default function Header(props: Props) {
       window!.removeEventListener('scroll', handleScroll)
     }
   }, [])
-
-  useEffect(() => {
-    if (!props.isAuthenticated) {
-      setUser(null)
-    }
-  }, [props.isAuthenticated])
 
   const nav = props.navigation.navigation as NavigationType
 
@@ -57,7 +52,7 @@ export default function Header(props: Props) {
       </div>
 
       <div className="">
-        <Nav navigation={nav} isAuthenticated={props.isAuthenticated} />
+        <Nav navigation={nav} />
       </div>
     </header>
   )

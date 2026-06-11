@@ -27,6 +27,12 @@ export default function OrderForm() {
   const confirm = useConfirm()
 
   useEffect(() => {
+    if (!order) {
+      router.push('/')
+    }
+  }, [order])
+
+  useEffect(() => {
     const handlePaymentResult = async () => {
       if (!status || !orderId || !order) return
       setProcessingPayment(true)

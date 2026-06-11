@@ -7,6 +7,7 @@ import path from 'path'
 import { buildConfig, TaskConfig } from 'payload'
 import { GetPlatformProxyOptions } from 'wrangler'
 
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import { migrations } from 'migrations'
 import { Admins } from './admin/collections/Admins'
 import { BookingHistory } from './admin/collections/BookingHistory'
@@ -21,6 +22,7 @@ import { NewMemberships } from './admin/collections/NewMemberships'
 import { Orders } from './admin/collections/Orders'
 import { Pages } from './admin/collections/Pages'
 import { Payments } from './admin/collections/Payments'
+import { PreviousUsers } from './admin/collections/PreviousUsers'
 import { Settings } from './admin/collections/Settings'
 import { Users } from './admin/collections/Users'
 import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
@@ -106,6 +108,7 @@ export default buildConfig({
     Payments,
     Pages,
     Users,
+    PreviousUsers,
   ],
   editor: lexicalEditor(),
   email: mailerSendAdapter({
@@ -162,6 +165,26 @@ export default buildConfig({
     prodMigrations: migrations,
   }),
   plugins: [
+    importExportPlugin({
+      collections: [
+        {
+          slug: 'previousUsers',
+          import: {
+            disableJobsQueue: true,
+            limit: 2000, // Override global importLimit for this collection
+          },
+        },
+      ],
+      overrideImportCollection: ({ collection }) => ({
+        ...collection,
+        admin: {
+          ...collection.admin,
+          group: 'Data Management',
+        },
+      }),
+      // see below for a list of available options
+    }),
+
     r2Storage({
       bucket: cloudflare.env.R2 as any,
       collections: { media: true },

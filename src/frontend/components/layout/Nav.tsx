@@ -7,10 +7,10 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Logout from '../ui/logout'
 import Profile from '../ui/profile'
+import { useAuth } from '../ui/AuthProvider'
 
 type Props = {
   navigation: NavigationType
-  isAuthenticated: boolean
 }
 
 export default function Nav(props: Props) {
@@ -21,6 +21,7 @@ export default function Nav(props: Props) {
   const [showNav, setShowNav] = useState<boolean>(false)
   const [settings, setSettings] = useAtom(settingsAtom)
   const [order, setOrder] = useAtom(orderAtom)
+  const { user } = useAuth()
 
   const getSubSection = (index: number) => {
     if (mainSections[index].children?.length) {
@@ -65,14 +66,10 @@ export default function Nav(props: Props) {
                 setShowNav(true)
               }}
             >
-              {section.title === 'Profile' ? (
-                <Profile isAuthenticated={props.isAuthenticated} />
-              ) : (
-                section.title
-              )}
+              {section.title === 'Profile' ? <Profile /> : section.title}
             </div>
           ))}
-          {order?.products && order?.products.length > 0 && props.isAuthenticated && (
+          {order?.products && order?.products.length > 0 && user && (
             <Link href="/checkout">
               <div className="bg-black text-sm bg-opacity-60 border border-white border-opacity-60 px-2 py-1 flex items-center gap-2 relative uppercase">
                 <div className="text-sm">Cart</div>

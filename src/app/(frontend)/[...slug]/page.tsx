@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
-import { draftMode } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { draftMode, headers } from 'next/headers'
+import { notFound, redirect } from 'next/navigation'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 
@@ -16,16 +16,27 @@ type Args = {
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
+  const payload = await getPayload({ config: configPromise })
+
+  const { user } = await payload.auth({
+    headers: await headers(),
+  })
   let { slug } = await paramsPromise
   if (!slug) {
     slug = ['home']
   }
-  //   const url = '/' + slug
+
   const page = await queryPageBySlug({
     slug,
   })
   if (!page) {
     notFound()
+  }
+  //Authenticated routes
+  if (page.slug === 'bookings' || page.slug === 'checkout' || page.slug.includes('profile')) {
+    if (!user) {
+      redirect('/?auth=false')
+    }
   }
   const { layout } = page
   return (
