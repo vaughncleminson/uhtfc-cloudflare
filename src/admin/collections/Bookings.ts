@@ -2,6 +2,9 @@ import type { CollectionConfig } from 'payload'
 import { LineItems } from '../fields/LineItems'
 import { UserRole } from '../fields/UserRole'
 
+const isValidPublicId = (value: unknown): value is string =>
+  typeof value === 'string' && value.trim().length > 0
+
 export const Bookings: CollectionConfig = {
   slug: 'bookings',
   // Sets the default order for the Admin UI list view
@@ -26,6 +29,37 @@ export const Bookings: CollectionConfig = {
       name: 'userId',
       label: 'User ID',
       required: true,
+    },
+    {
+      type: 'text',
+      name: 'publicId',
+      label: 'Public ID',
+      required: true,
+      unique: true,
+      access: {
+        update: () => false,
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value, operation }) => {
+            if (operation === 'create' && !isValidPublicId(value)) {
+              return crypto.randomUUID()
+            }
+
+            return value
+          },
+        ],
+      },
+      validate: (value: unknown) => {
+        if (!isValidPublicId(value)) {
+          return 'Public ID is required and cannot be empty.'
+        }
+
+        return true
+      },
+      admin: {
+        readOnly: true,
+      },
     },
     { type: 'number', name: 'orderId', label: 'Order ID' },
     {
