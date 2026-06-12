@@ -1,40 +1,6 @@
-import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-d1-sqlite'
+import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-d1-sqlite'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
-  await db.run(sql`CREATE TABLE \`pages_blocks_user_profile\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`_path\` text NOT NULL,
-  	\`id\` text PRIMARY KEY NOT NULL,
-  	\`image_id\` integer,
-  	\`block_name\` text,
-  	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`pages\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(sql`CREATE INDEX \`pages_blocks_user_profile_order_idx\` ON \`pages_blocks_user_profile\` (\`_order\`);`)
-  await db.run(sql`CREATE INDEX \`pages_blocks_user_profile_parent_id_idx\` ON \`pages_blocks_user_profile\` (\`_parent_id\`);`)
-  await db.run(sql`CREATE INDEX \`pages_blocks_user_profile_path_idx\` ON \`pages_blocks_user_profile\` (\`_path\`);`)
-  await db.run(sql`CREATE INDEX \`pages_blocks_user_profile_image_idx\` ON \`pages_blocks_user_profile\` (\`image_id\`);`)
-  await db.run(sql`CREATE TABLE \`_pages_v_blocks_user_profile\` (
-  	\`_order\` integer NOT NULL,
-  	\`_parent_id\` integer NOT NULL,
-  	\`_path\` text NOT NULL,
-  	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`image_id\` integer,
-  	\`_uuid\` text,
-  	\`block_name\` text,
-  	FOREIGN KEY (\`image_id\`) REFERENCES \`media\`(\`id\`) ON UPDATE no action ON DELETE set null,
-  	FOREIGN KEY (\`_parent_id\`) REFERENCES \`_pages_v\`(\`id\`) ON UPDATE no action ON DELETE cascade
-  );
-  `)
-  await db.run(sql`CREATE INDEX \`_pages_v_blocks_user_profile_order_idx\` ON \`_pages_v_blocks_user_profile\` (\`_order\`);`)
-  await db.run(sql`CREATE INDEX \`_pages_v_blocks_user_profile_parent_id_idx\` ON \`_pages_v_blocks_user_profile\` (\`_parent_id\`);`)
-  await db.run(sql`CREATE INDEX \`_pages_v_blocks_user_profile_path_idx\` ON \`_pages_v_blocks_user_profile\` (\`_path\`);`)
-  await db.run(sql`CREATE INDEX \`_pages_v_blocks_user_profile_image_idx\` ON \`_pages_v_blocks_user_profile\` (\`image_id\`);`)
-  await db.run(sql`DROP TABLE \`exports\`;`)
-  await db.run(sql`DROP TABLE \`exports_texts\`;`)
-  await db.run(sql`DROP TABLE \`imports\`;`)
   await db.run(sql`ALTER TABLE \`payments\` ADD \`user_id\` numeric NOT NULL;`)
   await db.run(sql`ALTER TABLE \`pages_blocks_payments\` DROP COLUMN \`title\`;`)
   await db.run(sql`ALTER TABLE \`_pages_v_blocks_payments\` DROP COLUMN \`title\`;`)
@@ -77,7 +43,9 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   	FOREIGN KEY (\`parent_id\`) REFERENCES \`exports\`(\`id\`) ON UPDATE no action ON DELETE cascade
   );
   `)
-  await db.run(sql`CREATE INDEX \`exports_texts_order_parent\` ON \`exports_texts\` (\`order\`,\`parent_id\`);`)
+  await db.run(
+    sql`CREATE INDEX \`exports_texts_order_parent\` ON \`exports_texts\` (\`order\`,\`parent_id\`);`,
+  )
   await db.run(sql`CREATE TABLE \`imports\` (
   	\`id\` integer PRIMARY KEY NOT NULL,
   	\`collection_slug\` text DEFAULT 'previousUsers' NOT NULL,
