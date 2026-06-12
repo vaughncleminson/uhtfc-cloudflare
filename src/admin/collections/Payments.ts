@@ -17,6 +17,12 @@ export const Payments: CollectionConfig = {
       required: true,
     },
     {
+      type: 'number',
+      name: 'userId',
+      label: 'User ID',
+      required: true,
+    },
+    {
       type: 'text',
       name: 'firstName',
       label: 'First Name',

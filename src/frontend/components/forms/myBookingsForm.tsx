@@ -1,15 +1,15 @@
 'use client'
-import { userAtom } from '@/frontend/atoms/userAtom'
 import { Booking } from '@/frontend/schemas/bookingSchema'
 import { User } from '@/payload-types'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { useConfirm } from '../ui/ModalProvider'
+import { useAuth } from '../ui/AuthProvider'
 
 export default function MyBookingsForm() {
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useAtom<User | null>(userAtom)
+  const { user } = useAuth() as { user: User | null }
   const [bookings, setBookings] = useState<Booking[]>([])
   const confirm = useConfirm()
 
@@ -17,7 +17,10 @@ export default function MyBookingsForm() {
     const loadBookings = async () => {
       setLoading(true)
       try {
-        const res = await fetch('/api/my-bookings')
+        const res = await fetch('/api/my-bookings', {
+          method: 'GET',
+          credentials: 'include',
+        })
         const data = (await res.json()) as Booking[]
         setBookings(data)
       } finally {

@@ -16,6 +16,7 @@ import Onboard from './Onboard'
 import Order from './Order'
 import Paymments from './Payments'
 import RodFeesMembership from './RodFeesMembership'
+import UserProfile from './UserProfile'
 
 const blockComponents: any = {
   hero: Hero,
@@ -32,6 +33,7 @@ const blockComponents: any = {
   catchReturns: CatchReturns,
   payments: Paymments,
   onboard: Onboard,
+  userProfile: UserProfile,
 }
 
 type Props = {
