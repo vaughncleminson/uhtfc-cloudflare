@@ -194,7 +194,7 @@ export default function BookingForm(props: BookingFormProps) {
             lineItems: [
               {
                 displayName: 'Permit fees',
-                description: `${bookingObject.locationName} (${bookingObject.date})`,
+                description: `${bookingObject.locationName} (${dayjs(bookingObject.date).format('DD-MM-YYYY hh:mm')})`,
                 quantity: 1,
                 price: bookingObject.totalAmount,
               },
@@ -205,7 +205,7 @@ export default function BookingForm(props: BookingFormProps) {
           order.totalAmount += bookingObject.totalAmount
           order.lineItems.push({
             displayName: 'Permit fees',
-            description: `${bookingObject.locationName} (${bookingObject.date})`,
+            description: `${bookingObject.locationName} (${dayjs(bookingObject.date).format('DD-MM-YYYY hh:mm')})`,
             quantity: 1,
             price: bookingObject.totalAmount,
           })

@@ -1,27 +1,19 @@
 'use client'
-import { userAtom } from '@/frontend/atoms/userAtom'
 import { NavigationType } from '@/frontend/types/navigation'
 import { Navigation } from '@/payload-types'
-import { useAtom } from 'jotai'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 type Props = {
   navigation: Navigation
-  isAuthenticated: boolean
 }
 export default function Footer(props: Props) {
-  const [user, setUser] = useAtom(userAtom)
   const [mainSections, setMainSections] = useState<NavigationType>(
     props.navigation.navigation as NavigationType,
   )
-  const [subSections, setSubSections] = useState<NavigationType | null>(null)
+  // const [subSections, setSubSections] = useState<NavigationType | null>(null)
 
-  useEffect(() => {
-    if (!props.isAuthenticated) {
-      setUser(null)
-    }
-  }, [props.isAuthenticated])
+  // const { user } = useAuth()
 
   return (
     <footer className="relative w-screen bg-slate-900 px-5 lg:px-40 py-10 flex justify-between mt-5">

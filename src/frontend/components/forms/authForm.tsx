@@ -12,16 +12,6 @@ export default function AuthForm() {
       ) : (
         <RegisterForm setAuthType={(e) => setAuthType(e)} />
       )}
-      {/* <p className="text-center mt-2 text-slate-400">
-        <span onClick={() => setAuthType('login')} className="underline cursor-pointer">
-          Login
-        </span>{' '}
-        or{' '}
-        <span onClick={() => setAuthType('register')} className="underline cursor-pointer">
-          Register
-        </span>{' '}
-        to book water or become a member
-      </p> */}
     </>
   )
 }

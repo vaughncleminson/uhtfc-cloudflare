@@ -14,6 +14,7 @@ import { Locations } from '../blocks/Locations'
 import { Map } from '../blocks/Map'
 import { MapDefault } from '../blocks/MapDefault'
 import { MyBookings } from '../blocks/MyBookings'
+import { Onboard } from '../blocks/Onboard'
 import { Order } from '../blocks/Order'
 import { Payments } from '../blocks/Payments'
 import { RodFeesMembership } from '../blocks/RodFeesMembership'
@@ -91,6 +92,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 MyBookings,
                 CatchReturns,
                 Payments,
+                Onboard,
               ],
               required: true,
             },

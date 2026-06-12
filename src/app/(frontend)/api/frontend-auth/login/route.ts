@@ -1,4 +1,5 @@
 import configPromise from '@payload-config'
+import { randomUUID } from 'crypto'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 
@@ -17,6 +18,31 @@ export async function POST(request: Request) {
   const payload = await getPayload({ config: configPromise })
 
   try {
+    const resetUser = await payload.find({
+      collection: 'previousUsers',
+      where: {
+        email: {
+          equals: data.email,
+        },
+        reset: {
+          equals: false,
+        },
+      },
+    })
+
+    if (resetUser.totalDocs > 0) {
+      const resetUUID = randomUUID()
+      await payload.update({
+        collection: 'previousUsers',
+        id: resetUser.docs[0].id,
+        data: {
+          resetUuid: resetUUID,
+        },
+      })
+
+      return NextResponse.json({ message: 'Reset email sent' }, { status: 200 })
+    }
+
     const result = await payload.login({
       collection: 'users',
       data: {
