@@ -227,6 +227,7 @@ export interface Booking {
   id: number;
   productType: string;
   userId: number;
+  publicId: string;
   orderId?: number | null;
   firstName: string;
   lastName: string;
@@ -1159,6 +1160,7 @@ export interface AdminsSelect<T extends boolean = true> {
 export interface BookingsSelect<T extends boolean = true> {
   productType?: T;
   userId?: T;
+  publicId?: T;
   orderId?: T;
   firstName?: T;
   lastName?: T;
