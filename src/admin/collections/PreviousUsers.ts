@@ -6,6 +6,9 @@ export const PreviousUsers: CollectionConfig = {
   defaultSort: 'email',
   admin: {
     defaultColumns: ['fullName', 'email', 'role'],
+    components: {
+      beforeListTable: ['@/admin/components/ImportExport/import#ImportCSVButton'],
+    },
   },
   hooks: {},
   fields: [

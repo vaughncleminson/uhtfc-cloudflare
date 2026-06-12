@@ -7,7 +7,6 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { GetPlatformProxyOptions } from 'wrangler'
 
-import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import { migrations } from 'migrations'
 import { Admins } from './admin/collections/Admins'
 import { BookingHistory } from './admin/collections/BookingHistory'
@@ -165,22 +164,6 @@ export default buildConfig({
     prodMigrations: migrations,
   }),
   plugins: [
-    importExportPlugin({
-      debug: true,
-      collections: [
-        {
-          slug: 'previousUsers',
-        },
-      ],
-      overrideImportCollection: ({ collection }) => ({
-        ...collection,
-        admin: {
-          ...collection.admin,
-          group: 'Data Management',
-        },
-      }),
-    }),
-
     r2Storage({
       bucket: cloudflare.env.R2 as any,
       collections: { media: true },
