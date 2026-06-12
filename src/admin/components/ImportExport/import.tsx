@@ -2,6 +2,7 @@
 import { EmailSubscriber } from '@/payload-types'
 
 import React, { useState } from 'react'
+import './index.scss'
 
 export function ImportCSVButton(props: any) {
   console.log(props)
@@ -9,20 +10,25 @@ export function ImportCSVButton(props: any) {
 
   const createSubscriber = async (data: EmailSubscriber): Promise<Response | null> => {
     try {
-      const req = fetch(`${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/${props.collectionSlug}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
+      const req = await fetch(
+        `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/${props.collectionSlug}`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      })
+      )
+      const d = (await req.json()) as any
+      if (d.errors[0]) {
+        alert(d.errors[0].message)
+        window.location.replace(`/admin/collections/${props.collectionSlug}`)
+      }
       return req
-      // const data = await req.json()
     } catch (err) {
-      alert('Import failed')
-      window.location.reload()
-      return null
+      window.location.replace(`/admin/collections/${props.collectionSlug}`)
     }
   }
 
@@ -46,15 +52,14 @@ export function ImportCSVButton(props: any) {
       formattedData.forEach((row: { [k: string]: any }) => {
         row.unsubscribeToken = crypto.randomUUID()
         row.subscribed = true
+        console.log(row)
         subscribers.push(createSubscriber(row as EmailSubscriber))
       })
 
       const result = await Promise.all(subscribers)
 
       if (result) {
-        window.location.reload()
-      } else {
-        alert('Import failed')
+        window.location.replace(`/admin/collections/${props.collectionSlug}`)
       }
 
       setLoading(false)
@@ -64,9 +69,9 @@ export function ImportCSVButton(props: any) {
 
   return (
     <div>
-      <button>
+      <button id="import-button">
         Import CSV
-        <input type="file" accept=".csv" onChange={handleFileUpload} />
+        <input id="csv-input" type="file" accept=".csv" onChange={handleFileUpload} />
       </button>
       {loading && <p>Uploading...</p>}
     </div>
