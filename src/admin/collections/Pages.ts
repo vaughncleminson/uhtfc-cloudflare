@@ -18,6 +18,7 @@ import { Onboard } from '../blocks/Onboard'
 import { Order } from '../blocks/Order'
 import { Payments } from '../blocks/Payments'
 import { RodFeesMembership } from '../blocks/RodFeesMembership'
+import { UserProfile } from '../blocks/UserProfile'
 import { generatePreviewPath } from '../utils/generatePreviewPath'
 import { populatePublishedAt } from './hooks/populatePublishedAt'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
@@ -93,6 +94,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 CatchReturns,
                 Payments,
                 Onboard,
+                UserProfile,
               ],
               required: true,
             },

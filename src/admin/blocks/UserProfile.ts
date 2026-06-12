@@ -1,13 +1,13 @@
 import { Block } from 'payload'
 
-export const Payments: Block = {
-  slug: 'payments',
-  interfaceName: 'PaymentsBlock',
+export const UserProfile: Block = {
+  slug: 'userProfile',
+  interfaceName: 'UserProfileBlock',
   fields: [
     {
+      type: 'upload',
       name: 'image',
       label: 'Image',
-      type: 'upload',
       relationTo: 'media',
     },
   ],

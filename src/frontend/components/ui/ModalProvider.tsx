@@ -13,6 +13,8 @@ type ConfirmOptions = {
 
   cancelUrl?: string
   confirmUrl?: string
+
+  showCancelButton?: boolean
 }
 
 type ConfirmContextType = {
@@ -28,7 +30,10 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
   const [resolver, setResolver] = useState<((value: boolean) => void) | null>(null)
 
   const confirm = (options: ConfirmOptions) => {
-    setOptions(options)
+    setOptions({
+      showCancelButton: true,
+      ...options,
+    })
 
     return new Promise<boolean>((resolve) => {
       setResolver(() => resolve)
@@ -63,19 +68,21 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 
       {options && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-slate-700 p-6 rounded-md max-w-md w-full">
-            <h2 className="text-lg text-white font-semibold uppercase">
+          <div className="w-full max-w-md rounded-md bg-slate-700 p-6">
+            <h2 className="text-lg font-semibold uppercase text-white">
               {options.title ?? 'Confirm'}
             </h2>
 
-            <p className="mt-3 text-white text-center">{options.message}</p>
+            <p className="mt-3 text-center text-white">{options.message}</p>
 
-            <div className="flex gap-3 mt-6">
-              <Button
-                className="w-full bg-slate-800 hover:bg-slate-900"
-                title={options.cancelTitle ?? 'Cancel'}
-                onClick={handleCancel}
-              />
+            <div className="mt-6 flex gap-3">
+              {options.showCancelButton && (
+                <Button
+                  className="w-full bg-slate-800 hover:bg-slate-900"
+                  title={options.cancelTitle ?? 'Cancel'}
+                  onClick={handleCancel}
+                />
+              )}
 
               <Button
                 className="w-full"

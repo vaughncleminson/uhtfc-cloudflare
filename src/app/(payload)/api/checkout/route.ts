@@ -213,6 +213,7 @@ async function createYocoCheckout(order: Order): Promise<CheckoutResponse | null
         date: dayjs().toISOString(),
         firstName: order.firstName,
         lastName: order.lastName,
+        userId: order.userId,
         summary: order.lineItems
           .map((item) => `${item.displayName} - ${item.description}`)
           .join(', '),

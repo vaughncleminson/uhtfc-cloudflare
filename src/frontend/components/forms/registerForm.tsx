@@ -1,7 +1,8 @@
 'use client'
 
 import { registerSchema } from '@/frontend/schemas/authSchema'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { User } from '@/payload-types'
+import { useSearchParams } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 import Button from '../ui/Button'
 import { useConfirm } from '../ui/ModalProvider'
@@ -9,6 +10,7 @@ import { useConfirm } from '../ui/ModalProvider'
 type RegisterFormProps = {
   setAuthType?: (authType: string) => void
   submitTitle?: string
+  user?: User
 }
 
 export default function RegisterForm(props: RegisterFormProps) {
@@ -20,25 +22,23 @@ export default function RegisterForm(props: RegisterFormProps) {
   const confirm = useConfirm()
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: email || '',
-    mobileNumber: '',
-    idNumber: '',
-    physicalAddress: '',
+    firstName: props.user?.firstName || '',
+    lastName: props.user?.lastName || '',
+    email: props.user?.email || email || '',
+    mobileNumber: props.user?.mobileNumber || '',
+    idNumber: props.user?.idNumber || '',
+    physicalAddress: props.user?.physicalAddress || '',
     password: '',
     confirmPassword: '',
     vehicles: [
       {
-        vehicleModel: '',
-        vehicleRegistration: '',
-        vehicleColour: '',
+        vehicleModel: props.user?.vehicles?.[0]?.vehicleModel || '',
+        vehicleRegistration: props.user?.vehicles?.[0]?.vehicleRegistration || '',
+        vehicleColour: props.user?.vehicles?.[0]?.vehicleColour || '',
       },
     ],
     uuid: uuid || '',
   })
-
-  const router = useRouter()
 
   const updateField = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -76,18 +76,31 @@ export default function RegisterForm(props: RegisterFormProps) {
       result.error.errors.forEach((err) => {
         fieldErrors[err.path.join('.')] = err.message
       })
+      if (props.user) {
+        if (formData.password || formData.confirmPassword) {
+          setErrors(fieldErrors)
 
-      setErrors(fieldErrors)
-      return
+          return
+        }
+      } else {
+        setErrors(fieldErrors)
+
+        return
+      }
     }
 
     setErrors({})
 
     try {
       setLoading(true)
+      let path = 'register'
+      if (props.user) {
+        path = 'update-user'
+      }
 
-      const response = await fetch('/api/register', {
+      const response = await fetch(`/api/${path}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -101,17 +114,24 @@ export default function RegisterForm(props: RegisterFormProps) {
         const confirmed = await confirm({
           title: 'Registration successful',
           message: 'Please login to continue.',
+          showCancelButton: false,
           confirmTitle: 'LOGIN',
-          cancelTitle: 'CLOSE',
         })
         if (!confirmed) return
-      }
-      if (result.message === 'Onboarding Successful') {
+      } else if (result.message === 'Onboarding Successful') {
         const confirmed = await confirm({
           title: 'Details updated successfully',
           message: 'Please login to continue.',
+          showCancelButton: false,
           confirmTitle: 'LOGIN',
-          cancelTitle: 'CLOSE',
+        })
+        if (!confirmed) return
+      } else if (result.message === 'Profile Update Successful') {
+        const confirmed = await confirm({
+          title: 'SUCCESS',
+          message: 'Details updated successfully.',
+          showCancelButton: false,
+          confirmTitle: 'OK',
         })
         if (!confirmed) return
       } else {
@@ -274,24 +294,24 @@ export default function RegisterForm(props: RegisterFormProps) {
       </div>
 
       <label className="label">
-        PASSWORD
+        {`  ${!props.user ? 'PASSWORD ' : 'NEW PASSWORD (only modify if you want to change it) '}`}
         {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
       </label>
       <input
         className="input"
-        placeholder="Password"
+        placeholder={`${props.user ? 'New ' : ''}Password`}
         type="password"
         value={formData.password}
         onChange={(e) => updateField('password', e.target.value)}
       />
 
       <label className="label">
-        CONFIRM PASSWORD
+        {`  ${!props.user ? 'CONFIRM PASSWORD ' : 'NEW CONFIRM PASSWORD (only modify if you want to change it) '}`}
         {errors.confirmPassword && <p className="text-red-500 text-xs">{errors.confirmPassword}</p>}
       </label>
       <input
         className="input"
-        placeholder="Confirm password"
+        placeholder={`${props.user ? 'New ' : ''}Confirm password`}
         type="password"
         value={formData.confirmPassword}
         onChange={(e) => updateField('confirmPassword', e.target.value)}
