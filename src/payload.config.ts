@@ -1,5 +1,6 @@
 import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite'
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { r2Storage } from '@payloadcms/storage-r2'
 import fs from 'fs'
@@ -167,6 +168,16 @@ export default buildConfig({
     r2Storage({
       bucket: cloudflare.env.R2 as any,
       collections: { media: true },
+    }),
+    importExportPlugin({
+      collections: [{ slug: 'previousUsers' }],
+      overrideImportCollection: ({ collection }) => ({
+        ...collection,
+        admin: {
+          ...collection.admin,
+          group: 'Data Management',
+        },
+      }),
     }),
   ],
   jobs,
