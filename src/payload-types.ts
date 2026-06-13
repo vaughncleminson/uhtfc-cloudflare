@@ -420,7 +420,9 @@ export interface BookingHistory {
 export interface CatchReturn {
   id: number;
   booking?: (number | null) | Booking;
+  returnCompleted: boolean;
   nilReturn?: boolean | null;
+  publicId: string;
   returns?:
     | {
         species: 'rainbow' | 'brown' | 'bass';
@@ -1152,7 +1154,9 @@ export interface BookingHistorySelect<T extends boolean = true> {
  */
 export interface CatchReturnsSelect<T extends boolean = true> {
   booking?: T;
+  returnCompleted?: T;
   nilReturn?: T;
+  publicId?: T;
   returns?:
     | T
     | {
