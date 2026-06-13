@@ -88,14 +88,14 @@ export default function CatchReturnsForm() {
               returns:
                 data.catchReturn?.returns && data.catchReturn.returns.length > 0
                   ? data.catchReturn.returns
-                      .filter((item) => (item.quantity ?? 0) > 0)
+                      .filter((item) => (item.quantity ?? 0) > 0 && (item.length ?? 0) > 0)
                       .map((item) => ({
-                        species: item.species || '',
+                        species: item.species || 'rainbow',
                         length: item.length ?? 0,
                         released: item.released ?? false,
                         quantity: item.quantity ?? 0,
                       }))
-                  : prev.returns,
+                  : [],
             }))
           }
         } else {
@@ -119,14 +119,7 @@ export default function CatchReturnsForm() {
       averageLength: 0,
       largeFish: 0,
     },
-    returns: [
-      {
-        species: '',
-        length: 0,
-        released: false,
-        quantity: 0,
-      },
-    ],
+    returns: [],
   })
 
   // return the number of anglers in the booking, or 0 if no booking is present
@@ -177,7 +170,7 @@ export default function CatchReturnsForm() {
     setErrors({})
     try {
       setLoading(true)
-      const response = await fetch(`/api/${path}`, {
+      const response = await fetch('/api/catch-return', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -207,12 +200,17 @@ export default function CatchReturnsForm() {
     }
   }
 
+  const bFormDisabled = loading || (catchReturn?.returnCompleted ?? false)
+
   if (!catchReturn) {
     return <div className="p-10 bg-white rounded shadow">Loading catch return details...</div>
   }
 
   return (
-    <form className="flex flex-col bg-white p-10 pt-8 border rounded shadow-lg w-full">
+    <form
+      onSubmit={submit}
+      className="flex flex-col bg-white p-10 pt-8 border rounded shadow-lg w-full"
+    >
       <div className="flex justify-between items-center">
         <div></div>
         <div>{booking ? dayjs(new Date()).format('DD-MM-YYYY') : ''}</div>
@@ -229,6 +227,7 @@ export default function CatchReturnsForm() {
             <div className="w-44">Date</div>
             <div className="w-full">Details</div>
             <div className=" w-36">Rods</div>
+            <div className=" w-36">Completed</div>
           </div>
           <div className="flex w-full justify-between items-center border-b py-2 px-5 rounded-sm text-sm">
             <div className="w-44 truncate text-nowrap">
@@ -238,6 +237,7 @@ export default function CatchReturnsForm() {
               {booking ? booking.locationName : ''} ({returnCatchReturnBookingAnglerCountByRole()})
             </div>
             <div className=" w-36">{returnCatchReturnBookingAnglerCount()}</div>
+            <div className=" w-36">{bFormDisabled ? 'Yes' : 'No'}</div>
           </div>
         </div>
 
@@ -250,7 +250,7 @@ export default function CatchReturnsForm() {
                 <div className="w-full">Species</div>
                 <div className="w-full">length</div>
                 <div className="w-full">Released</div>
-                <div className="w-28"></div>
+                {!bFormDisabled && <div className="w-28"></div>}
               </div>
               {formData.returns.length > 0 ? (
                 formData.returns.map((returnItem, index) => (
@@ -263,19 +263,21 @@ export default function CatchReturnsForm() {
                     <div className="w-full truncate text-nowrap">{returnItem.species}</div>
                     <div className=" w-full">{returnItem.length}</div>
                     <div className=" w-full">{returnItem.released ? 'Yes' : 'No'}</div>
-                    <div className=" w-28 text-white p-1 text-center rounded-sm">
-                      <div
-                        onClick={() => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            returns: prev.returns.filter((_, i) => i !== index),
-                          }))
-                        }}
-                        className="w-5 h-5 flex justify-center items-center rounded-sm bg-slate-200"
-                      >
-                        <FontAwesomeIcon className="text-slate-950" icon={faTimes} />
+                    {!bFormDisabled && (
+                      <div className=" w-28 text-white p-1 text-center rounded-sm">
+                        <div
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              returns: prev.returns.filter((_, i) => i !== index),
+                            }))
+                          }}
+                          className="w-5 h-5 flex justify-center items-center rounded-sm bg-slate-200"
+                        >
+                          <FontAwesomeIcon className="text-slate-950" icon={faTimes} />
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))
               ) : (
@@ -284,101 +286,113 @@ export default function CatchReturnsForm() {
                 </div>
               )}
             </div>
-            <div className="w-full" id="newCatchReturnRow">
-              <label className="label">Quantity</label>
-              <input
-                placeholder="Qty"
-                type="number"
-                className="input h-10"
-                value={newCatchReturnRow.quantity > 0 ? newCatchReturnRow.quantity : ''}
-                onChange={(e) =>
-                  setNewCatchReturnRow({
-                    ...newCatchReturnRow,
-                    quantity: parseInt(e.target.value, 10),
-                  })
-                }
-              />
-            </div>
-            <div className="w-full">
-              <label className="label">Species</label>
-              <select
-                className="input"
-                value={newCatchReturnRow.species}
-                onChange={(e) =>
-                  setNewCatchReturnRow({
-                    ...newCatchReturnRow,
-                    species: e.target.value,
-                  })
-                }
-              >
-                <option value="rainbow">Rainbow</option>
-                <option value="brown">Brown</option>
-                <option value="bass">Bass</option>
-              </select>
-            </div>
-            <div className="w-full">
-              <label className="label">Length</label>
-              <input
-                placeholder="Length (cm)"
-                type="number"
-                className="input"
-                value={newCatchReturnRow.length > 0 ? newCatchReturnRow.length : ''}
-                onChange={(e) =>
-                  setNewCatchReturnRow({
-                    ...newCatchReturnRow,
-                    length: parseInt(e.target.value, 10),
-                  })
-                }
-              />
-            </div>
-            <div className="w-full">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={newCatchReturnRow.released}
-                  onChange={(e) =>
-                    setNewCatchReturnRow({
-                      ...newCatchReturnRow,
-                      released: e.target.checked,
-                    })
-                  }
-                />{' '}
-                Released
-              </label>
-            </div>
-            <div className="flex w-full gap-2">
-              <Button
-                onClick={() => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    returns:
-                      newCatchReturnRow.quantity > 0
-                        ? [...prev.returns, newCatchReturnRow]
-                        : prev.returns,
-                  }))
-                  setNewCatchReturnRow({
-                    quantity: 0,
-                    species: '',
-                    length: 0,
-                    released: false,
-                  })
-                }}
-                className="w-full  bg-slate-800 hover:bg-slate-600"
-                title="Add To List"
-                type="button"
-              />
-            </div>
-            <div className="flex w-full gap-2">
-              {errors.submit && <p className="text-red-500 text-xs">{errors.submit}</p>}
-            </div>
-            <div className="flex w-full gap-2">
-              <Button className="w-1/2" title="Submit" type="submit" loading={loading} />
-              <Button
-                className="w-1/2 bg-slate-800 hover:bg-slate-600"
-                title="Nil Return"
-                loading={loading}
-              />
-            </div>
+            {!bFormDisabled && (
+              <span id="spanUpdateCatchReturn">
+                <div className="w-full">
+                  <label className="label">Quantity</label>
+                  <input
+                    placeholder="Qty"
+                    type="number"
+                    className="input h-10"
+                    value={newCatchReturnRow.quantity > 0 ? newCatchReturnRow.quantity : ''}
+                    onChange={(e) =>
+                      setNewCatchReturnRow({
+                        ...newCatchReturnRow,
+                        quantity: parseInt(e.target.value, 10),
+                      })
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="label">Species</label>
+                  <select
+                    className="input"
+                    value={newCatchReturnRow.species}
+                    onChange={(e) =>
+                      setNewCatchReturnRow({
+                        ...newCatchReturnRow,
+                        species: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="rainbow">Rainbow</option>
+                    <option value="brown">Brown</option>
+                    <option value="bass">Bass</option>
+                  </select>
+                </div>
+                <div className="w-full">
+                  <label className="label">Length</label>
+                  <input
+                    placeholder="Length (cm)"
+                    type="number"
+                    className="input"
+                    value={newCatchReturnRow.length > 0 ? newCatchReturnRow.length : ''}
+                    onChange={(e) =>
+                      setNewCatchReturnRow({
+                        ...newCatchReturnRow,
+                        length: parseInt(e.target.value, 10),
+                      })
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={newCatchReturnRow.released}
+                      onChange={(e) =>
+                        setNewCatchReturnRow({
+                          ...newCatchReturnRow,
+                          released: e.target.checked,
+                        })
+                      }
+                    />{' '}
+                    Released
+                  </label>
+                </div>
+                <div className="flex w-full gap-2">
+                  <Button
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        returns:
+                          newCatchReturnRow.quantity > 0 && newCatchReturnRow.length > 0
+                            ? [...prev.returns, newCatchReturnRow]
+                            : prev.returns,
+                      }))
+                      setNewCatchReturnRow({
+                        quantity: 0,
+                        species: '',
+                        length: 0,
+                        released: false,
+                      })
+                    }}
+                    className="w-full  bg-slate-800 hover:bg-slate-600"
+                    title="Add To List"
+                    type="button"
+                  />
+                </div>
+                <div className="flex w-full gap-2">
+                  {errors.submit && <p className="text-red-500 text-xs">{errors.submit}</p>}
+                </div>
+                <div className="flex w-full gap-2">
+                  <Button className="w-1/2" title="Submit" type="submit" loading={loading} />
+                  <Button
+                    className="w-1/2 bg-slate-800 hover:bg-slate-600"
+                    title="Nil Return"
+                    loading={loading}
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        nilReturn: true,
+                        returns: [],
+                      }))
+                    }}
+                  />
+                </div>
+              </span>
+            )}
           </div>
         </div>
       </div>

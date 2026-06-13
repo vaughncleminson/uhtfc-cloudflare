@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const catchReturnReturnSchema = z.object({
-  species: z.string(),
+  species: z.enum(['rainbow', 'brown', 'bass']),
   length: z.number(),
   released: z.boolean(),
   quantity: z.number(),
