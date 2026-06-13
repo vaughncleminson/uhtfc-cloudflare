@@ -1,6 +1,9 @@
 import type { CollectionConfig } from 'payload'
 import { tr } from 'payload/i18n/tr'
 
+const isValidPublicId = (value: unknown): value is string =>
+  typeof value === 'string' && value.trim().length > 0
+
 export const CatchReturns: CollectionConfig = {
   slug: 'catchReturns',
   admin: {},
@@ -15,9 +18,47 @@ export const CatchReturns: CollectionConfig = {
     },
     {
       type: 'checkbox',
+      name: 'returnCompleted',
+      label: 'Return Completed',
+      required: true,
+      defaultValue: false,
+    },
+    {
+      type: 'checkbox',
       name: 'nilReturn',
       label: 'Nil Return',
       defaultValue: false,
+    },
+    {
+      type: 'text',
+      name: 'publicId',
+      label: 'Public ID',
+      required: true,
+      unique: true,
+      access: {
+        update: () => false,
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value, operation }) => {
+            if (operation === 'create' && !isValidPublicId(value)) {
+              return crypto.randomUUID()
+            }
+
+            return value
+          },
+        ],
+      },
+      validate: (value: unknown) => {
+        if (!isValidPublicId(value)) {
+          return 'Public ID is required and cannot be empty.'
+        }
+
+        return true
+      },
+      admin: {
+        readOnly: true,
+      },
     },
     {
       type: 'array',

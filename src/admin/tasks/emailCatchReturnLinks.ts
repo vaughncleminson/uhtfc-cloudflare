@@ -8,7 +8,9 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
   // Bookings.first_name, Bookings.email, Bookings.date fields will be used in the email content
   // In the body of the email we will include a hyperlink to "Submit Catch Return" which will link to a page on the frontend
   // where the user can submit their catch return details
-  // The hyperlink will include a query parameter with the booking ID so that we can associate the catch return with the correct booking
+  // At the time the email is sent, a new record will be created in the CatchReturns collection
+  // with the booking relationship field populated and the publicId field populated with a unique value
+  // The hyperlink will include a query parameter with the CatchReturns publicId so that we can associate the catch return with the correct booking
   slug: 'emailCatchReturnLinks',
 
   // This automatically queues the task every day at 8 AM
@@ -57,10 +59,25 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
     const catchReturnsToSend = bookingsToday.docs.length
 
     for (const booking of bookingsToday.docs) {
+      //create a new record in the CatchReturns collection with the booking relationship field populated and the publicId field populated
+      const newCatchReturn = await req.payload.create({
+        collection: 'catchReturns',
+        data: {
+          booking: booking.id,
+          returnCompleted: false,
+          publicId: crypto.randomUUID(),
+          stats: {
+            total: 0,
+            averageLength: 0,
+            largeFish: 0,
+          },
+        },
+      })
+      //send an email to the user with a link to submit their catch return details
       await req.payload.sendEmail({
         to: booking.email,
         subject: `Your ${returnBookingLocation(booking)} Catch Return for ${returnBookingDate(booking)}`,
-        html: generateCatchReturnHTML(booking),
+        html: generateCatchReturnHTML(booking, newCatchReturn.publicId),
       })
     }
 
@@ -81,9 +98,9 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
   },
 }
 
-function generateCatchReturnHTML(booking: PayloadBooking) {
+function generateCatchReturnHTML(booking: PayloadBooking, catchReturnPublicId: string): string {
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  const catchReturnURL = `${baseURL}/catch-return?publicId=${booking.publicId}`
+  const catchReturnURL = `${baseURL}/catch-return?publicId=${catchReturnPublicId}`
   const locationLabel = returnBookingLocation(booking)
   const bookingDate = returnBookingDate(booking)
 
