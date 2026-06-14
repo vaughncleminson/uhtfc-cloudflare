@@ -385,6 +385,10 @@ const sendBookingEmails = async (order: Order) => {
         <ul>
           <li>Name: ${booking.firstName} ${booking.lastName}</li>
           <li>Email: ${booking.email}</li>
+          <li>Club Membership: ${booking.role}</li>
+          <li>Vehicle Model: ${booking.vehicleModel}</li>
+          <li>Vehicle Colour: ${booking.vehicleColour}</li>
+          <li>Vehicle Registration: ${booking.vehicleRegistration}</li>          
           <li>Anglers: ${booking.anglers.map((a) => a.fullName).join(', ')}</li>
         </ul>        
         <p>Best regards,</p>
