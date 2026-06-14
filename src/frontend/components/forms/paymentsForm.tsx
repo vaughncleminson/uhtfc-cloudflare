@@ -3,13 +3,11 @@ import { Payment, User } from '@/payload-types'
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../ui/AuthProvider'
-import { useConfirm } from '../ui/ModalProvider'
 
 export default function PaymentsForm() {
   const [loading, setLoading] = useState(true)
   const { user } = useAuth() as { user: User | null }
   const [payments, setPayments] = useState<Payment[]>([])
-  const confirm = useConfirm()
 
   useEffect(() => {
     const loadPayments = async () => {
