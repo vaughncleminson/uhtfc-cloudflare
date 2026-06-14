@@ -82,6 +82,22 @@ export const Bookings: CollectionConfig = {
       required: true,
     },
     {
+      type: 'text',
+      name: 'vehicleModel',
+      label: 'Model',
+    },
+    {
+      type: 'text',
+      name: 'vehicleRegistration',
+      label: 'Registration',
+    },
+    {
+      type: 'text',
+      name: 'vehicleColour',
+      label: 'Colour',
+    },
+
+    {
       type: 'relationship',
       name: 'location',
       label: 'Location',

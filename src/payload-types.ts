@@ -233,6 +233,9 @@ export interface Booking {
   lastName: string;
   role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
   email: string;
+  vehicleModel?: string | null;
+  vehicleRegistration?: string | null;
+  vehicleColour?: string | null;
   location?: (number | null) | Location;
   locationName?: string | null;
   date?: string | null;
@@ -1179,6 +1182,9 @@ export interface BookingsSelect<T extends boolean = true> {
   lastName?: T;
   role?: T;
   email?: T;
+  vehicleModel?: T;
+  vehicleRegistration?: T;
+  vehicleColour?: T;
   location?: T;
   locationName?: T;
   date?: T;

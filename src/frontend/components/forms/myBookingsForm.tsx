@@ -2,10 +2,9 @@
 import { Booking } from '@/frontend/schemas/bookingSchema'
 import { User } from '@/payload-types'
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-import { useConfirm } from '../ui/ModalProvider'
 import { useAuth } from '../ui/AuthProvider'
+import { useConfirm } from '../ui/ModalProvider'
 
 export default function MyBookingsForm() {
   const [loading, setLoading] = useState(true)
@@ -102,7 +101,13 @@ export default function MyBookingsForm() {
                     {dayjs(booking.date).format('DD-MM-YYYY')}
                   </div>
                   <div className="w-full truncate text-nowrap">
-                    {booking.locationName} - {booking.firstName}
+                    <span>{booking.locationName} - </span>
+                    {booking.anglers.map((angler, idx) => (
+                      <span key={idx}>
+                        {angler.firstName} {angler.lastName} ({angler.role}){' '}
+                        {idx < booking.anglers.length - 1 && ', '}
+                      </span>
+                    ))}
                   </div>
                   <div className=" w-36">{booking.lineItems.length}</div>
                   <div

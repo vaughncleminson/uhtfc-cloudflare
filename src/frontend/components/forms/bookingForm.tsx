@@ -2,7 +2,6 @@
 
 import { validateBookingDates, ValidateBookingProps } from '@/admin/utils/validateBookingDates'
 import { orderAtom } from '@/frontend/atoms/orderAtom'
-import { userAtom } from '@/frontend/atoms/userAtom'
 import { Booking, bookingSchema } from '@/frontend/schemas/bookingSchema'
 import { LineItem } from '@/frontend/schemas/lineItemSchema'
 import { Membership } from '@/frontend/schemas/membershipSchema'
@@ -17,6 +16,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { useAuth } from '../ui/AuthProvider'
 import Button from '../ui/Button'
 import { useToast } from '../ui/ToastProvider'
 dayjs.extend(isBetween)
@@ -45,6 +45,9 @@ type Angler = {
   lastName?: string | null | undefined
   email?: string | null | undefined
   role?: 'non-member' | 'member' | 'member-guest' | 'admin' | null | undefined
+  vehicleModel?: string | null | undefined
+  vehicleRegistration?: string | null | undefined
+  vehicleColour?: string | null | undefined
 }
 
 export default function BookingForm(props: BookingFormProps) {
@@ -52,7 +55,7 @@ export default function BookingForm(props: BookingFormProps) {
   const toast = useToast()
   const selectedLocationId = parseInt(searchParams.get('location')!)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [user, setUser] = useAtom<User | null>(userAtom)
+  // const [user, setUser] = useAtom<User | null>(userAtom)
   const [order, setOrder] = useAtom<Order | null>(orderAtom)
   const [loading, setLoading] = useState(false)
   const [booking, setBooking] = useState<Booking>()
@@ -61,12 +64,16 @@ export default function BookingForm(props: BookingFormProps) {
   const [selectedLocation, setSelectedLocation] = useState<LocationOption | null>(null)
   const locationOptions = useRef<LocationOption[]>([])
   const [anglers, setAnglers] = useState<Angler[]>([])
+  const [anglersNames, setAnglersNames] = useState<{ firstName: string; lastName: string }[]>([
+    { firstName: '', lastName: '' },
+  ])
   const [angler, setAngler] = useState<Angler>()
   const hasShown = useRef(false)
   const [mainContact, setMainContact] = useState<Angler>()
   const [acceptTerms, setAcceptTerms] = useState(false)
   const router = useRouter()
   const [cartBookings, setCartBookings] = useState<BookingHistory[]>([])
+  const { user } = useAuth() as { user: User }
 
   useEffect(() => {
     if (user && props.locations) {
@@ -79,6 +86,9 @@ export default function BookingForm(props: BookingFormProps) {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        vehicleModel: user.vehicles[0].vehicleModel,
+        vehicleRegistration: user.vehicles[0].vehicleRegistration,
+        vehicleColour: user.vehicles[0].vehicleColour,
         role: user.role,
       }
       setMainContact(mainContact)
@@ -87,11 +97,6 @@ export default function BookingForm(props: BookingFormProps) {
       }
       setAnglers(initAnglers)
       if (props.locations) {
-        console.log('selectedDate: ' + selectedDate)
-        console.log('locations: ', props.locations)
-        console.log('user: ', user)
-        console.log('bookingSettings: ', props.bookingSettings)
-        console.log('selectedLocationId: ', selectedLocationId)
         const locationOps = validateBookingDates({
           date: selectedDate,
           locations: props.locations,
@@ -144,17 +149,33 @@ export default function BookingForm(props: BookingFormProps) {
   }
 
   const submit = async () => {
+    let updatedAnglers: Angler[] = anglers
+    if (anglersNames.length > 0) {
+      updatedAnglers = anglers.map((angler, index) => ({
+        ...angler,
+        firstName: index === 0 ? angler.firstName : anglersNames[index]?.firstName || '',
+        lastName: index === 0 ? angler.lastName : anglersNames[index]?.lastName || '',
+        fullName:
+          index === 0
+            ? angler.fullName
+            : `${anglersNames[index]?.firstName || ''} ${anglersNames[index]?.lastName || ''}`,
+      }))
+    }
+
     const bookingObject: Booking = {
       productType: 'booking',
       userId: mainContact!.userId || 0,
       firstName: mainContact!.firstName || '',
       lastName: mainContact!.lastName || '',
       email: mainContact!.email || '',
+      vehicleModel: mainContact!.vehicleModel || '',
+      vehicleRegistration: mainContact!.vehicleRegistration || '',
+      vehicleColour: mainContact!.vehicleColour || '',
       role: mainContact!.role || 'non-member',
       location: selectedLocation?.locationId || -1,
       locationName: selectedLocation?.locationTitle || '',
       date: selectedDate.toISOString(),
-      anglers: anglers,
+      anglers: updatedAnglers,
       totalAmount: 0,
       lineItems: [
         {
@@ -311,6 +332,7 @@ export default function BookingForm(props: BookingFormProps) {
 
   const removeAngler = (index: number) => {
     setAnglers((prev) => prev.filter((_, i) => i !== index))
+    setAnglersNames((prev) => prev.filter((_, i) => i !== index))
   }
 
   const locationOptionText = (location: LocationOption) => {
@@ -487,7 +509,55 @@ export default function BookingForm(props: BookingFormProps) {
                   <div key={index} className="w-full px-4 py-3">
                     {angler.firstName &&
                       `${index + 1}. ${angler.firstName ?? ''} ${angler.lastName ?? ''} ${index > 0 ? '' : `(${angler.role})`}`}
-                    {index > 0 && <>{`${index + 1}. ${angler.role}`}</>}
+                    {index > 0 && (
+                      <div className="flex gap-2 items-center">
+                        <div className="w-24">{`${index + 1}. ${angler.role}`}</div>
+                        <input
+                          className=" border-0 bg-slate-900 w-40 h-6 px-2"
+                          placeholder="Firstname"
+                          type="text"
+                          value={anglersNames[index]?.firstName || ''}
+                          onChange={(e) =>
+                            setAnglersNames((prev) => {
+                              const updated = [...prev]
+
+                              if (!updated[index]) {
+                                updated[index] = {
+                                  firstName: '',
+                                  lastName: '',
+                                }
+                              }
+
+                              updated[index].firstName = e.target.value
+
+                              return [...updated]
+                            })
+                          }
+                        />
+                        <input
+                          className=" border-0 bg-slate-900 w-40 h-6 px-2"
+                          placeholder="Lastname"
+                          type="text"
+                          value={anglersNames[index]?.lastName || ''}
+                          onChange={(e) =>
+                            setAnglersNames((prev) => {
+                              const updated = [...prev]
+
+                              if (!updated[index]) {
+                                updated[index] = {
+                                  firstName: '',
+                                  lastName: '',
+                                }
+                              }
+
+                              updated[index].lastName = e.target.value
+
+                              return [...updated]
+                            })
+                          }
+                        />
+                      </div>
+                    )}
                   </div>
                   {user && user!.role == 'admin' && index == 0 && (
                     <div className="flex pr-5 items-center justify-end gap-2">
@@ -546,6 +616,42 @@ export default function BookingForm(props: BookingFormProps) {
                 </select>
               </div>
             )}
+          </div>
+          <label className="label">PRIMARY VEHICLE</label>
+          <div className="flex gap-2">
+            <div>
+              <input
+                className="input"
+                placeholder="MODEL"
+                type="text"
+                value={mainContact.vehicleModel || ''}
+                onChange={(e) =>
+                  setMainContact((prev) => ({ ...prev!, vehicleModel: e.target.value }))
+                }
+              />
+            </div>
+            <div>
+              <input
+                className="input"
+                placeholder="REGISTRATION"
+                type="text"
+                value={mainContact.vehicleRegistration || ''}
+                onChange={(e) =>
+                  setMainContact((prev) => ({ ...prev!, vehicleRegistration: e.target.value }))
+                }
+              />
+            </div>
+            <div>
+              <input
+                className="input"
+                placeholder="COLOUR"
+                type="text"
+                value={mainContact.vehicleColour || ''}
+                onChange={(e) =>
+                  setMainContact((prev) => ({ ...prev!, vehicleColour: e.target.value }))
+                }
+              />
+            </div>
           </div>
         </>
       )}
