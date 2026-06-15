@@ -64,9 +64,6 @@ export default function BookingForm(props: BookingFormProps) {
   const [selectedLocation, setSelectedLocation] = useState<LocationOption | null>(null)
   const locationOptions = useRef<LocationOption[]>([])
   const [anglers, setAnglers] = useState<Angler[]>([])
-  const [anglersNames, setAnglersNames] = useState<{ firstName: string; lastName: string }[]>([
-    { firstName: '', lastName: '' },
-  ])
   const [angler, setAngler] = useState<Angler>()
   const hasShown = useRef(false)
   const [mainContact, setMainContact] = useState<Angler>()
@@ -149,19 +146,14 @@ export default function BookingForm(props: BookingFormProps) {
   }
 
   const submit = async () => {
-    let updatedAnglers: Angler[] = anglers
-    if (anglersNames.length > 0) {
-      updatedAnglers = anglers.map((angler, index) => ({
-        ...angler,
-        firstName: index === 0 ? angler.firstName : anglersNames[index]?.firstName || '',
-        lastName: index === 0 ? angler.lastName : anglersNames[index]?.lastName || '',
-        fullName:
-          index === 0
-            ? angler.fullName
-            : `${anglersNames[index]?.firstName || ''} ${anglersNames[index]?.lastName || ''}`,
-      }))
+    if (anglers.length > 1) {
+      for (let i = 0; i < anglers.length; i++) {
+        if (!anglers[i].firstName || !anglers[i].lastName || !anglers[i].role) {
+          toast.error(`Angler first and last name are required.`)
+          return
+        }
+      }
     }
-
     const bookingObject: Booking = {
       productType: 'booking',
       userId: mainContact!.userId || 0,
@@ -175,7 +167,7 @@ export default function BookingForm(props: BookingFormProps) {
       location: selectedLocation?.locationId || -1,
       locationName: selectedLocation?.locationTitle || '',
       date: selectedDate.toISOString(),
-      anglers: updatedAnglers,
+      anglers: anglers,
       totalAmount: 0,
       lineItems: [
         {
@@ -332,7 +324,6 @@ export default function BookingForm(props: BookingFormProps) {
 
   const removeAngler = (index: number) => {
     setAnglers((prev) => prev.filter((_, i) => i !== index))
-    setAnglersNames((prev) => prev.filter((_, i) => i !== index))
   }
 
   const locationOptionText = (location: LocationOption) => {
@@ -508,7 +499,8 @@ export default function BookingForm(props: BookingFormProps) {
                 <div key={index} className={`flex ${index == 0 ? 'bg-slate-700 text-white' : ''}`}>
                   <div key={index} className="w-full px-4 py-3">
                     {angler.firstName &&
-                      `${index + 1}. ${angler.firstName ?? ''} ${angler.lastName ?? ''} ${index > 0 ? '' : `(${angler.role})`}`}
+                      index == 0 &&
+                      `${index + 1}. ${angler.firstName ?? ''} ${angler.lastName ?? ''} (${angler.role})`}
                     {index > 0 && (
                       <div className="flex gap-2 items-center">
                         <div className="w-24">{`${index + 1}. ${angler.role}`}</div>
@@ -516,19 +508,13 @@ export default function BookingForm(props: BookingFormProps) {
                           className=" border-0 bg-slate-900 w-40 h-6 px-2"
                           placeholder="Firstname"
                           type="text"
-                          value={anglersNames[index]?.firstName || ''}
+                          value={anglers[index]?.firstName || ''}
                           onChange={(e) =>
-                            setAnglersNames((prev) => {
+                            //set the correct index of the anglers array
+                            setAnglers((prev) => {
                               const updated = [...prev]
 
-                              if (!updated[index]) {
-                                updated[index] = {
-                                  firstName: '',
-                                  lastName: '',
-                                }
-                              }
-
-                              updated[index].firstName = e.target.value
+                              updated[index]!.firstName = e.target.value
 
                               return [...updated]
                             })
@@ -538,19 +524,13 @@ export default function BookingForm(props: BookingFormProps) {
                           className=" border-0 bg-slate-900 w-40 h-6 px-2"
                           placeholder="Lastname"
                           type="text"
-                          value={anglersNames[index]?.lastName || ''}
+                          value={anglers[index]?.lastName || ''}
                           onChange={(e) =>
-                            setAnglersNames((prev) => {
+                            //set the correct index of the anglers array
+                            setAnglers((prev) => {
                               const updated = [...prev]
 
-                              if (!updated[index]) {
-                                updated[index] = {
-                                  firstName: '',
-                                  lastName: '',
-                                }
-                              }
-
-                              updated[index].lastName = e.target.value
+                              updated[index]!.lastName = e.target.value
 
                               return [...updated]
                             })
@@ -593,6 +573,7 @@ export default function BookingForm(props: BookingFormProps) {
                         role: e.target.value as User['role'],
                       },
                     ])
+
                     setTimeout(() => {
                       e.target.value = 'add'
                     }, 100)
