@@ -9,7 +9,22 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role'],
   },
-  auth: {},
+  auth: {
+    forgotPassword: {
+      generateEmailHTML: async ({ token, user }: { token?: string; user?: any }) => {
+        const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+        const resetURL = `${baseURL}/forgot-password/reset?token=${token}`
+        return `<p>Hi ${user.firstName},</p>
+          <p>Please click the link below to reset your UHTFC password:</p>
+          <p><a href="${resetURL}">Reset your password</a></p>
+          <p>This link will expire in 1 hour.</p>
+          <p>If you did not request this, please ignore this email.</p>
+          <p>Best regards,</p>
+          <p>The UHTFC Team</p>`
+      },
+      generateEmailSubject: async () => 'Reset your UHTFC password',
+    },
+  },
   hooks: {},
   fields: [
     {
