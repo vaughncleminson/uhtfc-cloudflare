@@ -353,7 +353,7 @@ const sendBookingEmails = async (order: Order) => {
     // send email to user
     await payload.sendEmail({
       to: order.email,
-      subject: `Booking Confirmation - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
+      subject: `UHTFC Booking Confirmation - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
       html: `<p>Hi ${order.firstName},</p>
       <p>Thank you for your booking at ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}.</p>
       <p>Your booking details:</p>
@@ -378,7 +378,7 @@ const sendBookingEmails = async (order: Order) => {
     if (locationNotificationEmail) {
       await payload.sendEmail({
         to: locationNotificationEmail,
-        subject: `New Booking - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
+        subject: `New UHTFC Booking - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
         html: `<p>Hi Location Owner/Contact,</p>
         <p>A new booking has been made for ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}.</p>
         <p>Booking details:</p>

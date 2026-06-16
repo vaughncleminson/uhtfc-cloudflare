@@ -317,9 +317,39 @@ export default function BookingForm(props: BookingFormProps) {
         toast.error('Please add all the required main contact details.')
         return
       }
-      setMainContact(angler)
+      setMainContact({
+        ...angler,
+        fullName: `${angler.firstName} ${angler.lastName}`.trim(),
+      })
     }
-    setAnglers((prev) => [...prev, angler!])
+    setAnglers((prev) => [
+      ...prev,
+      {
+        ...angler!,
+        fullName: `${angler?.firstName || ''} ${angler?.lastName || ''}`.trim(),
+      },
+    ])
+  }
+
+  const updateAnglerName = (index: number, field: 'firstName' | 'lastName', value: string) => {
+    setAnglers((prev) => {
+      const updated = [...prev]
+      const currentAngler = updated[index]
+
+      if (!currentAngler) {
+        return prev
+      }
+
+      const nextAngler = {
+        ...currentAngler,
+        [field]: value,
+      }
+
+      nextAngler.fullName = `${nextAngler.firstName || ''} ${nextAngler.lastName || ''}`.trim()
+      updated[index] = nextAngler
+
+      return updated
+    })
   }
 
   const removeAngler = (index: number) => {
@@ -509,32 +539,14 @@ export default function BookingForm(props: BookingFormProps) {
                           placeholder="Firstname"
                           type="text"
                           value={anglers[index]?.firstName || ''}
-                          onChange={(e) =>
-                            //set the correct index of the anglers array
-                            setAnglers((prev) => {
-                              const updated = [...prev]
-
-                              updated[index]!.firstName = e.target.value
-
-                              return [...updated]
-                            })
-                          }
+                          onChange={(e) => updateAnglerName(index, 'firstName', e.target.value)}
                         />
                         <input
                           className=" border-0 bg-slate-900 w-40 h-6 px-2"
                           placeholder="Lastname"
                           type="text"
                           value={anglers[index]?.lastName || ''}
-                          onChange={(e) =>
-                            //set the correct index of the anglers array
-                            setAnglers((prev) => {
-                              const updated = [...prev]
-
-                              updated[index]!.lastName = e.target.value
-
-                              return [...updated]
-                            })
-                          }
+                          onChange={(e) => updateAnglerName(index, 'lastName', e.target.value)}
                         />
                       </div>
                     )}
