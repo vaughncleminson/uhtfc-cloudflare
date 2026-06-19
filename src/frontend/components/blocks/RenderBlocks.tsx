@@ -16,6 +16,7 @@ import Onboard from './Onboard'
 import Order from './Order'
 import Paymments from './Payments'
 import RodFeesMembership from './RodFeesMembership'
+import TwoColumnTextLeft from './TwoColumnTextLeft'
 import UserProfile from './UserProfile'
 
 const blockComponents: any = {
@@ -34,6 +35,7 @@ const blockComponents: any = {
   payments: Paymments,
   onboard: Onboard,
   userProfile: UserProfile,
+  twoColumnTextLeft: TwoColumnTextLeft,
 }
 
 type Props = {

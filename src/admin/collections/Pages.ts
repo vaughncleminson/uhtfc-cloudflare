@@ -18,6 +18,7 @@ import { Onboard } from '../blocks/Onboard'
 import { Order } from '../blocks/Order'
 import { Payments } from '../blocks/Payments'
 import { RodFeesMembership } from '../blocks/RodFeesMembership'
+import { TwoColumnTextLeft } from '../blocks/TwoColumnTextLeft'
 import { UserProfile } from '../blocks/UserProfile'
 import { generatePreviewPath } from '../utils/generatePreviewPath'
 import { populatePublishedAt } from './hooks/populatePublishedAt'
@@ -95,6 +96,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 Payments,
                 Onboard,
                 UserProfile,
+                TwoColumnTextLeft,
               ],
               required: true,
             },
