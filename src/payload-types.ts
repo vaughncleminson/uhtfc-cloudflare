@@ -622,6 +622,7 @@ export interface Page {
     | PaymentsBlock
     | OnboardBlock
     | UserProfileBlock
+    | TwoColumnTextLeftBlock
   )[];
   meta?: {
     title?: string | null;
@@ -776,6 +777,33 @@ export interface UserProfileBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'userProfile';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TwoColumnTextLeftBlock".
+ */
+export interface TwoColumnTextLeftBlock {
+  variant: 'lightContent' | 'darkSplit';
+  title?: string | null;
+  description: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'twoColumnTextLeft';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1537,6 +1565,7 @@ export interface PagesSelect<T extends boolean = true> {
         payments?: T | PaymentsBlockSelect<T>;
         onboard?: T | OnboardBlockSelect<T>;
         userProfile?: T | UserProfileBlockSelect<T>;
+        twoColumnTextLeft?: T | TwoColumnTextLeftBlockSelect<T>;
       };
   meta?:
     | T
@@ -1679,6 +1708,18 @@ export interface OnboardBlockSelect<T extends boolean = true> {
  * via the `definition` "UserProfileBlock_select".
  */
 export interface UserProfileBlockSelect<T extends boolean = true> {
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TwoColumnTextLeftBlock_select".
+ */
+export interface TwoColumnTextLeftBlockSelect<T extends boolean = true> {
+  variant?: T;
+  title?: T;
+  description?: T;
   image?: T;
   id?: T;
   blockName?: T;
