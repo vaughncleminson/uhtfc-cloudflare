@@ -9,6 +9,10 @@ import { BookingHistory, Location, Setting } from '@/payload-types'
 import config from '@payload-config'
 import dayjs from 'dayjs'
 import { getPayload } from 'payload'
+import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
+
+const bookingConfirmationTemplateId =
+  process.env.MAILSEND_BOOKING_CONFIRMATION_TEMPLATE_ID || 'booking-confirmation-template-id'
 
 type RequestBody = {
   order: Order
@@ -350,22 +354,39 @@ const sendBookingEmails = async (order: Order) => {
   const products = order.products as (Booking | Membership)[]
   const bookings = products.filter((p) => p.productType === 'booking') as Booking[]
   for (let booking of bookings) {
+    const bookingDate = dayjs(booking.date).format('MMMM D, YYYY')
+    const anglerNames = booking.anglers
+      .map((angler) => {
+        if (angler.fullName) return angler.fullName
+        const fallbackName = `${angler.firstName || ''} ${angler.lastName || ''}`.trim()
+        return fallbackName || null
+      })
+      .filter((name): name is string => Boolean(name))
+
     // send email to user
-    await payload.sendEmail({
-      to: order.email,
-      subject: `UHTFC Booking Confirmation - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
-      html: `<p>Hi ${order.firstName},</p>
-      <p>Thank you for your booking at ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}.</p>
-      <p>Your booking details:</p>
-      <ul>
-        <li>Location: ${booking.locationName}</li>
-        <li>Date: ${dayjs(booking.date).format('MMMM D, YYYY')}</li>
-        <li>Anglers: ${booking.anglers.map((a) => a.fullName).join(', ')}</li>
-      </ul>
-      <p>Tight lines!</p>
-      <p>Best regards,</p>
-      <p>The UHTFC Team</p>`,
-    })
+    await mailerSendTemplateAdapter(
+      bookingConfirmationTemplateId,
+      `UHTFC Booking Confirmation - ${booking.locationName} on ${bookingDate}`,
+      [{ email: order.email, name: order.firstName }],
+      [
+        {
+          email: order.email,
+          data: {
+            name: order.firstName,
+            accountName: 'UHTFC',
+            locationName: booking.locationName,
+            bookingDate: bookingDate,
+            anglers: anglerNames.join(', '),
+            anglersArray: anglerNames,
+            vehicleModel: booking.vehicleModel,
+            vehicleColour: booking.vehicleColour,
+            vehicleRegistration: booking.vehicleRegistration,
+            template_id: bookingConfirmationTemplateId,
+            unsubscribe: '',
+          },
+        },
+      ],
+    )
 
     // send email to location owner/contact
     // first we need to get the location details to get the contact email
@@ -379,7 +400,7 @@ const sendBookingEmails = async (order: Order) => {
       await payload.sendEmail({
         to: locationNotificationEmail,
         subject: `New UHTFC Booking - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
-        html: `<p>Hi Location Owner/Contact,</p>
+        html: `<p>Hi Riparian Owner/Contact,</p>
         <p>A new booking has been made for ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}.</p>
         <p>Booking details:</p>
         <ul>

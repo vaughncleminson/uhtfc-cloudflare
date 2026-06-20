@@ -58,7 +58,7 @@ const payloadServerURL = isProduction
 const skipRemoteCloudflare = process.env.SKIP_REMOTE_CLOUDFLARE === 'true'
 
 const cloudflare = await getCloudflareContextSafe()
-const mailerSendToken = process.env.MAILSEND_TOKEN || process.env.NEXT_PUBLIC_MAILSEND_TOKEN || ''
+const mailerSendToken = process.env.MAILSEND_TOKEN || ''
 
 export default buildConfig({
   admin: {
