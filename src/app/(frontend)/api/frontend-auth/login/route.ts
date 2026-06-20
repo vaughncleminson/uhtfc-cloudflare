@@ -72,10 +72,11 @@ export async function POST(request: Request) {
   async function sendPreviousUserResetEmail(previousUser: any) {
     const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
     const resetURL = `${baseURL}/onboard?uuid=${previousUser.resetUuid}&email=${previousUser.email}`
+    const displayName = previousUser.fullName?.split(' ')?.[0] || previousUser.fullName || 'Member'
     await payload.sendEmail({
       to: previousUser.email,
       subject: 'Reset your UHTFC account',
-      html: `<p>Hi ${previousUser.firstName},</p>
+      html: `<p>Hi ${displayName},</p>
           <p>Please click the link below to reset your UHTFC account:</p>
           <p><a href="${resetURL}">Reset your account</a></p>
           <p>If you did not request this, please ignore this email.</p>
