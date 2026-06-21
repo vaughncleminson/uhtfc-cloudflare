@@ -70,7 +70,7 @@ export async function POST(request: Request) {
   }
 
   async function sendPreviousUserResetEmail(previousUser: any) {
-    const baseURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+    const baseURL = process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3000'
     const resetURL = `${baseURL}/onboard?uuid=${previousUser.resetUuid}&email=${previousUser.email}`
     const displayName = previousUser.fullName?.split(' ')?.[0] || previousUser.fullName || 'Member'
     await payload.sendEmail({
