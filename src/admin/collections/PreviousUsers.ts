@@ -5,6 +5,7 @@ export const PreviousUsers: CollectionConfig = {
   // Sets the default order for the Admin UI list view
   defaultSort: 'email',
   admin: {
+    useAsTitle: 'email',
     defaultColumns: ['fullName', 'email', 'role'],
     components: {
       beforeListTable: ['@/admin/components/ImportExport/import#ImportCSVButton'],
