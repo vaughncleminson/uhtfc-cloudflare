@@ -10,6 +10,12 @@ async function runPayloadJobs() {
   jobsRunning = true
 
   try {
+    // Payload's dependency checker uses fileURLToPath(import.meta.url), which can
+    // fail in the Cloudflare worker bundle/runtime for scheduled invocations.
+    if (typeof process !== 'undefined' && process?.env) {
+      process.env.PAYLOAD_DISABLE_DEPENDENCY_CHECKER = 'true'
+    }
+
     const [{ getPayload }, { default: config }] = await Promise.all([
       import('payload'),
       import('./src/payload.config'),
