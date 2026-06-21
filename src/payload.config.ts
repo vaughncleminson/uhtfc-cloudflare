@@ -31,7 +31,11 @@ import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
 const dirname = path.resolve(process.cwd(), 'src')
 
 // Define realpath safely
-const realpath = (value: string) => {
+const realpath = (value: unknown) => {
+  if (typeof value !== 'string' || value.length === 0) {
+    return undefined
+  }
+
   try {
     return fs.existsSync(value) ? fs.realpathSync(value) : undefined
   } catch (e) {
@@ -52,7 +56,7 @@ const isProduction = process.env.NODE_ENV === 'production'
 // In development, let Payload infer the origin from the incoming request.
 // Forcing a production URL here can cause admin server-actions to lose auth context.
 const payloadServerURL = isProduction
-  ? process.env.PAYLOAD_PUBLIC_SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL || ''
+  ? process.env.NEXT_PUBLIC_PAYLOAD_URL || process.env.NEXT_PUBLIC_PAYLOAD_URL || ''
   : undefined
 
 const skipRemoteCloudflare = process.env.SKIP_REMOTE_CLOUDFLARE === 'true'
