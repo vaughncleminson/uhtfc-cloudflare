@@ -99,7 +99,7 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
 }
 
 function generateCatchReturnHTML(booking: PayloadBooking, catchReturnPublicId: string): string {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const baseURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
   const catchReturnURL = `${baseURL}/catch-return?publicId=${catchReturnPublicId}`
   const locationLabel = returnBookingLocation(booking)
   const bookingDate = returnBookingDate(booking)

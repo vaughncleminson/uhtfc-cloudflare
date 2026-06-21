@@ -12,7 +12,7 @@ export const Users: CollectionConfig = {
   auth: {
     forgotPassword: {
       generateEmailHTML: async ({ token, user }: { token?: string; user?: any }) => {
-        const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+        const baseURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
         const resetURL = `${baseURL}/forgot-password/reset?token=${token}`
         return `<p>Hi ${user.firstName},</p>
           <p>Please click the link below to reset your UHTFC password:</p>
