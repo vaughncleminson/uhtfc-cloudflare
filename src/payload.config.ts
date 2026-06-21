@@ -31,7 +31,11 @@ import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
 const dirname = path.resolve(process.cwd(), 'src')
 
 // Define realpath safely
-const realpath = (value: string) => {
+const realpath = (value: unknown) => {
+  if (typeof value !== 'string' || value.length === 0) {
+    return undefined
+  }
+
   try {
     return fs.existsSync(value) ? fs.realpathSync(value) : undefined
   } catch (e) {
