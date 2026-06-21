@@ -50,3 +50,7 @@ tail -f .next/dev/logs/next-development.log
 
 * To verify types in project are ok, eg after adding a collection
 pnpm -s tsc --noEmit
+
+* To add secret vars
+npx wrangler secret put PAYLOAD_SECRET
+npx wrangler secret put MAILSEND_TOKEN
