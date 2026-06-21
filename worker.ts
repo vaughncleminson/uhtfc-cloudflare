@@ -29,7 +29,12 @@ async function runPayloadJobs() {
   } catch (err) {
     // D1 busy/locked errors must not crash the worker or leave the guard set.
     // Log and move on — the next scheduled invocation will retry.
-    console.error('[scheduled] jobs run failed:', err)
+    const asError = err instanceof Error ? err : new Error(String(err))
+    console.error('[scheduled] jobs run failed:', {
+      message: asError.message,
+      stack: asError.stack,
+      cause: asError.cause,
+    })
   } finally {
     jobsRunning = false
   }

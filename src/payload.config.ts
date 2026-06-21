@@ -3,7 +3,6 @@ import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite'
 import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { r2Storage } from '@payloadcms/storage-r2'
-import fs from 'fs'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { GetPlatformProxyOptions } from 'wrangler'
@@ -28,29 +27,9 @@ import { Users } from './admin/collections/Users'
 import { jobs } from './admin/jobs'
 import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
 
-const dirname = path.resolve(process.cwd(), 'src')
-
-// Define realpath safely
-const realpath = (value: unknown) => {
-  if (typeof value !== 'string' || value.length === 0) {
-    return undefined
-  }
-
-  try {
-    return fs.existsSync(value) ? fs.realpathSync(value) : undefined
-  } catch (e) {
-    return undefined
-  }
-}
-
-// Check for CLI safely
-const isCLI =
-  typeof process !== 'undefined' &&
-  Array.isArray(process.argv) &&
-  process.argv.some((value) => {
-    const pathValue = realpath(value)
-    return pathValue && pathValue.endsWith(path.join('payload', 'bin.js'))
-  })
+const cwd =
+  typeof process !== 'undefined' && typeof process.cwd === 'function' ? process.cwd() : undefined
+const dirname = path.resolve(typeof cwd === 'string' && cwd.length > 0 ? cwd : '.', 'src')
 const isProduction = process.env.NODE_ENV === 'production'
 
 // In development, let Payload infer the origin from the incoming request.
@@ -58,8 +37,6 @@ const isProduction = process.env.NODE_ENV === 'production'
 const payloadServerURL = isProduction
   ? process.env.NEXT_PUBLIC_PAYLOAD_URL || process.env.NEXT_PUBLIC_PAYLOAD_URL || ''
   : undefined
-
-const skipRemoteCloudflare = process.env.SKIP_REMOTE_CLOUDFLARE === 'true'
 
 const cloudflare = await getCloudflareContextSafe()
 const mailerSendToken = process.env.MAILSEND_TOKEN || ''
