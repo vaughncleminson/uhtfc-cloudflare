@@ -1,5 +1,24 @@
-// @ts-ignore .open-next/worker.js is generated at build time
-import { default as handler } from './.open-next/worker.js'
+function setPayloadRuntimeGuards() {
+  // In bundled Cloudflare worker runtimes, Payload's dependency checker can
+  // crash while resolving import.meta.url. Disable it early, before imports.
+  if (typeof process !== 'undefined' && process?.env) {
+    process.env.PAYLOAD_DISABLE_DEPENDENCY_CHECKER = 'true'
+  }
+}
+
+setPayloadRuntimeGuards()
+
+let openNextHandlerPromise: Promise<ExportedHandler<CloudflareEnv>> | null = null
+
+async function getOpenNextHandler() {
+  if (!openNextHandlerPromise) {
+    openNextHandlerPromise = import('./.open-next/worker.js').then(
+      (mod) => mod.default as ExportedHandler<CloudflareEnv>,
+    )
+  }
+
+  return openNextHandlerPromise
+}
 
 // Single-entry guard: prevents overlapping invocations from hammering D1
 // simultaneously if the Worker is recycled and a new invocation fires.
@@ -10,11 +29,7 @@ async function runPayloadJobs() {
   jobsRunning = true
 
   try {
-    // Payload's dependency checker uses fileURLToPath(import.meta.url), which can
-    // fail in the Cloudflare worker bundle/runtime for scheduled invocations.
-    if (typeof process !== 'undefined' && process?.env) {
-      process.env.PAYLOAD_DISABLE_DEPENDENCY_CHECKER = 'true'
-    }
+    setPayloadRuntimeGuards()
 
     const [{ getPayload }, { default: config }] = await Promise.all([
       import('payload'),
@@ -47,7 +62,10 @@ async function runPayloadJobs() {
 }
 
 export default {
-  fetch: handler.fetch,
+  async fetch(request, env, ctx) {
+    const handler = await getOpenNextHandler()
+    return handler.fetch(request, env, ctx)
+  },
   async scheduled(_controller, _env, ctx) {
     ctx.waitUntil(runPayloadJobs())
   },
