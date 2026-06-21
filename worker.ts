@@ -24,29 +24,41 @@ async function getOpenNextHandler() {
 // simultaneously if the Worker is recycled and a new invocation fires.
 let jobsRunning = false
 
-async function runPayloadJobs() {
+async function runPayloadJobs(env: CloudflareEnv) {
   if (jobsRunning) return
   jobsRunning = true
 
   try {
-    setPayloadRuntimeGuards()
+    const handler = await getOpenNextHandler()
 
-    const [{ getPayload }, { default: config }] = await Promise.all([
-      import('payload'),
-      import('./src/payload.config'),
-    ])
-
-    const payload = await getPayload({ config })
-
-    await payload.jobs.handleSchedules({
-      queue: 'daily',
+    const internalRequest = new Request('https://internal.local/api/internal/run-scheduled-jobs', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-cron-secret': env.PAYLOAD_SECRET,
+      },
+      body: JSON.stringify({
+        queue: 'daily',
+        limit: 10,
+      }),
     })
 
-    await payload.jobs.run({
-      limit: 10,
-      queue: 'daily',
-      silent: true,
-    })
+    const response = await handler.fetch(
+      internalRequest as unknown as Request<unknown, IncomingRequestCfProperties<unknown>>,
+      env,
+      {
+        waitUntil: () => {},
+        passThroughOnException: () => {},
+      },
+    )
+
+    if (!response.ok) {
+      const text = await response.text()
+      throw new Error(`Internal scheduled route failed with ${response.status}: ${text}`)
+    }
+
+    const result = await response.json().catch((): null => null)
+    console.log('[scheduled] jobs run ok:', result)
   } catch (err) {
     // D1 busy/locked errors must not crash the worker or leave the guard set.
     // Log and move on — the next scheduled invocation will retry.
@@ -66,7 +78,7 @@ export default {
     const handler = await getOpenNextHandler()
     return handler.fetch(request, env, ctx)
   },
-  async scheduled(_controller, _env, ctx) {
-    ctx.waitUntil(runPayloadJobs())
+  async scheduled(_controller, env, ctx) {
+    ctx.waitUntil(runPayloadJobs(env))
   },
 } satisfies ExportedHandler<CloudflareEnv>
