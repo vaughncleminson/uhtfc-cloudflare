@@ -1,5 +1,10 @@
-import config from '@payload-config'
-import { getPayload } from 'payload'
+function setPayloadRuntimeGuards() {
+  // Payload's dependency checker can crash in bundled worker routes when it
+  // resolves import.meta.url too early.
+  if (typeof process !== 'undefined' && process?.env) {
+    process.env.PAYLOAD_DISABLE_DEPENDENCY_CHECKER = 'true'
+  }
+}
 
 type ScheduledBody = {
   queue?: string
@@ -7,6 +12,13 @@ type ScheduledBody = {
 }
 
 export async function POST(request: Request) {
+  setPayloadRuntimeGuards()
+
+  const [{ default: config }, { getPayload }] = await Promise.all([
+    import('@payload-config'),
+    import('payload'),
+  ])
+
   const expectedSecret = process.env.PAYLOAD_SECRET
   const providedSecret = request.headers.get('x-cron-secret')
 
