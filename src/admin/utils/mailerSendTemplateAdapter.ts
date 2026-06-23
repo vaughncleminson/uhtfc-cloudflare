@@ -1,14 +1,24 @@
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend'
+import type { Payload } from 'payload'
 
 export type TemplateRecipient = {
   email: string
   name?: string
 }
 
+export type TemplateData = {
+  recipientName: string
+  emailSubject: string
+  messageTitle: string
+  messageBody: string
+}
+
 export type TemplatePersonalization = {
   email: string
-  data: Record<string, unknown>
+  data: TemplateData
 }
+
+type TemplateLogger = Pick<Payload['logger'], 'info' | 'warn'>
 
 const mailerSendToken = process.env.MAILSEND_TOKEN || process.env.API_KEY || ''
 const mailerSend = mailerSendToken ? new MailerSend({ apiKey: mailerSendToken }) : null
@@ -22,9 +32,18 @@ export default async function mailerSendTemplateAdapter(
   subject: string,
   recipients: TemplateRecipient[],
   personalizationData: TemplatePersonalization[],
+  logger?: TemplateLogger,
 ) {
+  logger?.info({
+    msg: 'Sending template email with MailerSend adapter.',
+    templateId,
+    subject,
+    recipients,
+    personalizationData,
+  })
+
   if (!mailerSend) {
-    console.warn('Skipping MailerSend template email: MAILSEND_TOKEN is not configured.')
+    logger?.warn({ msg: 'Skipping MailerSend template email: MAILSEND_TOKEN is not configured.' })
     return null
   }
 
@@ -40,6 +59,6 @@ export default async function mailerSendTemplateAdapter(
     .setPersonalization(personalizationData)
 
   const messagesSent = await mailerSend.email.send(emailParams)
-  console.log(messagesSent)
+  logger?.info({ msg: 'MailerSend template email sent.', messagesSent })
   return messagesSent
 }

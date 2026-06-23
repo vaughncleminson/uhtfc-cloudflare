@@ -11,8 +11,7 @@ import dayjs from 'dayjs'
 import { getPayload } from 'payload'
 import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
 
-const bookingConfirmationTemplateId =
-  process.env.MAILSEND_BOOKING_CONFIRMATION_TEMPLATE_ID || 'booking-confirmation-template-id'
+const mailsendTemplateID = process.env.MAILSEND_SHARED_WEBSITE_TEMPLATE_ID || 'z86org8onyn4ew13'
 
 type RequestBody = {
   order: Order
@@ -364,28 +363,39 @@ const sendBookingEmails = async (order: Order) => {
       .filter((name): name is string => Boolean(name))
 
     // send email to user
+    //templateId, subject, recipients, personalizationData
+    //personalizationData is an array of strings
+    //recipientName, messageTitle, messageBody
+    const cMessageTitle = `UHTFC Booking Confirmation - ${booking.locationName} on ${bookingDate}`
+    const cMessageBody = `<p>Booking details:</p>
+          <ul>
+            <li>Name: ${booking.firstName} ${booking.lastName}</li>
+            <li>Email: ${booking.email}</li>
+            <li>Club Membership: ${booking.role}</li>
+            <li>Vehicle Model: ${booking.vehicleModel}</li>
+            <li>Vehicle Colour: ${booking.vehicleColour}</li>
+            <li>Vehicle Registration: ${booking.vehicleRegistration}</li>          
+            <li>Anglers: ${booking.anglers.map((a) => a.fullName).join(', ')}</li>
+          </ul>        
+          <p>Best regards,</p>
+          <p>The UHTFC Team</p>`
+
     await mailerSendTemplateAdapter(
-      bookingConfirmationTemplateId,
-      `UHTFC Booking Confirmation - ${booking.locationName} on ${bookingDate}`,
+      mailsendTemplateID,
+      cMessageTitle,
       [{ email: order.email, name: order.firstName }],
       [
         {
           email: order.email,
           data: {
-            name: order.firstName,
-            accountName: 'UHTFC',
-            locationName: booking.locationName,
-            bookingDate: bookingDate,
-            anglers: anglerNames.join(', '),
-            anglersArray: anglerNames,
-            vehicleModel: booking.vehicleModel,
-            vehicleColour: booking.vehicleColour,
-            vehicleRegistration: booking.vehicleRegistration,
-            template_id: bookingConfirmationTemplateId,
-            unsubscribe: '',
+            recipientName: order.firstName,
+            emailSubject: cMessageTitle,
+            messageTitle: cMessageTitle,
+            messageBody: cMessageBody,
           },
         },
       ],
+      payload.logger,
     )
 
     // send email to location owner/contact
@@ -397,25 +407,23 @@ const sendBookingEmails = async (order: Order) => {
     const locationNotificationEmail = location ? getLocationNotificationEmail(location) : null
 
     if (locationNotificationEmail) {
-      await payload.sendEmail({
-        to: locationNotificationEmail,
-        subject: `New UHTFC Booking - ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}`,
-        html: `<p>Hi Riparian Owner/Contact,</p>
-        <p>A new booking has been made for ${booking.locationName} on ${dayjs(booking.date).format('MMMM D, YYYY')}.</p>
-        <p>Booking details:</p>
-        <ul>
-          <li>Name: ${booking.firstName} ${booking.lastName}</li>
-          <li>Email: ${booking.email}</li>
-          <li>Club Membership: ${booking.role}</li>
-          <li>Vehicle Model: ${booking.vehicleModel}</li>
-          <li>Vehicle Colour: ${booking.vehicleColour}</li>
-          <li>Vehicle Registration: ${booking.vehicleRegistration}</li>          
-          <li>Anglers: ${booking.anglers.map((a) => a.fullName).join(', ')}</li>
-        </ul>        
-        <p>Best regards,</p>
-        <p>The UHTFC Team</p>`,
-      })
+      await mailerSendTemplateAdapter(
+        mailsendTemplateID,
+        cMessageTitle,
+        [{ email: locationNotificationEmail, name: 'Location Owner/Contact' }],
+        [
+          {
+            email: locationNotificationEmail,
+            data: {
+              recipientName: 'Location Owner/Contact',
+              emailSubject: cMessageTitle,
+              messageTitle: cMessageTitle,
+              messageBody: cMessageBody,
+            },
+          },
+        ],
+        payload.logger,
+      )
     }
   }
 }
-// npx wrangler versions upload
