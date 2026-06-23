@@ -1,6 +1,8 @@
-import type { TaskConfig } from 'payload'
-
+import { getPayload, type TaskConfig } from 'payload'
+import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
 import type { Booking as PayloadBooking } from '../../payload-types'
+import config from '@payload-config'
+const mailsendTemplateID = process.env.MAILSEND_SHARED_WEBSITE_TEMPLATE_ID || 'z86org8onyn4ew13'
 
 export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
   // This task will send an email for each booking that occurs today
@@ -73,12 +75,28 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
           },
         },
       })
+
       //send an email to the user with a link to submit their catch return details
-      await req.payload.sendEmail({
-        to: booking.email,
-        subject: `Your ${returnBookingLocation(booking)} Catch Return for ${returnBookingDate(booking)}`,
-        html: generateCatchReturnHTML(booking, newCatchReturn.publicId),
-      })
+      const cMessageTitle = `Your ${returnBookingLocation(booking)} Catch Return for ${returnBookingDate(booking)}`
+      const cMessageBody = generateCatchReturnHTML(booking, newCatchReturn.publicId)
+      const payload = await getPayload({ config })
+      await mailerSendTemplateAdapter(
+        mailsendTemplateID,
+        cMessageTitle,
+        [{ email: booking.email, name: booking.firstName }],
+        [
+          {
+            email: booking.email,
+            data: {
+              recipientName: booking.firstName,
+              emailSubject: cMessageTitle,
+              messageTitle: cMessageTitle,
+              messageBody: cMessageBody,
+            },
+          },
+        ],
+        payload.logger,
+      )
     }
 
     //add a note to the job log with the number of emails sent and the date the job ran
@@ -105,10 +123,17 @@ function generateCatchReturnHTML(booking: PayloadBooking, catchReturnPublicId: s
   const bookingDate = returnBookingDate(booking)
 
   return `
-    <p>Hi ${booking.firstName},</p>
     <p>Thank you for your booking at ${locationLabel} on ${bookingDate}.</p>
-    <p>Please submit your catch return details by clicking the link below:</p>
-    <p><a href="${catchReturnURL}">Submit Catch Return</a></p>
+    <br/>
+    <p>Click the button below to submit your catch return:</p>
+    <br/>
+    <p><a href="${catchReturnURL}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">Submit Catch Return</a></p>
+    <br/>
+    <p>If the button above does not work, please copy and paste the following link into your web browser:</p>
+    <p>${catchReturnURL}</p>
+    <br/>
+    <p>We appreciate your cooperation in submitting your catch return details.</p>
+    <br/>
     <p>Best regards,<br/>The Underberg-Himeville Trout Fishing Club</p>
   `
 }
