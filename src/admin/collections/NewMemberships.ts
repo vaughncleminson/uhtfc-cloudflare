@@ -89,32 +89,8 @@ export const NewMemberships: CollectionConfig = {
     },
     {
       type: 'text',
-      name: 'street',
-      label: 'Street Address',
-      required: true,
-    },
-    {
-      type: 'text',
-      name: 'city',
-      label: 'City',
-      required: true,
-    },
-    {
-      type: 'text',
-      name: 'province',
-      label: 'Province',
-      required: true,
-    },
-    {
-      type: 'text',
-      name: 'postalCode',
-      label: 'Postal Code',
-      required: true,
-    },
-    {
-      type: 'text',
-      name: 'country',
-      label: 'Country',
+      name: 'physicalAddress',
+      label: 'Physical Address',
       required: true,
     },
     {

@@ -1,13 +1,13 @@
 'use client'
+import { catchReturnSchema } from '@/frontend/schemas/catchReturnSchema'
+import { Booking, CatchReturn } from '@/payload-types'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { FormEvent, useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import Button from '../ui/Button'
-import { Booking, CatchReturn } from '@/payload-types'
 import dayjs from 'dayjs'
+import { useSearchParams } from 'next/navigation'
+import { FormEvent, useEffect, useState } from 'react'
+import Button from '../ui/Button'
 import { useConfirm } from '../ui/ModalProvider'
-import { catchReturnSchema } from '@/frontend/schemas/catchReturnSchema'
 
 type CatchReturnApiResponse = {
   catchReturn: CatchReturn | null
@@ -28,7 +28,7 @@ export default function CatchReturnsForm() {
 
   const [newCatchReturnRow, setNewCatchReturnRow] = useState<CatchReturnRow>({
     quantity: 0,
-    species: 'rainbow',
+    species: 'select',
     length: 0,
     released: false,
   })
@@ -186,6 +186,7 @@ export default function CatchReturnsForm() {
           message: 'Catch return submitted successfully.',
           showCancelButton: false,
           confirmTitle: 'OK',
+          confirmUrl: `/`,
         })
         if (!confirmed) return
 
@@ -209,10 +210,10 @@ export default function CatchReturnsForm() {
   return (
     <form
       onSubmit={submit}
-      className="flex flex-col bg-white p-10 pt-8 border rounded shadow-lg w-full"
+      className="relative min-h-[16rem] flex flex-col bg-slate-700 p-10 pt-8 w-full text-white"
     >
       <div className="flex justify-between items-center">
-        <div></div>
+        <h1 className="text-2xl mb-2 text-white uppercase">Catch Return</h1>
         <div>{booking ? dayjs(new Date()).format('DD-MM-YYYY') : ''}</div>
       </div>
       <div className="flex flex-col gap-5">
@@ -222,14 +223,14 @@ export default function CatchReturnsForm() {
           <div>{booking ? booking.role : ''}</div>
         </div>
 
-        <div className="w-full border rounded-sm shadow">
+        <div className="w-full bg-slate-800">
           <div className="flex w-full justify-between border-b py-2 px-5 rounded-sm text-sm">
             <div className="w-44">Date</div>
             <div className="w-full">Details</div>
             <div className=" w-36">Rods</div>
             <div className=" w-36">Completed</div>
           </div>
-          <div className="flex w-full justify-between items-center border-b py-2 px-5 rounded-sm text-sm">
+          <div className="flex w-full justify-between items-center py-2 px-5 rounded-sm text-sm">
             <div className="w-44 truncate text-nowrap">
               {booking ? dayjs(booking.date).format('DD-MM-YYYY') : ''}
             </div>
@@ -241,7 +242,7 @@ export default function CatchReturnsForm() {
           </div>
         </div>
 
-        <div className="w-full border rounded-sm shadow">
+        <div className="w-full bg-slate-800">
           <div className="flex flex-col w-full justify-between items-center border-b p-5 rounded-sm text-sm gap-2">
             <div className="w-full border rounded-sm shadow" id="catchReturnsList">
               <div className="flex w-full justify-between border-b py-2 px-5 rounded-sm text-sm">
@@ -287,7 +288,7 @@ export default function CatchReturnsForm() {
               )}
             </div>
             {!bFormDisabled && (
-              <span id="spanUpdateCatchReturn">
+              <div id="spanUpdateCatchReturn" className="w-full">
                 <div className="w-full">
                   <label className="label">Quantity</label>
                   <input
@@ -315,6 +316,9 @@ export default function CatchReturnsForm() {
                       })
                     }
                   >
+                    <option value="select" disabled>
+                      Select
+                    </option>
                     <option value="rainbow">Rainbow</option>
                     <option value="brown">Brown</option>
                     <option value="bass">Bass</option>
@@ -356,18 +360,20 @@ export default function CatchReturnsForm() {
                       setFormData((prev) => ({
                         ...prev,
                         returns:
-                          newCatchReturnRow.quantity > 0 && newCatchReturnRow.length > 0
+                          newCatchReturnRow.quantity > 0 &&
+                          newCatchReturnRow.length > 0 &&
+                          newCatchReturnRow.species !== 'select'
                             ? [...prev.returns, newCatchReturnRow]
                             : prev.returns,
                       }))
                       setNewCatchReturnRow({
                         quantity: 0,
-                        species: '',
+                        species: 'select',
                         length: 0,
                         released: false,
                       })
                     }}
-                    className="w-full  bg-slate-800 hover:bg-slate-600"
+                    className="w-full  bg-slate-700 hover:bg-slate-600"
                     title="Add To List"
                     type="button"
                   />
@@ -376,22 +382,27 @@ export default function CatchReturnsForm() {
                   {errors.submit && <p className="text-red-500 text-xs">{errors.submit}</p>}
                 </div>
                 <div className="flex w-full gap-2">
-                  <Button className="w-1/2" title="Submit" type="submit" loading={loading} />
-                  <Button
-                    className="w-1/2 bg-slate-800 hover:bg-slate-600"
-                    title="Nil Return"
-                    loading={loading}
-                    type="button"
-                    onClick={() => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        nilReturn: true,
-                        returns: [],
-                      }))
-                    }}
-                  />
+                  {formData.returns.length > 0 && (
+                    <Button className="w-full" title="Submit" type="submit" loading={loading} />
+                  )}
+                  {formData.returns.length === 0 && (
+                    <Button
+                      className="w-full bg-slate-700 hover:bg-slate-600"
+                      title="Submit Nil Return"
+                      loading={loading}
+                      type="button"
+                      onClick={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          nilReturn: true,
+                          returns: [],
+                        }))
+                        submit(new Event('submit') as unknown as FormEvent)
+                      }}
+                    />
+                  )}
                 </div>
-              </span>
+              </div>
             )}
           </div>
         </div>

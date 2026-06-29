@@ -519,11 +519,7 @@ export interface NewMembership {
   idNumber: string;
   email: string;
   mobileNumber: string;
-  street: string;
-  city: string;
-  province: string;
-  postalCode: string;
-  country: string;
+  physicalAddress: string;
   otherMemberships?: string | null;
   howDidYouHearAboutUs?: string | null;
   totalAmount?: number | null;
@@ -691,6 +687,7 @@ export interface MapDefaultBlock {
  * via the `definition` "RodFeesMembershipBlock".
  */
 export interface RodFeesMembershipBlock {
+  image?: (number | null) | Media;
   id?: string | null;
   blockName?: string | null;
   blockType: 'rodFeesMembership';
@@ -1471,11 +1468,7 @@ export interface NewMembershipsSelect<T extends boolean = true> {
   idNumber?: T;
   email?: T;
   mobileNumber?: T;
-  street?: T;
-  city?: T;
-  province?: T;
-  postalCode?: T;
-  country?: T;
+  physicalAddress?: T;
   otherMemberships?: T;
   howDidYouHearAboutUs?: T;
   totalAmount?: T;
@@ -1634,6 +1627,7 @@ export interface MapDefaultBlockSelect<T extends boolean = true> {
  * via the `definition` "RodFeesMembershipBlock_select".
  */
 export interface RodFeesMembershipBlockSelect<T extends boolean = true> {
+  image?: T;
   id?: T;
   blockName?: T;
 }

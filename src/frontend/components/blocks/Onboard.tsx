@@ -1,7 +1,7 @@
 'use client'
 import { AuthBlock, Media } from '@/payload-types'
 import Image from 'next/image'
-import RegisterForm from '../forms/registerForm'
+import OnboardingForm from '../forms/onboardingForm'
 import Col from '../layout/Col'
 import Row from '../layout/Row'
 import { useAuth } from '../ui/AuthProvider'
@@ -16,7 +16,7 @@ export default function Onboard(props: AuthBlock) {
         <div id="onboard" className="relative w-screen bg-opacity-90">
           <Row>
             <Col>
-              <RegisterForm submitTitle="UPDATE DETAILS" />
+              <OnboardingForm submitTitle="UPDATE DETAILS" />
             </Col>
             <Col>
               <div className="relative h-[380px]">

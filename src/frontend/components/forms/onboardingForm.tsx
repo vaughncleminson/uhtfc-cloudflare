@@ -1,25 +1,27 @@
 'use client'
 
-import { registerSchema } from '@/frontend/schemas/authSchema'
+import { onboardingSchema } from '@/frontend/schemas/authSchema'
 import { User } from '@/payload-types'
 import { useSearchParams } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 import Button from '../ui/Button'
 import { useConfirm } from '../ui/ModalProvider'
+import { useToast } from '../ui/ToastProvider'
 
-type RegisterFormProps = {
+type OnboardingFormProps = {
   setAuthType?: (authType: string) => void
   submitTitle?: string
   user?: User
 }
 
-export default function RegisterForm(props: RegisterFormProps) {
+export default function OnboardingForm(props: OnboardingFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
   const searchParams = useSearchParams()
   const uuid = searchParams.get('uuid')
   const email = searchParams.get('email')
   const confirm = useConfirm()
+  const toast = useToast()
 
   const [formData, setFormData] = useState({
     firstName: props.user?.firstName || '',
@@ -68,8 +70,7 @@ export default function RegisterForm(props: RegisterFormProps) {
   const submit = async (e: FormEvent) => {
     e.preventDefault()
 
-    const result = registerSchema.safeParse(formData)
-    console.log('result', result)
+    const result = onboardingSchema.safeParse(formData)
 
     if (!result.success) {
       const fieldErrors: Record<string, string> = {}
@@ -84,6 +85,7 @@ export default function RegisterForm(props: RegisterFormProps) {
           return
         }
       } else {
+        toast.error('Please complete all required fields in the form')
         setErrors(fieldErrors)
 
         return
@@ -94,7 +96,12 @@ export default function RegisterForm(props: RegisterFormProps) {
 
     try {
       setLoading(true)
-      const response = await fetch(`/api/register`, {
+      let path = '/api/update-user'
+      if (props.submitTitle === 'UPDATE DETAILS') {
+        path = '/api/register'
+      }
+
+      const response = await fetch(path, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -105,17 +112,25 @@ export default function RegisterForm(props: RegisterFormProps) {
 
       const result = (await response.json()) as any
 
-      if (result.message === 'Registration Successful') {
-        props.setAuthType('login')
+      if (result.message === 'Onboard Successful') {
         const confirmed = await confirm({
-          title: 'Registration successful',
+          title: 'Details updated successfully',
           message: 'Please login to continue.',
           showCancelButton: false,
           confirmTitle: 'LOGIN',
+          confirmUrl: '/#login',
+        })
+        if (!confirmed) return
+      } else if (result.message === 'Profile Update Successful') {
+        const confirmed = await confirm({
+          title: 'SUCCESS',
+          message: 'Details updated successfully.',
+          showCancelButton: false,
+          confirmTitle: 'OK',
         })
         if (!confirmed) return
       } else {
-        setErrors({ submit: result.message || 'Registration failed' })
+        setErrors({ submit: result.message || 'Update failed' })
       }
     } catch (error) {
       console.error(error)
@@ -126,16 +141,19 @@ export default function RegisterForm(props: RegisterFormProps) {
 
   return (
     <form onSubmit={submit} className="flex flex-col bg-slate-900 p-10 pt-8 gap-2">
-      <div className="flex gap-2">
-        <h1
-          onClick={() => props.setAuthType('login')}
-          className="text-2xl mb-2 text-gray-300 underline cursor-pointer"
-        >
-          LOGIN
-        </h1>
-        <h1 className="text-2xl mb-2 text-white">/</h1>
-        <h1 className="text-2xl mb-2 text-white">REGISTER</h1>
-      </div>
+      {props.submitTitle ? <h1 className="text-2xl mb-2 text-white">{props.submitTitle}</h1> : null}
+      {!props.submitTitle && (
+        <div className="flex gap-2">
+          <h1
+            onClick={() => props.setAuthType('login')}
+            className="text-2xl mb-2 text-gray-300 underline cursor-pointer"
+          >
+            LOGIN
+          </h1>
+          <h1 className="text-2xl mb-2 text-white">/</h1>
+          <h1 className="text-2xl mb-2 text-white">REGISTER</h1>
+        </div>
+      )}
 
       <label className="label">
         FIRST NAME
@@ -183,6 +201,30 @@ export default function RegisterForm(props: RegisterFormProps) {
         type="text"
         value={formData.mobileNumber}
         onChange={(e) => updateField('mobileNumber', e.target.value)}
+      />
+
+      <label className="label">
+        ID NUMBER
+        {errors.idNumber && <p className="text-red-500 text-xs">{errors.idNumber}</p>}
+      </label>
+      <input
+        className="input"
+        placeholder="ID Number"
+        type="text"
+        value={formData.idNumber}
+        onChange={(e) => updateField('idNumber', e.target.value)}
+      />
+
+      <label className="label">
+        PHYSICAL ADDRESS
+        {errors.physicalAddress && <p className="text-red-500 text-xs">{errors.physicalAddress}</p>}
+      </label>
+      <input
+        className="input"
+        placeholder="Physical address"
+        type="text"
+        value={formData.physicalAddress}
+        onChange={(e) => updateField('physicalAddress', e.target.value)}
       />
 
       <div>
@@ -270,9 +312,7 @@ export default function RegisterForm(props: RegisterFormProps) {
         onChange={(e) => updateField('confirmPassword', e.target.value)}
       />
 
-      {errors.submit && <p className="text-red-500 text-xs">{errors.submit}</p>}
-
-      <Button type="submit" loading={loading} title={'REGISTER'} />
+      <Button type="submit" loading={loading} title={props.submitTitle || 'UPDATE'} />
     </form>
   )
 }
