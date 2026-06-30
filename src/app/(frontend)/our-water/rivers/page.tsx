@@ -9,29 +9,6 @@ import { generateMeta } from '@/admin/utils/generateMeta'
 import RenderBlocks from '@/frontend/components/blocks/RenderBlocks'
 import type { Page as PageType } from '@/payload-types'
 
-// export async function generateStaticParams() {
-//   const payload = await getPayload({ config: configPromise })
-//   const pages = await payload.find({
-//     collection: 'pages',
-//     draft: false,
-//     limit: 1000,
-//     overrideAccess: false,
-//     pagination: false,
-//     select: {
-//       slug: true,
-//     },
-//   })
-
-//   const params = pages.docs
-//     ?.filter((doc) => doc.slug && doc.slug !== 'home') // Exclude "home" and check for slug existence
-//     .map((doc) => {
-//       const slugParts = doc.slug!.split('/') // Split the slug into parts for [...slug]
-//       return { slug: slugParts }
-//     })
-
-//   return params
-// }
-
 type Args = {
   params: Promise<{
     slug?: string[]
@@ -53,7 +30,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   }
   const { layout } = page
   return (
-    <section>
+    <section className="flex flex-col gap-5 pt-[90px]">
       <RenderBlocks blocks={layout} />
     </section>
   )
