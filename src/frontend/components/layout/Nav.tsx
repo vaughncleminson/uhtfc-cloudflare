@@ -37,7 +37,14 @@ export default function Nav(props: Props) {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (showNav && navRef.current && !navRef.current.contains(event.target as Node)) {
+      console.log(event.target)
+      const hasClassMainLink = (event.target as HTMLElement).classList.contains('main-link')
+      if (
+        showNav &&
+        navRef.current &&
+        !navRef.current.contains(event.target as Node) &&
+        !hasClassMainLink
+      ) {
         setShowNav(false)
       }
     }
@@ -95,7 +102,7 @@ export default function Nav(props: Props) {
       if (obj.auth && user) {
         return (
           <div
-            className="hover:text-slate-300 cursor-pointer"
+            className="main-link hover:text-slate-300 cursor-pointer"
             key={obj.title}
             onClick={() => {
               getSubSection(obj.index)
@@ -108,7 +115,7 @@ export default function Nav(props: Props) {
       } else if (!obj.auth && !user) {
         return (
           <div
-            className="hover:text-slate-300 cursor-pointer"
+            className="main-link hover:text-slate-300 cursor-pointer"
             key={obj.title}
             onClick={() => {
               getSubSection(obj.index)
