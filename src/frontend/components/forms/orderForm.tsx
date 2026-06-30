@@ -57,12 +57,12 @@ export default function OrderForm() {
             title: 'Booking successful',
             message: 'Tight Lines! Your booking has been confirmed.',
             confirmTitle: 'View bookings',
-            cancelTitle: 'Home',
+            showCancelButton: false,
             confirmUrl: '/profile/my-bookings',
-            cancelUrl: '/',
           })
-          if (!confirmed) return
           setOrder(null)
+          if (!confirmed) return
+
           // router.push('/profile/my-bookings')
         } else {
           setProcessingPayment(false)
@@ -70,12 +70,11 @@ export default function OrderForm() {
             title: 'Payment successful',
             message: 'Your payment has been processed successfully.',
             confirmTitle: 'View bookings',
+            showCancelButton: false,
             confirmUrl: '/profile/my-bookings',
-            cancelTitle: 'Home',
-            cancelUrl: '/',
           })
-          if (!confirmed) return
           setOrder(null)
+          if (!confirmed) return
         }
       } else if (status === 'cancel' || status === 'failure') {
         try {
