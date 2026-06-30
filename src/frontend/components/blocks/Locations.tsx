@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { Where } from 'payload'
 import qs from 'qs'
 import { useEffect, useState } from 'react'
+import { useAuth } from '../ui/AuthProvider'
 import Button from '../ui/Button'
 
 type LocationCard = {
@@ -27,6 +28,7 @@ type LocationCard = {
 
 export default function Locations(props: LocationsBlock) {
   const [locations, setLocations] = useState<LocationCard[]>([])
+  const { user } = useAuth()
   useEffect(() => {
     const fetchLocations = async () => {
       const whereQuery: Where = {
@@ -100,18 +102,46 @@ export default function Locations(props: LocationsBlock) {
                     <div className={`${crimson.className} text-white`}>
                       {card.membersOnly ? 'Members only' : 'Members & non-members'}
                     </div>
-                    <Link href={`${card.type}s/${card.slug}`} className="w-full">
+                    <Link
+                      href={`${card.type}s/${card.slug}`}
+                      className="w-full flex justify-center"
+                    >
                       <Button
-                        className="w-full rounded-none h-11 mt-3 bg-black bg-opacity-30 border border-white text-white text-base hover:bg-black  transition-colors duration-300"
+                        className="w-[170px] rounded-none h-11 mt-3 bg-black bg-opacity-30 border border-white text-white text-base hover:bg-black  transition-colors duration-300"
                         title="View Details"
                       />
                     </Link>
-                    <Link href={`/book-now?location=${card.id}#details`} className="w-full">
-                      <Button
-                        className="w-full rounded-none h-11 mt-3 bg-black bg-opacity-30 border border-white text-white text-base hover:bg-black  transition-colors duration-300"
-                        title="Book Now"
-                      />
-                    </Link>
+                    {user && (
+                      <>
+                        {user.role === 'member' && (
+                          <Link
+                            href={`/book-now?location=${card.id}#details`}
+                            className="w-full flex justify-center"
+                          >
+                            <Button
+                              className="w-[170px] rounded-none h-11 mt-3 bg-black bg-opacity-30 border border-white text-white text-base hover:bg-black  transition-colors duration-300"
+                              title="Book Now"
+                            />
+                          </Link>
+                        )}
+                        {user.role === 'non-member' && !card.membersOnly && (
+                          <Link
+                            href={`/book-now?location=${card.id}#details`}
+                            className="w-full flex justify-center"
+                          >
+                            <Button
+                              className=" w-[170px] rounded-none h-11 mt-3 bg-black bg-opacity-30 border border-white text-white text-base hover:bg-black  transition-colors duration-300"
+                              title="Book Now"
+                            />
+                          </Link>
+                        )}
+
+                        {user.role == 'non-member' && card.membersOnly && (
+                          <div className="w-full h-11 mt-3 bg-opacity-0"></div>
+                        )}
+                      </>
+                    )}
+                    {!user && <div className="w-full h-11 mt-3 bg-opacity-0"></div>}
                   </div>
                 </div>
               </div>

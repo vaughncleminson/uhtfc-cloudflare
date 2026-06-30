@@ -22,24 +22,24 @@ export default function Footer(props: Props) {
       <div className="flex flex-col gap-5 text-white uppercase lg:flex-row">
         {mainSections
           .filter((section) => section.title !== 'Profile')
-          .map((section) => (
-            <>
+          .map((section, index) => (
+            <div key={index}>
               {section.link && (
                 <>
                   {section.auth != undefined && section.auth == false && !user && (
-                    <Link href={section.link}>
+                    <Link key={index} href={section.link}>
                       <div className="uppercase text-xl">{section.title}</div>
                     </Link>
                   )}
                   {section.auth != undefined && section.auth == true && user && (
-                    <Link href={section.link}>
+                    <Link key={index} href={section.link}>
                       <div className="uppercase text-xl">{section.title}</div>
                     </Link>
                   )}
                 </>
               )}
               {!section.link && (
-                <div className="flex flex-col gap-1 w-36" key={section.title}>
+                <div key={index} className="flex flex-col gap-1 w-36">
                   <div className="uppercase text-xl">{section.title}</div>
                   {section.children?.map((sub) => (
                     <a href={sub.link} key={sub.title} className="uppercase text-slate-400 text-sm">
@@ -48,7 +48,7 @@ export default function Footer(props: Props) {
                   ))}
                 </div>
               )}
-            </>
+            </div>
           ))}
       </div>
       <div className=" text-white flex flex-col gap-1 text-right">
