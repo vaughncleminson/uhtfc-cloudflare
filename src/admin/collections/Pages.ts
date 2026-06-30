@@ -23,6 +23,7 @@ import { UserProfile } from '../blocks/UserProfile'
 import { generatePreviewPath } from '../utils/generatePreviewPath'
 import { populatePublishedAt } from './hooks/populatePublishedAt'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
+import { MyCatchReturns } from '../blocks/MyCatchReturns'
 
 // import { Hero } from '../blocks/Hero'
 // import { DividerBar } from '../blocks/DividerBar'
@@ -92,6 +93,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 Locations,
                 Order,
                 MyBookings,
+                MyCatchReturns,
                 CatchReturns,
                 Payments,
                 Onboard,

@@ -1,7 +1,7 @@
-import { getPayload, type TaskConfig } from 'payload'
 import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
-import type { Booking as PayloadBooking } from '../../payload-types'
 import config from '@payload-config'
+import { getPayload, type TaskConfig } from 'payload'
+import type { Booking as PayloadBooking } from '../../payload-types'
 const mailsendTemplateID = process.env.MAILSEND_SHARED_WEBSITE_TEMPLATE_ID || 'z86org8onyn4ew13'
 
 export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
@@ -65,6 +65,8 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
       const newCatchReturn = await req.payload.create({
         collection: 'catchReturns',
         data: {
+          userId: booking.userId,
+          locationName: booking.locationName || '',
           booking: booking.id,
           returnCompleted: false,
           publicId: crypto.randomUUID(),

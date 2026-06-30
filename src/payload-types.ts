@@ -429,6 +429,8 @@ export interface BookingHistory {
 export interface CatchReturn {
   id: number;
   booking?: (number | null) | Booking;
+  userId?: number | null;
+  locationName?: string | null;
   returnCompleted: boolean;
   nilReturn?: boolean | null;
   publicId: string;
@@ -614,6 +616,7 @@ export interface Page {
     | LocationsBlock
     | OrderBlock
     | MyBookingsBlock
+    | MyCatchReturnsBlock
     | CatchReturnsBlock
     | PaymentsBlock
     | OnboardBlock
@@ -733,6 +736,17 @@ export interface MyBookingsBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'myBookings';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MyCatchReturnsBlock".
+ */
+export interface MyCatchReturnsBlock {
+  title?: string | null;
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'myCatchReturns';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1265,6 +1279,8 @@ export interface BookingHistorySelect<T extends boolean = true> {
  */
 export interface CatchReturnsSelect<T extends boolean = true> {
   booking?: T;
+  userId?: T;
+  locationName?: T;
   returnCompleted?: T;
   nilReturn?: T;
   publicId?: T;
@@ -1554,6 +1570,7 @@ export interface PagesSelect<T extends boolean = true> {
         locations?: T | LocationsBlockSelect<T>;
         order?: T | OrderBlockSelect<T>;
         myBookings?: T | MyBookingsBlockSelect<T>;
+        myCatchReturns?: T | MyCatchReturnsBlockSelect<T>;
         catchReturns?: T | CatchReturnsBlockSelect<T>;
         payments?: T | PaymentsBlockSelect<T>;
         onboard?: T | OnboardBlockSelect<T>;
@@ -1664,6 +1681,16 @@ export interface OrderBlockSelect<T extends boolean = true> {
  * via the `definition` "MyBookingsBlock_select".
  */
 export interface MyBookingsBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MyCatchReturnsBlock_select".
+ */
+export interface MyCatchReturnsBlockSelect<T extends boolean = true> {
   title?: T;
   image?: T;
   id?: T;

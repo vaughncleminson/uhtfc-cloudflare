@@ -109,7 +109,11 @@ export default function Nav(props: Props) {
               setShowNav(true)
             }}
           >
-            {obj.title === 'Profile' ? <Profile /> : obj.title}
+            {obj.title === 'Profile' ? (
+              <Profile />
+            ) : (
+              <div className="main-link hover:text-slate-300 cursor-pointer">{obj.title}</div>
+            )}
           </div>
         )
       } else if (!obj.auth && !user) {
@@ -122,7 +126,11 @@ export default function Nav(props: Props) {
               setShowNav(true)
             }}
           >
-            {obj.title === 'Profile' ? <Profile /> : obj.title}
+            {obj.title === 'Profile' ? (
+              <Profile />
+            ) : (
+              <div className="main-link hover:text-slate-300 cursor-pointer">{obj.title}</div>
+            )}
           </div>
         )
       } else {
@@ -134,7 +142,11 @@ export default function Nav(props: Props) {
               setShowNav(true)
             }}
           >
-            {obj.title === 'Profile' ? <Profile /> : obj.title}
+            {obj.title === 'Profile' ? (
+              <Profile />
+            ) : (
+              <div className="main-link hover:text-slate-300 cursor-pointer">{obj.title}</div>
+            )}
           </div>
         )
       }

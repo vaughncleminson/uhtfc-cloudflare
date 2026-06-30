@@ -3,7 +3,7 @@ import { NavigationType } from '@/frontend/types/navigation'
 import { Navigation } from '@/payload-types'
 import Link from 'next/link'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../ui/AuthProvider'
 
 type Props = {
@@ -13,12 +13,35 @@ export default function Footer(props: Props) {
   const [mainSections, setMainSections] = useState<NavigationType>(
     props.navigation.navigation as NavigationType,
   )
-  // const [subSections, setSubSections] = useState<NavigationType | null>(null)
-
+  const [scrollPosition, setScrollPosition] = useState(0)
   const { user } = useAuth()
 
+  const [showFooter, setShowFooter] = useState(false)
+
+  const handleScroll = () => {
+    const scrollTop = window.scrollY
+    const windowHeight = window.innerHeight
+    const documentHeight = document.documentElement.scrollHeight
+
+    // Allow a small tolerance (10px) for rounding differences
+    const atBottom = scrollTop + windowHeight >= documentHeight - 10
+
+    setShowFooter(atBottom)
+  }
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll() // Check on initial render
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+  // const [subSections, setSubSections] = useState<NavigationType | null>(null)
+
   return (
-    <footer className="relative w-screen bg-slate-900 px-5 lg:px-40 py-10 flex justify-between mt-5">
+    <footer
+      className={`fixed bottom-0 left-0 z-50 w-screen bg-slate-900 px-5 lg:px-40 py-10 flex justify-between transition-transform duration-300 ease-in-out ${
+        showFooter ? 'translate-y-0' : 'translate-y-full'
+      }`}
+    >
       <div className="flex flex-col gap-5 text-white uppercase lg:flex-row">
         {mainSections
           .filter((section) => section.title !== 'Profile')

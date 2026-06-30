@@ -18,6 +18,7 @@ import Paymments from './Payments'
 import RodFeesMembership from './RodFeesMembership'
 import TwoColumnTextLeft from './TwoColumnTextLeft'
 import UserProfile from './UserProfile'
+import MyCatchReturns from './MyCatchReturns'
 
 const blockComponents: any = {
   hero: Hero,
@@ -36,6 +37,7 @@ const blockComponents: any = {
   onboard: Onboard,
   userProfile: UserProfile,
   twoColumnTextLeft: TwoColumnTextLeft,
+  myCatchReturns: MyCatchReturns,
 }
 
 type Props = {

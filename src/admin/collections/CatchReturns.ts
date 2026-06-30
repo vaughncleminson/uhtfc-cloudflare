@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload'
-import { tr } from 'payload/i18n/tr'
 
 const isValidPublicId = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0
@@ -15,6 +14,16 @@ export const CatchReturns: CollectionConfig = {
       label: 'Booking',
       // required: true,
       relationTo: 'bookings',
+    },
+    {
+      type: 'number',
+      name: 'userId',
+      label: 'User ID',
+    },
+    {
+      type: 'text',
+      name: 'locationName',
+      label: 'Location Name',
     },
     {
       type: 'checkbox',
