@@ -1,8 +1,10 @@
 'use client'
 import { NavigationType } from '@/frontend/types/navigation'
 import { Navigation } from '@/payload-types'
+import Link from 'next/link'
 
 import { useState } from 'react'
+import { useAuth } from '../ui/AuthProvider'
 
 type Props = {
   navigation: Navigation
@@ -13,7 +15,7 @@ export default function Footer(props: Props) {
   )
   // const [subSections, setSubSections] = useState<NavigationType | null>(null)
 
-  // const { user } = useAuth()
+  const { user } = useAuth()
 
   return (
     <footer className="relative w-screen bg-slate-900 px-5 lg:px-40 py-10 flex justify-between mt-5">
@@ -21,14 +23,32 @@ export default function Footer(props: Props) {
         {mainSections
           .filter((section) => section.title !== 'Profile')
           .map((section) => (
-            <div className="flex flex-col gap-1 w-36" key={section.title}>
-              <div className="uppercase text-xl">{section.title}</div>
-              {section.children?.map((sub) => (
-                <a href={sub.link} key={sub.title} className="uppercase text-slate-400 text-sm">
-                  {sub.title}
-                </a>
-              ))}
-            </div>
+            <>
+              {section.link && (
+                <>
+                  {section.auth != undefined && section.auth == false && !user && (
+                    <Link href={section.link}>
+                      <div className="uppercase text-xl">{section.title}</div>
+                    </Link>
+                  )}
+                  {section.auth != undefined && section.auth == true && user && (
+                    <Link href={section.link}>
+                      <div className="uppercase text-xl">{section.title}</div>
+                    </Link>
+                  )}
+                </>
+              )}
+              {!section.link && (
+                <div className="flex flex-col gap-1 w-36" key={section.title}>
+                  <div className="uppercase text-xl">{section.title}</div>
+                  {section.children?.map((sub) => (
+                    <a href={sub.link} key={sub.title} className="uppercase text-slate-400 text-sm">
+                      {sub.title}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </>
           ))}
       </div>
       <div className=" text-white flex flex-col gap-1 text-right">
