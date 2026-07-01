@@ -112,7 +112,7 @@ export default function MyBookingsForm() {
                   <div className=" w-36">{booking.lineItems.length}</div>
                   <div
                     onClick={() => handleCancel(booking.id)}
-                    className=" w-32 bg-slate-800 text-white p-1 text-left rounded-sm"
+                    className=" w-32 bg-slate-800 text-white p-1 text-left rounded-sm cursor-pointer hover:text-slate-400"
                   >
                     Cancel
                   </div>

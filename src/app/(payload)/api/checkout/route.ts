@@ -1,5 +1,6 @@
 import { CheckoutInitiate, CheckoutResponse } from '@/admin/types/checkout'
 import { LocationOption } from '@/admin/types/locationOptions'
+import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
 import { validateBookingDates } from '@/admin/utils/validateBookingDates'
 import { Booking } from '@/frontend/schemas/bookingSchema'
 import { LineItem, YocoLineItem } from '@/frontend/schemas/lineItemSchema'
@@ -9,7 +10,6 @@ import { BookingHistory, Location, Setting } from '@/payload-types'
 import config from '@payload-config'
 import dayjs from 'dayjs'
 import { getPayload } from 'payload'
-import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
 
 const mailsendTemplateID = process.env.MAILSEND_SHARED_WEBSITE_TEMPLATE_ID || 'z86org8onyn4ew13'
 
@@ -327,11 +327,6 @@ const createOrderEntries = async (order: Order): Promise<Order> => {
             idNumber: prod.idNumber,
             email: prod.email,
             mobileNumber: prod.mobileNumber,
-            street: prod.street,
-            city: prod.city,
-            province: prod.province,
-            postalCode: prod.postalCode,
-            country: prod.country,
             otherMemberships: prod.otherMemberships || '',
             howDidYouHearAboutUs: prod.howDidYouHearAboutUs || '',
             totalAmount: prod.totalAmount,

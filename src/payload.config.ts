@@ -13,6 +13,7 @@ import { BookingHistory } from './admin/collections/BookingHistory'
 import { Bookings } from './admin/collections/Bookings'
 import { CatchReturns } from './admin/collections/CatchReturns'
 import { EmailSubscribers } from './admin/collections/EmailSubscribers'
+import { FestivalEntries } from './admin/collections/FestivalEntries'
 import { Festivals } from './admin/collections/Festivals'
 import { Locations } from './admin/collections/Locations'
 import { Media } from './admin/collections/Media'
@@ -82,6 +83,7 @@ export default buildConfig({
     CatchReturns,
     EmailSubscribers,
     Festivals,
+    FestivalEntries,
     Locations,
     Media,
     NewMemberships,

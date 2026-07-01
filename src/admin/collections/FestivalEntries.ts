@@ -10,6 +10,24 @@ export const FestivalEntries: CollectionConfig = {
   fields: [
     {
       type: 'text',
+      name: 'productType',
+      label: 'Product Type',
+      required: true,
+      defaultValue: 'festivalEntry',
+      admin: {
+        readOnly: true,
+      },
+    },
+    {
+      name: 'festival',
+      label: 'Festival',
+      type: 'relationship',
+      relationTo: 'festivals',
+      required: true,
+      hasMany: false,
+    },
+    {
+      type: 'text',
       name: 'teamName',
       label: 'Team Name',
       required: true,

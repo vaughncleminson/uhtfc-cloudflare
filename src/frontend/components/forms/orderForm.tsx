@@ -53,29 +53,30 @@ export default function OrderForm() {
         }
         if (order.products.some((p) => p.productType === 'booking')) {
           setProcessingPayment(false)
+          setOrder(null)
+          clearCheckout()
           const confirmed = await confirm({
             title: 'Booking successful',
             message: 'Tight Lines! Your booking has been confirmed.',
             confirmTitle: 'View bookings',
-            cancelTitle: 'Home',
+            showCancelButton: false,
             confirmUrl: '/profile/my-bookings',
-            cancelUrl: '/',
           })
+
           if (!confirmed) return
-          setOrder(null)
-          // router.push('/profile/my-bookings')
         } else {
           setProcessingPayment(false)
+          setOrder(null)
+          clearCheckout()
           const confirmed = await confirm({
             title: 'Payment successful',
             message: 'Your payment has been processed successfully.',
-            confirmTitle: 'View bookings',
-            confirmUrl: '/profile/my-bookings',
-            cancelTitle: 'Home',
-            cancelUrl: '/',
+            confirmTitle: 'Continue',
+            showCancelButton: false,
+            confirmUrl: '/',
           })
+
           if (!confirmed) return
-          setOrder(null)
         }
       } else if (status === 'cancel' || status === 'failure') {
         try {
@@ -84,8 +85,18 @@ export default function OrderForm() {
           })
 
           if (res.ok) {
+            setProcessingPayment(false)
             setOrder(null)
-            router.push('/')
+            clearCheckout()
+            const confirmed = await confirm({
+              title: 'Payment Unsuccessful',
+              message: 'Your payment was not processed.',
+              confirmTitle: 'Continue',
+              showCancelButton: false,
+              confirmUrl: '/',
+            })
+
+            if (!confirmed) return
           } else {
             alert('Failed to cancel booking')
           }

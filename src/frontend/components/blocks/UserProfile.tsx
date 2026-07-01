@@ -1,7 +1,7 @@
 'use client'
 import { Media, User, UserProfileBlock } from '@/payload-types'
 import Image from 'next/image'
-import RegisterForm from '../forms/registerForm'
+import OnboardingForm from '../forms/onboardingForm'
 import Col from '../layout/Col'
 import Row from '../layout/Row'
 import { useAuth } from '../ui/AuthProvider'
@@ -15,7 +15,7 @@ export default function UserProfile(props: UserProfileBlock) {
       <div id="onboard" className="relative w-screen bg-opacity-90">
         <Row>
           <Col>
-            <RegisterForm user={user as User} submitTitle="UPDATE PROFILE" />
+            <OnboardingForm user={user as User} submitTitle="UPDATE PROFILE" />
           </Col>
           <Col>
             <div className="relative h-[380px]">

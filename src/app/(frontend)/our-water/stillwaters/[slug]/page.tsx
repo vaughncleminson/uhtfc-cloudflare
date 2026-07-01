@@ -50,7 +50,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   }
   const { layout } = page
   return (
-    <section className="flex flex-col gap-5">
+    <section className="flex flex-col gap-5 pt-[90px] pb-[170px]">
       <RenderBlocks blocks={layout} page={page} />
     </section>
   )
