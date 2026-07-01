@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { createContext, ReactNode, useContext, useState } from 'react'
 import Button from './Button'
 
@@ -24,8 +23,6 @@ type ConfirmContextType = {
 const ConfirmContext = createContext<ConfirmContextType | null>(null)
 
 export function ConfirmProvider({ children }: { children: ReactNode }) {
-  const router = useRouter()
-
   const [options, setOptions] = useState<ConfirmOptions | null>(null)
   const [resolver, setResolver] = useState<((value: boolean) => void) | null>(null)
 
@@ -48,18 +45,22 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 
   const handleCancel = () => {
     if (options?.cancelUrl) {
-      router.push(options.cancelUrl)
+      // Force a native clean browser redirect
+      // This wipes the state completely and loads the new URL cleanly
+      window.location.assign(options.cancelUrl)
+    } else {
+      handleClose(false)
     }
-
-    handleClose(false)
   }
 
   const handleConfirm = () => {
     if (options?.confirmUrl) {
-      router.push(options.confirmUrl)
+      // Force a native clean browser redirect
+      // This eliminates Next.js component unmounting state conflicts
+      window.location.assign(options.confirmUrl)
+    } else {
+      handleClose(true)
     }
-
-    handleClose(true)
   }
 
   return (
