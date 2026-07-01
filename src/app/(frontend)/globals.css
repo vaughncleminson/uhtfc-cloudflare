@@ -17,10 +17,10 @@
     @apply text-5xl;
   }
   h2 {
-    @apply text-3xl text-teal-600 text-center;
+    @apply text-3xl text-teal-600 font-normal;
   }
   h3 {
-    @apply text-xl font-bold;
+    @apply text-xl;
   }
   h4 {
     @apply text-lg;

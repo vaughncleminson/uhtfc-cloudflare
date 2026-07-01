@@ -1,28 +1,41 @@
+import {
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 import type { CollectionConfig } from 'payload'
-import { LineItems } from '../fields/LineItems'
 
 export const Festivals: CollectionConfig = {
   slug: 'festivals',
   // Sets the default order for the Admin UI list view
-  defaultSort: 'festivalName',
-  admin: {},
-  hooks: {},
+  defaultSort: 'startDate',
+
+  admin: {
+    defaultColumns: ['festivalName', 'startDate', 'endDate'],
+    useAsTitle: 'festivalName',
+  },
   fields: [
-    {
-      type: 'text',
-      name: 'productType',
-      label: 'Product Type',
-      required: true,
-      defaultValue: 'festivalEntry',
-      admin: {
-        readOnly: true,
-      },
-    },
     {
       type: 'text',
       name: 'festivalName',
       label: 'Festival Name',
       required: true,
+    },
+    {
+      name: 'blurb',
+      type: 'richText',
+      label: 'Blurb',
+      editor: lexicalEditor({
+        features: ({ rootFeatures }) => {
+          return [
+            ...rootFeatures,
+            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+            FixedToolbarFeature(),
+            InlineToolbarFeature(),
+          ]
+        },
+      }),
     },
     {
       name: 'bookingsOpen',
@@ -62,7 +75,7 @@ export const Festivals: CollectionConfig = {
     },
 
     {
-      name: 'extaMeals',
+      name: 'extraMeals',
       type: 'number',
       label: 'Extra Meals Cost Per Person Per Day',
     },
@@ -165,53 +178,10 @@ export const Festivals: CollectionConfig = {
       ],
     },
     {
-      type: 'array',
-      name: 'teamMembers',
-      label: 'Team Members',
-      fields: [
-        {
-          type: 'text',
-          name: 'fullName',
-          label: 'Full Name',
-          required: true,
-        },
-        {
-          type: 'email',
-          name: 'email',
-          label: 'Email',
-          required: true,
-        },
-        {
-          type: 'text',
-          name: 'mobile',
-          label: 'Mobile Number',
-          required: true,
-        },
-        {
-          type: 'text',
-          name: 'garmentSize',
-          label: 'Garment Size',
-          required: true,
-        },
-        {
-          type: 'text',
-          name: 'hatSize',
-          label: 'Hat size',
-          required: true,
-        },
-        {
-          type: 'number',
-          name: 'extraMeals',
-          label: 'Extra Meals',
-        },
-      ],
-      required: true,
+      name: 'sponsorImage',
+      label: 'Sponsor Image',
+      type: 'upload',
+      relationTo: 'media',
     },
-    {
-      type: 'number',
-      name: 'totalAmount',
-      defaultValue: 0,
-    },
-    LineItems,
   ],
 }

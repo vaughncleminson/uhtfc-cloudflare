@@ -5,6 +5,7 @@ import type { Location, Page } from '@/payload-types'
 import Auth from './Auth'
 import Booking from './Booking'
 import CatchReturns from './CatchReturns'
+import FestivalDetails from './FestivalDetails'
 import Hero from './Hero'
 import LocationDetails from './LocationDetails'
 import LocationHero from './LocationHero'
@@ -12,13 +13,13 @@ import Locations from './Locations'
 import Map from './Map'
 import MapDefault from './MapDefault'
 import MyBookings from './MyBookings'
+import MyCatchReturns from './MyCatchReturns'
 import Onboard from './Onboard'
 import Order from './Order'
 import Paymments from './Payments'
 import RodFeesMembership from './RodFeesMembership'
 import TwoColumnTextLeft from './TwoColumnTextLeft'
 import UserProfile from './UserProfile'
-import MyCatchReturns from './MyCatchReturns'
 
 const blockComponents: any = {
   hero: Hero,
@@ -38,6 +39,7 @@ const blockComponents: any = {
   userProfile: UserProfile,
   twoColumnTextLeft: TwoColumnTextLeft,
   myCatchReturns: MyCatchReturns,
+  festival: FestivalDetails,
 }
 
 type Props = {

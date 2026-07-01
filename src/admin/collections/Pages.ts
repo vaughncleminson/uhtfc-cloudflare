@@ -9,11 +9,13 @@ import { CollectionConfig } from 'payload'
 import { Auth } from '../blocks/Auth'
 import { Booking } from '../blocks/Booking'
 import { CatchReturns } from '../blocks/CatchReturns'
+import { Festival } from '../blocks/Festival'
 import { Hero } from '../blocks/Hero'
 import { Locations } from '../blocks/Locations'
 import { Map } from '../blocks/Map'
 import { MapDefault } from '../blocks/MapDefault'
 import { MyBookings } from '../blocks/MyBookings'
+import { MyCatchReturns } from '../blocks/MyCatchReturns'
 import { Onboard } from '../blocks/Onboard'
 import { Order } from '../blocks/Order'
 import { Payments } from '../blocks/Payments'
@@ -23,7 +25,6 @@ import { UserProfile } from '../blocks/UserProfile'
 import { generatePreviewPath } from '../utils/generatePreviewPath'
 import { populatePublishedAt } from './hooks/populatePublishedAt'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
-import { MyCatchReturns } from '../blocks/MyCatchReturns'
 
 // import { Hero } from '../blocks/Hero'
 // import { DividerBar } from '../blocks/DividerBar'
@@ -94,6 +95,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 Order,
                 MyBookings,
                 MyCatchReturns,
+                Festival,
                 CatchReturns,
                 Payments,
                 Onboard,

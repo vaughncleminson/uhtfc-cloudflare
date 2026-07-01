@@ -74,6 +74,7 @@ export interface Config {
     catchReturns: CatchReturn;
     emailSubscribers: EmailSubscriber;
     festivals: Festival;
+    festivalEntries: FestivalEntry;
     locations: Location;
     media: Media;
     newMemberships: NewMembership;
@@ -98,6 +99,7 @@ export interface Config {
     catchReturns: CatchReturnsSelect<false> | CatchReturnsSelect<true>;
     emailSubscribers: EmailSubscribersSelect<false> | EmailSubscribersSelect<true>;
     festivals: FestivalsSelect<false> | FestivalsSelect<true>;
+    festivalEntries: FestivalEntriesSelect<false> | FestivalEntriesSelect<true>;
     locations: LocationsSelect<false> | LocationsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     newMemberships: NewMembershipsSelect<false> | NewMembershipsSelect<true>;
@@ -471,8 +473,22 @@ export interface EmailSubscriber {
  */
 export interface Festival {
   id: number;
-  productType: string;
   festivalName: string;
+  blurb?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   bookingsOpen?: boolean | null;
   numberOfTeams?: number | null;
   entriesPerTeam?: number | null;
@@ -480,16 +496,28 @@ export interface Festival {
   endDate?: string | null;
   'Event Duration'?: number | null;
   price?: number | null;
-  extaMeals?: number | null;
+  extraMeals?: number | null;
   giveAwayType?: ('tShirt' | 'hoodie' | 'cap' | 'hat')[] | null;
   garmentSizes?: ('xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl')[] | null;
   hatSizes?: ('s' | 'm' | 'l')[] | null;
+  sponsorImage?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "festivalEntries".
+ */
+export interface FestivalEntry {
+  id: number;
+  productType: string;
+  festival: number | Festival;
+  teamName: string;
   teamMembers: {
     fullName: string;
     email: string;
     mobile: string;
-    garmentSize: string;
-    hatSize: string;
+    size: string;
     extraMeals?: number | null;
     id?: string | null;
   }[];
@@ -617,6 +645,7 @@ export interface Page {
     | OrderBlock
     | MyBookingsBlock
     | MyCatchReturnsBlock
+    | FestivalBlock
     | CatchReturnsBlock
     | PaymentsBlock
     | OnboardBlock
@@ -747,6 +776,16 @@ export interface MyCatchReturnsBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'myCatchReturns';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FestivalBlock".
+ */
+export interface FestivalBlock {
+  festival: number | Festival;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'festival';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1097,6 +1136,10 @@ export interface PayloadLockedDocument {
         value: number | Festival;
       } | null)
     | ({
+        relationTo: 'festivalEntries';
+        value: number | FestivalEntry;
+      } | null)
+    | ({
         relationTo: 'locations';
         value: number | Location;
       } | null)
@@ -1321,8 +1364,8 @@ export interface EmailSubscribersSelect<T extends boolean = true> {
  * via the `definition` "festivals_select".
  */
 export interface FestivalsSelect<T extends boolean = true> {
-  productType?: T;
   festivalName?: T;
+  blurb?: T;
   bookingsOpen?: T;
   numberOfTeams?: T;
   entriesPerTeam?: T;
@@ -1330,18 +1373,29 @@ export interface FestivalsSelect<T extends boolean = true> {
   endDate?: T;
   'Event Duration'?: T;
   price?: T;
-  extaMeals?: T;
+  extraMeals?: T;
   giveAwayType?: T;
   garmentSizes?: T;
   hatSizes?: T;
+  sponsorImage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "festivalEntries_select".
+ */
+export interface FestivalEntriesSelect<T extends boolean = true> {
+  productType?: T;
+  festival?: T;
+  teamName?: T;
   teamMembers?:
     | T
     | {
         fullName?: T;
         email?: T;
         mobile?: T;
-        garmentSize?: T;
-        hatSize?: T;
+        size?: T;
         extraMeals?: T;
         id?: T;
       };
@@ -1571,6 +1625,7 @@ export interface PagesSelect<T extends boolean = true> {
         order?: T | OrderBlockSelect<T>;
         myBookings?: T | MyBookingsBlockSelect<T>;
         myCatchReturns?: T | MyCatchReturnsBlockSelect<T>;
+        festival?: T | FestivalBlockSelect<T>;
         catchReturns?: T | CatchReturnsBlockSelect<T>;
         payments?: T | PaymentsBlockSelect<T>;
         onboard?: T | OnboardBlockSelect<T>;
@@ -1693,6 +1748,15 @@ export interface MyBookingsBlockSelect<T extends boolean = true> {
 export interface MyCatchReturnsBlockSelect<T extends boolean = true> {
   title?: T;
   image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FestivalBlock_select".
+ */
+export interface FestivalBlockSelect<T extends boolean = true> {
+  festival?: T;
   id?: T;
   blockName?: T;
 }
@@ -2136,6 +2200,7 @@ export interface TaskCreateCollectionExport {
       | 'catchReturns'
       | 'emailSubscribers'
       | 'festivals'
+      | 'festivalEntries'
       | 'locations'
       | 'media'
       | 'newMemberships'

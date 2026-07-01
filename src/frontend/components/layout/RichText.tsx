@@ -1,12 +1,12 @@
-import { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
+import { DefaultNodeTypes } from '@payloadcms/richtext-lexical'
 import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import {
   JSXConvertersFunction,
   RichText as RichTextWithoutBlocks,
 } from '@payloadcms/richtext-lexical/react'
 
-import type {} from '@/payload-types'
 import { cn } from '@/admin/utils/cn'
+import type {} from '@/payload-types'
 
 type NodeTypes = DefaultNodeTypes
 //   | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
