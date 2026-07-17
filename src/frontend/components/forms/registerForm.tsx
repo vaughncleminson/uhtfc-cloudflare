@@ -69,7 +69,7 @@ export default function RegisterForm(props: RegisterFormProps) {
     e.preventDefault()
 
     const result = registerSchema.safeParse(formData)
-    console.log('result', result)
+    console.log('registerForm safeParse: result', result)
 
     if (!result.success) {
       const fieldErrors: Record<string, string> = {}
@@ -105,7 +105,9 @@ export default function RegisterForm(props: RegisterFormProps) {
 
       const result = (await response.json()) as any
 
-      if (result.message === 'Registration Successful') {
+      console.log('registerForm response: result', result)
+
+      if (result.message === 'Registration Successful' || result.message === 'Onboard Successful') {
         props.setAuthType('login')
         const confirmed = await confirm({
           title: 'Registration successful',

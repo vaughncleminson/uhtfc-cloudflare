@@ -100,7 +100,7 @@ export default function OnboardingForm(props: OnboardingFormProps) {
       if (props.submitTitle === 'UPDATE DETAILS') {
         path = '/api/register'
       }
-
+      console.log('onboardingForm: path', path)
       const response = await fetch(path, {
         method: 'POST',
         credentials: 'include',
@@ -111,10 +111,10 @@ export default function OnboardingForm(props: OnboardingFormProps) {
       })
 
       const result = (await response.json()) as any
-
+      console.log('onboardingForm: result', result)
       if (result.message === 'Onboard Successful') {
         const confirmed = await confirm({
-          title: 'Details updated successfully',
+          title: 'Onboard Successful',
           message: 'Please login to continue.',
           showCancelButton: false,
           confirmTitle: 'LOGIN',

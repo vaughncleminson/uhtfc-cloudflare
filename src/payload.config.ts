@@ -174,7 +174,7 @@ function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {
     ({ getPlatformProxy }) =>
       getPlatformProxy({
         environment: process.env.CLOUDFLARE_ENV,
-        remoteBindings: true,
+        remoteBindings: isProduction, // set to true if you want to load R2 bucket photos on dev,
       } satisfies GetPlatformProxyOptions),
   )
 }
