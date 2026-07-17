@@ -5,26 +5,30 @@ npx wrangler login
 * How to view tail of server:
 npx wrangler tail uhtfc-cloudflare
 
-* How to Export database from cloudflare D1
-npx wrangler d1 export d1-uhtfc-cloudflare --remote --output=./database-exports/export16May2026-1721.sql
+* How to Export database from cloudflare D1 and restore locally
+# 1) Stop dev server first
 
-* Steps to import db to local:
-* Note sqlite3 must be installed
-* Stop local dev server before import
-Local sqlite db is in .wrangler/state/v3/d1/miniflare-D1DatabaseObject:
+# 2) Export prod D1 to a single variable (avoid filename mismatch)
+DUMP="./database-exports/prod-$(date +%F-%H%M%S).sql"
+npx wrangler d1 export d1-uhtfc-cloudflare --remote --output="$DUMP"
 
+# 3) Reset local D1 state
 rm -f .wrangler/state/v3/d1/miniflare-D1DatabaseObject/*.sqlite
+
+# 4) Recreate empty local DB file
 npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT 1" >/dev/null
 
-db_file=$(ls .wrangler/state/v3/d1/miniflare-D1DatabaseObject/*.sqlite | grep -v 'metadata.sqlite')
+# 5) Import using Wrangler (preferred over direct sqlite file plumbing)
+npx wrangler d1 execute d1-uhtfc-cloudflare --local --file "$DUMP"
 
-{ 
-  printf 'PRAGMA foreign_keys=OFF;\n'
-  cat database-exports/export10May2026_1321.sql
-  printf '\nPRAGMA foreign_keys=ON;\n'
-} | sqlite3 "$db_file"
+# 6) Verify key tables
+npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT COUNT(*) AS admins_count FROM admins;"
+npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%migration%';"
 
 * End Steps
+
+* Restore prod D1 snapshot into local DB using script:
+pnpm run db:restore:prod-to-local
 
 * Verify import:
 npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT COUNT(*) AS admins_count FROM admins;"

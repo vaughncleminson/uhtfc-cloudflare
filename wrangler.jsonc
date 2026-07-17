@@ -33,13 +33,14 @@
       "binding": "D1",
       "database_id": "c2e7a11c-24e7-470b-bec3-7223a5cfcce8",
       "database_name": "d1-uhtfc-cloudflare",
-      "remote": true,
+      "remote": false,
     },
   ],
   "r2_buckets": [
     {
       "binding": "R2",
       "bucket_name": "r2-uhtfc-cloudflare",
+      "remote": true,
     },
   ],
   "observability": {
