@@ -10,6 +10,7 @@ import Row from '../layout/Row'
 
 export default async function FestivalDetails(props: FestivalBlock) {
   const payload = await getPayload({ config })
+  console.log('FestivalDetails: props.festival', props.festival)
   const festivalDetails = await payload.findByID({
     collection: 'festivals',
     depth: 2,

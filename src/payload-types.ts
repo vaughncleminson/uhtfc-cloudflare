@@ -497,9 +497,10 @@ export interface Festival {
   'Event Duration'?: number | null;
   price?: number | null;
   extraMeals?: number | null;
-  giveAwayType?: ('tShirt' | 'hoodie' | 'cap' | 'hat')[] | null;
+  giveAwayType?: ('beanie' | 'cap' | 'hat' | 'hoodie' | 'tShirt')[] | null;
   garmentSizes?: ('xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl')[] | null;
   hatSizes?: ('s' | 'm' | 'l')[] | null;
+  beanieSizes?: 'all'[] | null;
   sponsorImage?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -1377,6 +1378,7 @@ export interface FestivalsSelect<T extends boolean = true> {
   giveAwayType?: T;
   garmentSizes?: T;
   hatSizes?: T;
+  beanieSizes?: T;
   sponsorImage?: T;
   updatedAt?: T;
   createdAt?: T;
