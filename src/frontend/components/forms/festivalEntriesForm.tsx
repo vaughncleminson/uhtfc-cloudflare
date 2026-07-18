@@ -1,9 +1,10 @@
 'use client'
 
-import { festivalEntrySchema } from '@/frontend/schemas/festivalEntrySchema'
-import { Festival } from '@/payload-types'
-import { useRouter } from 'next/navigation'
+import { createFestivalEntrySchema } from '@/frontend/schemas/festivalEntrySchema'
+import { Festival, User } from '@/payload-types'
+import Link from 'next/link'
 import { FormEvent, useState } from 'react'
+import { useAuth } from '../ui/AuthProvider'
 import Button from '../ui/Button'
 import { useConfirm } from '../ui/ModalProvider'
 
@@ -15,50 +16,82 @@ export default function FestivalEntriesForm(props: FestivalEntriesFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const user = useAuth().user as User
   const confirm = useConfirm()
+  //set the size options based on the selected giveaway type
+  const selectedGiveAwayType = props.festival.giveAwayType?.[0]
+  const sizeOptions =
+    selectedGiveAwayType === 'beanie'
+      ? (props.festival.beanieSizes ?? [])
+      : selectedGiveAwayType === 'hat'
+        ? (props.festival.hatSizes ?? [])
+        : (props.festival.garmentSizes ?? [])
+  const sizeLabel =
+    selectedGiveAwayType === 'tShirt'
+      ? 'T-Shirt Size'
+      : selectedGiveAwayType
+        ? `${selectedGiveAwayType.charAt(0).toUpperCase()}${selectedGiveAwayType.slice(1)} Size`
+        : 'Select Size'
+
+  const formatSizeLabel = (size: string) => {
+    if (size === 'all') return 'One-size-fits-all'
+    return size.toUpperCase()
+  }
+
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     const form = e.target as HTMLFormElement
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
-    const result = festivalEntrySchema.safeParse(data)
-    console.log('festivalEntriesForm: submit: result', result)
+    const validationSchema = createFestivalEntrySchema(props.festival.entriesPerTeam ?? 1)
+    const result = validationSchema.safeParse(data)
+    console.log('festivalEntriesForm: validationSchema: result', result)
     if (!result.success) {
       const fieldErrors: Record<string, string> = {}
       result.error.errors.forEach((err) => {
-        fieldErrors[err.path[0]] = err.message
+        const path = err.path[0]
+        if (typeof path === 'string') {
+          fieldErrors[path] = err.message
+        }
       })
       setErrors(fieldErrors)
     } else {
       setErrors({})
       try {
         setLoading(true)
-        const login = await fetch('/api/frontend-auth/login', {
+        const response = await fetch('/api/festival-entries', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            ...data,
+            festivalId: props.festival.id,
+          }),
         })
-        const result = (await login.json()) as any
-        if (result.message == 'Authentication Passed') {
-          router.push('/')
-          router.refresh()
-        } else if (result.message == 'Reset email sent') {
-          setLoading(false)
-          const confirmed = await confirm({
-            title: 'Required information',
-            message: `An email has been sent to ${data.email}. You are required to click the link in the email to reset your password and supply other information before continuing. If you haven't received the email within a few minutes, please check your spam folder or contact us directly.`,
-            confirmTitle: 'OK',
-            cancelTitle: 'Cancel',
-            confirmUrl: '/',
-            cancelUrl: '/',
-          })
-          if (!confirmed) return
+        console.log('festivalEntriesForm: post body:', {
+          ...data,
+          festivalId: props.festival.id,
+        })
+        const submitResult = (await response.json()) as {
+          success?: boolean
+          message?: string
+        }
+
+        if (response.ok && submitResult.success) {
           form.reset()
+          await confirm({
+            title: 'Entry submitted successfully',
+            message: 'Your festival entry has been saved.',
+            showCancelButton: false,
+            confirmTitle: 'OK',
+          })
         } else {
-          setErrors({ submit: 'Username or password incorrect' })
+          if (response.status === 401) {
+            setErrors({ submit: 'Please log in first' })
+          } else {
+            setErrors({ submit: submitResult.message || 'Failed to submit festival entry' })
+          }
         }
         setLoading(false)
       } catch (error) {
@@ -68,7 +101,11 @@ export default function FestivalEntriesForm(props: FestivalEntriesFormProps) {
     }
   }
   return (
-    <form onSubmit={submit} className="flex flex-col bg-slate-900 p-10 pt-8 gap-2" action="">
+    <form
+      onSubmit={submit}
+      className="flex flex-col bg-slate-900 p-10 pt-8 gap-2 relative"
+      action=""
+    >
       <div className="flex gap-2">
         <h1 className="text-2xl text-white mb-2 uppercase">Enter Now</h1>
       </div>
@@ -83,36 +120,47 @@ export default function FestivalEntriesForm(props: FestivalEntriesFormProps) {
           {Array.from({ length: props.festival.entriesPerTeam }).map((_, index) => (
             <div key={index}>
               <label className="label">TEAM MEMBER #{index + 1}</label>
-              {errors.teamName && <p className="text-red-500 text-sm">{errors.teamName}</p>}
               <input
                 placeholder={`Full Name`}
                 name={`teamMember_${index}`}
                 className="input my-2" // Added margin-bottom for spacing
                 type="text"
               />
+              {errors[`teamMember_${index}`] && (
+                <p className="text-red-500 text-sm">{errors[`teamMember_${index}`]}</p>
+              )}
               <input
                 placeholder={`Email`}
                 name={`teamMemberEmail_${index}`}
                 className="input mb-2" // Added margin-bottom for spacing
                 type="email"
               />
+              {errors[`teamMemberEmail_${index}`] && (
+                <p className="text-red-500 text-sm">{errors[`teamMemberEmail_${index}`]}</p>
+              )}
               <input
                 placeholder={`Mobile Number`}
                 name={`teamMemberMobile_${index}`}
                 className="input mb-2" // Added margin-bottom for spacing
                 type="text"
               />
+              {errors[`teamMemberMobile_${index}`] && (
+                <p className="text-red-500 text-sm">{errors[`teamMemberMobile_${index}`]}</p>
+              )}
               <select
                 name={`teamMemberSize_${index}`}
                 className="input mb-2" // Added margin-bottom for spacing
               >
-                <option value="">{`${props.festival.giveAwayType[0]} Size`}</option>
-                {props.festival.garmentSizes.map((size) => (
+                <option value="">{sizeLabel}</option>
+                {sizeOptions.map((size) => (
                   <option key={size} value={size}>
-                    {size.toUpperCase()}
+                    {formatSizeLabel(size)}
                   </option>
                 ))}
               </select>
+              {errors[`teamMemberSize_${index}`] && (
+                <p className="text-red-500 text-sm">{errors[`teamMemberSize_${index}`]}</p>
+              )}
             </div>
           ))}
         </>
@@ -128,6 +176,13 @@ export default function FestivalEntriesForm(props: FestivalEntriesFormProps) {
       />
       {errors.submit && <p className="text-red-500 text-sm">{errors.submit}</p>}
       <Button type="submit" loading={loading} title="SUBMIT" />
+      {!user && (
+        <Link href="/#login" className="text-white mt-2 underline">
+          <div className="bg-slate-950 bg-opacity-70 absolute left-0 top-0 w-full h-full text-white flex items-center justify-center">
+            PLEASE REGISTER OR LOGIN TO APPLY FOR FESTIVAL ENTRY
+          </div>
+        </Link>
+      )}
     </form>
   )
 }
