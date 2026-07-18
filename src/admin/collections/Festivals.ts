@@ -90,12 +90,8 @@ export const Festivals: CollectionConfig = {
       },
       options: [
         {
-          label: 'T-Shirt',
-          value: 'tShirt',
-        },
-        {
-          label: 'Hoodie',
-          value: 'hoodie',
+          label: 'Beanie',
+          value: 'beanie',
         },
         {
           label: 'Cap',
@@ -104,6 +100,14 @@ export const Festivals: CollectionConfig = {
         {
           label: 'Hat',
           value: 'hat',
+        },
+        {
+          label: 'Hoodie',
+          value: 'hoodie',
+        },
+        {
+          label: 'T-Shirt',
+          value: 'tShirt',
         },
       ],
     },
@@ -174,6 +178,25 @@ export const Festivals: CollectionConfig = {
         {
           label: 'Large',
           value: 'l',
+        },
+      ],
+    },
+    {
+      name: 'beanieSizes', // required
+      type: 'select', // required
+      label: 'Select Available Beanie Sizes', // required
+      hasMany: true,
+      admin: {
+        isClearable: true,
+        isSortable: true,
+        condition: (data) => {
+          return data.giveAwayType?.includes('beanie')
+        },
+      },
+      options: [
+        {
+          label: 'One-size-fits-all',
+          value: 'all',
         },
       ],
     },

@@ -1,6 +1,6 @@
 'use client'
 
-import { loginSchema } from '@/frontend/schemas/authSchema'
+import { festivalEntrySchema } from '@/frontend/schemas/festivalEntrySchema'
 import { Festival } from '@/payload-types'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
@@ -22,8 +22,8 @@ export default function FestivalEntriesForm(props: FestivalEntriesFormProps) {
     const form = e.target as HTMLFormElement
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
-    const result = loginSchema.safeParse(data)
-
+    const result = festivalEntrySchema.safeParse(data)
+    console.log('festivalEntriesForm: submit: result', result)
     if (!result.success) {
       const fieldErrors: Record<string, string> = {}
       result.error.errors.forEach((err) => {
