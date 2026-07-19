@@ -80,25 +80,15 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
       //send an email to the user with a link to submit their catch return details
       const cMessageTitle = `Your ${returnBookingLocation(booking)} Catch Return for ${returnBookingDate(booking)}`
       const cMessageBody = generateCatchReturnHTML(booking, newCatchReturn.publicId)
-      const payload = await getPayload({ config })
-      await mailerSendTemplateAdapter(
-        mailsendTemplateID,
-        cMessageTitle,
-        [{ email: booking.email, name: booking.firstName }],
-        [
-          {
-            email: booking.email,
-            data: {
-              recipientName: booking.firstName,
-              emailSubject: cMessageTitle,
-              messageTitle: cMessageTitle,
-              messageBody: cMessageBody,
-            },
-          },
-        ],
-        payload.logger,
-        payload,
-      )
+      await sendFormattedTemplateEmail({
+        templateId: mailsendTemplateID,
+        email: booking.email,
+        recipientName: booking.firstName,
+        messageTitle: cMessageTitle,
+        messageBody: cMessageBody,
+        logger: req.payload.logger,
+        payload: req.payload,
+      })
     }
 
     //add a note to the job log with the number of emails sent and the date the job ran

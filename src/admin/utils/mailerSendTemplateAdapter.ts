@@ -28,6 +28,7 @@ type SendFormattedTemplateEmailArgs = {
   messageTitle: string
   messageBody: string
   logger?: TemplateLogger
+  payload?: Payload
 }
 
 const mailerSendToken = process.env.MAILSEND_TOKEN || process.env.API_KEY || ''
@@ -136,6 +137,7 @@ export async function sendFormattedTemplateEmail({
   messageTitle,
   messageBody,
   logger,
+  payload,
 }: SendFormattedTemplateEmailArgs) {
   return mailerSendTemplateAdapter(
     templateId,
@@ -153,5 +155,6 @@ export async function sendFormattedTemplateEmail({
       },
     ],
     logger,
+    payload,
   )
 }
