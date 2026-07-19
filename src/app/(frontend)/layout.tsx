@@ -15,7 +15,6 @@ import { ToastProvider } from '@/frontend/components/ui/ToastProvider'
 import { Navigation } from '@/payload-types'
 import { getPayload } from 'payload'
 import './globals.css'
-// import { getServerSideURL } from '@/utilities/getURL'
 
 // Force dynamic rendering so build-time prerender does not query D1.
 export const dynamic = 'force-dynamic'

@@ -1,6 +1,5 @@
-import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
-import config from '@payload-config'
-import { getPayload, type TaskConfig } from 'payload'
+import { sendFormattedTemplateEmail } from '@/admin/utils/mailerSendTemplateAdapter'
+import { type TaskConfig } from 'payload'
 import type { Booking as PayloadBooking } from '../../payload-types'
 const mailsendTemplateID = process.env.MAILSEND_SHARED_WEBSITE_TEMPLATE_ID || 'z86org8onyn4ew13'
 
@@ -81,24 +80,14 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
       //send an email to the user with a link to submit their catch return details
       const cMessageTitle = `Your ${returnBookingLocation(booking)} Catch Return for ${returnBookingDate(booking)}`
       const cMessageBody = generateCatchReturnHTML(booking, newCatchReturn.publicId)
-      const payload = await getPayload({ config })
-      await mailerSendTemplateAdapter(
-        mailsendTemplateID,
-        cMessageTitle,
-        [{ email: booking.email, name: booking.firstName }],
-        [
-          {
-            email: booking.email,
-            data: {
-              recipientName: booking.firstName,
-              emailSubject: cMessageTitle,
-              messageTitle: cMessageTitle,
-              messageBody: cMessageBody,
-            },
-          },
-        ],
-        payload.logger,
-      )
+      await sendFormattedTemplateEmail({
+        templateId: mailsendTemplateID,
+        email: booking.email,
+        recipientName: booking.firstName,
+        messageTitle: cMessageTitle,
+        messageBody: cMessageBody,
+        logger: req.payload.logger,
+      })
     }
 
     //add a note to the job log with the number of emails sent and the date the job ran
