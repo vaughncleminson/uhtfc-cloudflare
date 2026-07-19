@@ -12,7 +12,6 @@ import { Admins } from './admin/collections/Admins'
 import { BookingHistory } from './admin/collections/BookingHistory'
 import { Bookings } from './admin/collections/Bookings'
 import { CatchReturns } from './admin/collections/CatchReturns'
-import { EmailAuditLogs } from './admin/collections/EmailAuditLogs'
 import { EmailSubscribers } from './admin/collections/EmailSubscribers'
 import { FestivalEntries } from './admin/collections/FestivalEntries'
 import { Festivals } from './admin/collections/Festivals'
@@ -83,7 +82,6 @@ export default buildConfig({
     Bookings,
     BookingHistory,
     CatchReturns,
-    EmailAuditLogs,
     EmailSubscribers,
     Festivals,
     FestivalEntries,
