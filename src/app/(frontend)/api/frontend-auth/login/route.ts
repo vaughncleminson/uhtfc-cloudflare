@@ -1,7 +1,6 @@
-import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
+import { sendFormattedTemplateEmail } from '@/admin/utils/mailerSendTemplateAdapter'
 import configPromise from '@payload-config'
 import { randomUUID } from 'crypto'
-import config from '@payload-config'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 

@@ -21,6 +21,15 @@ export type TemplatePersonalization = {
 
 type TemplateLogger = Pick<Payload['logger'], 'info' | 'warn'>
 
+type SendFormattedTemplateEmailArgs = {
+  templateId: string
+  email: string
+  recipientName: string
+  messageTitle: string
+  messageBody: string
+  logger?: TemplateLogger
+}
+
 const mailerSendToken = process.env.MAILSEND_TOKEN || process.env.API_KEY || ''
 const mailerSend = mailerSendToken ? new MailerSend({ apiKey: mailerSendToken }) : null
 
@@ -118,4 +127,31 @@ export default async function mailerSendTemplateAdapter(
 
     throw error
   }
+}
+
+export async function sendFormattedTemplateEmail({
+  templateId,
+  email,
+  recipientName,
+  messageTitle,
+  messageBody,
+  logger,
+}: SendFormattedTemplateEmailArgs) {
+  return mailerSendTemplateAdapter(
+    templateId,
+    messageTitle,
+    [{ email, name: recipientName }],
+    [
+      {
+        email,
+        data: {
+          recipientName,
+          emailSubject: messageTitle,
+          messageTitle,
+          messageBody,
+        },
+      },
+    ],
+    logger,
+  )
 }

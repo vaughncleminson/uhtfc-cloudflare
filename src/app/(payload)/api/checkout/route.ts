@@ -1,6 +1,6 @@
 import { CheckoutInitiate, CheckoutResponse } from '@/admin/types/checkout'
 import { LocationOption } from '@/admin/types/locationOptions'
-import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
+import { sendFormattedTemplateEmail } from '@/admin/utils/mailerSendTemplateAdapter'
 import { validateBookingDates } from '@/admin/utils/validateBookingDates'
 import { Booking } from '@/frontend/schemas/bookingSchema'
 import { LineItem, YocoLineItem } from '@/frontend/schemas/lineItemSchema'

@@ -1,6 +1,5 @@
-import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
-import config from '@payload-config'
-import { getPayload, type TaskConfig } from 'payload'
+import { sendFormattedTemplateEmail } from '@/admin/utils/mailerSendTemplateAdapter'
+import { type TaskConfig } from 'payload'
 import type { Booking as PayloadBooking } from '../../payload-types'
 const mailsendTemplateID = process.env.MAILSEND_SHARED_WEBSITE_TEMPLATE_ID || 'z86org8onyn4ew13'
 
