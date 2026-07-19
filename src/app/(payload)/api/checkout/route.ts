@@ -1,6 +1,6 @@
 import { CheckoutInitiate, CheckoutResponse } from '@/admin/types/checkout'
 import { LocationOption } from '@/admin/types/locationOptions'
-import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
+import { sendFormattedTemplateEmail } from '@/admin/utils/mailerSendTemplateAdapter'
 import { validateBookingDates } from '@/admin/utils/validateBookingDates'
 import { Booking } from '@/frontend/schemas/bookingSchema'
 import { LineItem, YocoLineItem } from '@/frontend/schemas/lineItemSchema'
@@ -375,23 +375,14 @@ const sendBookingEmails = async (order: Order) => {
           <p>Best regards,</p>
           <p>The UHTFC Team</p>`
 
-    await mailerSendTemplateAdapter(
-      mailsendTemplateID,
-      cMessageTitle,
-      [{ email: order.email, name: order.firstName }],
-      [
-        {
-          email: order.email,
-          data: {
-            recipientName: order.firstName,
-            emailSubject: cMessageTitle,
-            messageTitle: cMessageTitle,
-            messageBody: cMessageBody,
-          },
-        },
-      ],
-      payload.logger,
-    )
+    await sendFormattedTemplateEmail({
+      templateId: mailsendTemplateID,
+      email: order.email,
+      recipientName: order.firstName,
+      messageTitle: cMessageTitle,
+      messageBody: cMessageBody,
+      logger: payload.logger,
+    })
 
     // send email to location owner/contact
     // first we need to get the location details to get the contact email
@@ -402,23 +393,14 @@ const sendBookingEmails = async (order: Order) => {
     const locationNotificationEmail = location ? getLocationNotificationEmail(location) : null
 
     if (locationNotificationEmail) {
-      await mailerSendTemplateAdapter(
-        mailsendTemplateID,
-        cMessageTitle,
-        [{ email: locationNotificationEmail, name: 'Location Owner/Contact' }],
-        [
-          {
-            email: locationNotificationEmail,
-            data: {
-              recipientName: 'Location Owner/Contact',
-              emailSubject: cMessageTitle,
-              messageTitle: cMessageTitle,
-              messageBody: cMessageBody,
-            },
-          },
-        ],
-        payload.logger,
-      )
+      await sendFormattedTemplateEmail({
+        templateId: mailsendTemplateID,
+        email: locationNotificationEmail,
+        recipientName: 'Location Owner/Contact',
+        messageTitle: cMessageTitle,
+        messageBody: cMessageBody,
+        logger: payload.logger,
+      })
     }
   }
 }
