@@ -1,5 +1,6 @@
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend'
 import type { Payload } from 'payload'
+import { recordEmailAudit } from './emailAuditLog'
 
 export type TemplateRecipient = {
   email: string
@@ -33,6 +34,7 @@ export default async function mailerSendTemplateAdapter(
   recipients: TemplateRecipient[],
   personalizationData: TemplatePersonalization[],
   logger?: TemplateLogger,
+  payload?: Payload,
 ) {
   logger?.info({
     msg: 'Sending template email with MailerSend adapter.',
@@ -44,6 +46,20 @@ export default async function mailerSendTemplateAdapter(
 
   if (!mailerSend) {
     logger?.warn({ msg: 'Skipping MailerSend template email: MAILSEND_TOKEN is not configured.' })
+    if (payload) {
+      await recordEmailAudit(payload, {
+        status: 'skipped',
+        deliveryType: 'template',
+        subject,
+        templateId,
+        fromEmail: 'no-reply@uhtfc.org.za',
+        fromName: 'The Underberg-Himeville Trout Fishing Club',
+        replyToEmail: 'uhtfc.office@gmail.com',
+        replyToName: 'The Underberg-Himeville Trout Fishing Club',
+        to: recipients,
+        skipReason: 'MAILSEND_TOKEN is not configured',
+      })
+    }
     return null
   }
 
@@ -58,7 +74,48 @@ export default async function mailerSendTemplateAdapter(
     .setTemplateId(templateId)
     .setPersonalization(personalizationData)
 
-  const messagesSent = await mailerSend.email.send(emailParams)
-  logger?.info({ msg: 'MailerSend template email sent.', messagesSent })
-  return messagesSent
+  try {
+    const messagesSent = await mailerSend.email.send(emailParams)
+    logger?.info({ msg: 'MailerSend template email sent.', messagesSent })
+
+    if (payload) {
+      await recordEmailAudit(payload, {
+        status: 'sent',
+        deliveryType: 'template',
+        subject,
+        templateId,
+        fromEmail: 'no-reply@uhtfc.org.za',
+        fromName: 'The Underberg-Himeville Trout Fishing Club',
+        replyToEmail: 'uhtfc.office@gmail.com',
+        replyToName: 'The Underberg-Himeville Trout Fishing Club',
+        to: recipients,
+        response: messagesSent,
+        meta: {
+          personalizationCount: personalizationData.length,
+        },
+      })
+    }
+
+    return messagesSent
+  } catch (error) {
+    if (payload) {
+      await recordEmailAudit(payload, {
+        status: 'failed',
+        deliveryType: 'template',
+        subject,
+        templateId,
+        fromEmail: 'no-reply@uhtfc.org.za',
+        fromName: 'The Underberg-Himeville Trout Fishing Club',
+        replyToEmail: 'uhtfc.office@gmail.com',
+        replyToName: 'The Underberg-Himeville Trout Fishing Club',
+        to: recipients,
+        error: error instanceof Error ? error.message : String(error),
+        meta: {
+          personalizationCount: personalizationData.length,
+        },
+      })
+    }
+
+    throw error
+  }
 }

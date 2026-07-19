@@ -106,6 +106,7 @@ export async function POST(request: Request) {
         },
       ],
       payload.logger,
+      payload,
     )
   }
 }

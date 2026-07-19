@@ -98,6 +98,7 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
           },
         ],
         payload.logger,
+        payload,
       )
     }
 
