@@ -88,24 +88,13 @@ export async function POST(request: Request) {
           <br/>
           <p>Best regards,<br/>The Underberg-Himeville Trout Fishing Club</p>`
 
-    const payload = await getPayload({ config })
-    await mailerSendTemplateAdapter(
-      mailsendTemplateID,
-      cMessageTitle,
-      [{ email: previousUser.email, name: displayName }],
-      [
-        {
-          email: previousUser.email,
-          data: {
-            recipientName: displayName,
-            emailSubject: cMessageTitle,
-            messageTitle: cMessageTitle,
-            messageBody: cMessageBody,
-          },
-        },
-      ],
-      payload.logger,
-      payload,
-    )
+    await sendFormattedTemplateEmail({
+      templateId: mailsendTemplateID,
+      email: previousUser.email,
+      recipientName: displayName,
+      messageTitle: cMessageTitle,
+      messageBody: cMessageBody,
+      logger: payload.logger,
+    })
   }
 }

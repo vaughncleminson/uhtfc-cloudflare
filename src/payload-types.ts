@@ -72,7 +72,6 @@ export interface Config {
     bookings: Booking;
     bookingHistory: BookingHistory;
     catchReturns: CatchReturn;
-    emailAuditLogs: EmailAuditLog;
     emailSubscribers: EmailSubscriber;
     festivals: Festival;
     festivalEntries: FestivalEntry;
@@ -98,7 +97,6 @@ export interface Config {
     bookings: BookingsSelect<false> | BookingsSelect<true>;
     bookingHistory: BookingHistorySelect<false> | BookingHistorySelect<true>;
     catchReturns: CatchReturnsSelect<false> | CatchReturnsSelect<true>;
-    emailAuditLogs: EmailAuditLogsSelect<false> | EmailAuditLogsSelect<true>;
     emailSubscribers: EmailSubscribersSelect<false> | EmailSubscribersSelect<true>;
     festivals: FestivalsSelect<false> | FestivalsSelect<true>;
     festivalEntries: FestivalEntriesSelect<false> | FestivalEntriesSelect<true>;
@@ -452,65 +450,6 @@ export interface CatchReturn {
     averageLength: number;
     largeFish: number;
   };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "emailAuditLogs".
- */
-export interface EmailAuditLog {
-  id: number;
-  firstToEmail?: string | null;
-  sentAt: string;
-  status: 'sent' | 'skipped' | 'failed';
-  deliveryType: 'standard' | 'template';
-  provider: string;
-  subject: string;
-  templateId?: string | null;
-  fromEmail: string;
-  fromName?: string | null;
-  replyToEmail?: string | null;
-  replyToName?: string | null;
-  to: {
-    email: string;
-    name?: string | null;
-    id?: string | null;
-  }[];
-  cc?:
-    | {
-        email: string;
-        name?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  bcc?:
-    | {
-        email: string;
-        name?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  skipReason?: string | null;
-  error?: string | null;
-  response?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  meta?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1190,10 +1129,6 @@ export interface PayloadLockedDocument {
         value: number | CatchReturn;
       } | null)
     | ({
-        relationTo: 'emailAuditLogs';
-        value: number | EmailAuditLog;
-      } | null)
-    | ({
         relationTo: 'emailSubscribers';
         value: number | EmailSubscriber;
       } | null)
@@ -1409,50 +1344,6 @@ export interface CatchReturnsSelect<T extends boolean = true> {
         averageLength?: T;
         largeFish?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "emailAuditLogs_select".
- */
-export interface EmailAuditLogsSelect<T extends boolean = true> {
-  firstToEmail?: T;
-  sentAt?: T;
-  status?: T;
-  deliveryType?: T;
-  provider?: T;
-  subject?: T;
-  templateId?: T;
-  fromEmail?: T;
-  fromName?: T;
-  replyToEmail?: T;
-  replyToName?: T;
-  to?:
-    | T
-    | {
-        email?: T;
-        name?: T;
-        id?: T;
-      };
-  cc?:
-    | T
-    | {
-        email?: T;
-        name?: T;
-        id?: T;
-      };
-  bcc?:
-    | T
-    | {
-        email?: T;
-        name?: T;
-        id?: T;
-      };
-  skipReason?: T;
-  error?: T;
-  response?: T;
-  meta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2309,7 +2200,6 @@ export interface TaskCreateCollectionExport {
       | 'bookings'
       | 'bookingHistory'
       | 'catchReturns'
-      | 'emailAuditLogs'
       | 'emailSubscribers'
       | 'festivals'
       | 'festivalEntries'
