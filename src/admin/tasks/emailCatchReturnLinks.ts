@@ -87,6 +87,7 @@ export const emailCatchReturnLinksTask: TaskConfig<'emailCatchReturnLinks'> = {
         messageTitle: cMessageTitle,
         messageBody: cMessageBody,
         logger: req.payload.logger,
+        payload: req.payload,
       })
     }
 

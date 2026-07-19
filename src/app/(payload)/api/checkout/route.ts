@@ -382,6 +382,7 @@ const sendBookingEmails = async (order: Order) => {
       messageTitle: cMessageTitle,
       messageBody: cMessageBody,
       logger: payload.logger,
+      payload,
     })
 
     // send email to location owner/contact
@@ -400,6 +401,7 @@ const sendBookingEmails = async (order: Order) => {
         messageTitle: cMessageTitle,
         messageBody: cMessageBody,
         logger: payload.logger,
+        payload,
       })
     }
   }

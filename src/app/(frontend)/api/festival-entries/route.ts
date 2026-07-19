@@ -163,6 +163,7 @@ export const POST = async (request: Request) => {
         messageTitle: cMessageTitle,
         messageBody: cMessageBody,
         logger: payload.logger,
+        payload,
       })
 
       const clubAdminEmail = process.env.UHTFC_OFFICE_EMAIL || 'uhtfc.office@gmail.com'
@@ -184,6 +185,7 @@ export const POST = async (request: Request) => {
         messageTitle: adminMessageTitle,
         messageBody: adminMessageBody,
         logger: payload.logger,
+        payload,
       })
     }
 
