@@ -72,7 +72,7 @@ export async function generateMetadata({
   })
   return generateMeta({ doc: page })
 }
-
+//test
 const queryPageBySlug = cache(async ({ slug }: { slug: string[] }) => {
   const { isEnabled: draft } = await draftMode()
 
