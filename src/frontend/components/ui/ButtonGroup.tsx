@@ -1,9 +1,9 @@
 'use client'
 
-import { userAtom } from '@/frontend/atoms/userAtom'
 import { ButtonLink } from '@/frontend/types/buttonLink'
 import { Location, LocationDetailsBlock } from '@/payload-types'
-import { useAtom } from 'jotai'
+import { useAuth } from '@payloadcms/ui'
+
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -15,7 +15,7 @@ type Props = {
 
 export default function ButtonGroup(props: Props) {
   const [buttons] = useState(props.buttons)
-  const [user] = useAtom(userAtom)
+  const user = useAuth().user
   const [locationDetails, setLocationDetails] = useState<LocationDetailsBlock | null>(null)
   const pathName = usePathname()
 

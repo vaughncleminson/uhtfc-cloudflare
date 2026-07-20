@@ -1,5 +1,5 @@
 'use client'
-import { userAtom } from '@/frontend/atoms/userAtom'
+
 import { NavigationType } from '@/frontend/types/navigation'
 import { Navigation } from '@/payload-types'
 import { useAtom } from 'jotai'

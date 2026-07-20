@@ -1,20 +1,21 @@
 'use client'
 import { CheckoutResponse } from '@/admin/types/checkout'
 import { orderAtom } from '@/frontend/atoms/orderAtom'
-import { userAtom } from '@/frontend/atoms/userAtom'
 import { LineItem } from '@/frontend/schemas/lineItemSchema'
 import { User } from '@/payload-types'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useAuth } from '../ui/AuthProvider'
 import Button from '../ui/Button'
 import { useConfirm } from '../ui/ModalProvider'
 
 export default function OrderForm() {
   const [loading, setLoading] = useState(false)
   const [order, setOrder] = useAtom(orderAtom)
-  const [user, setUser] = useAtom<User | null>(userAtom)
+  const { user } = useAuth() as { user: User }
+
   const router = useRouter()
   const [processingPayment, setProcessingPayment] = useState(false)
 

@@ -5,7 +5,7 @@ import Button from './Button'
 
 type ConfirmOptions = {
   title?: string
-  message: string
+  message: string | ReactNode
 
   cancelTitle?: string
   confirmTitle?: string

@@ -18,6 +18,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useAuth } from '../ui/AuthProvider'
 import Button from '../ui/Button'
+import { useConfirm } from '../ui/ModalProvider'
 import { useToast } from '../ui/ToastProvider'
 dayjs.extend(isBetween)
 
@@ -55,7 +56,6 @@ export default function BookingForm(props: BookingFormProps) {
   const toast = useToast()
   const selectedLocationId = parseInt(searchParams.get('location')!)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  // const [user, setUser] = useAtom<User | null>(userAtom)
   const [order, setOrder] = useAtom<Order | null>(orderAtom)
   const [loading, setLoading] = useState(false)
   const [booking, setBooking] = useState<Booking>()
@@ -71,6 +71,7 @@ export default function BookingForm(props: BookingFormProps) {
   const router = useRouter()
   const [cartBookings, setCartBookings] = useState<BookingHistory[]>([])
   const { user } = useAuth() as { user: User }
+  const confirm = useConfirm()
 
   useEffect(() => {
     if (user && props.locations) {
@@ -652,7 +653,38 @@ export default function BookingForm(props: BookingFormProps) {
         <div>
           <label className="text-white flex items-center gap-2">
             <input
-              onChange={(e) => setAcceptTerms(e.target.checked)}
+              onChange={(e) => {
+                setAcceptTerms(e.target.checked)
+                if (e.target.checked) {
+                  confirm({
+                    title: 'ACCEPT FISHING RULES',
+                    confirmTitle: 'I ACCEPT',
+                    showCancelButton: false,
+                    message: (
+                      <div className="text-left">
+                        <div>1) Fly fishing only</div>
+                        <div>2) No electric or petrol motors.</div>
+                        <div>3) Only members may enter the location or paid member guests.</div>
+                        <div>4) No fires.</div>
+                        <div>5) No Pets.</div>
+                        <div>
+                          6) Bag limit - please refer to location on the site. Catch and release is
+                          encouraged.
+                        </div>
+                        <div>7) Leave gates open or closed as you found them.</div>
+                        <div>
+                          8) Refer to maps on the site for access to water. Don't drive on farmers
+                          land where you are not supposed to be.
+                        </div>
+                        <div>
+                          9) No driving over dam walls unless specified parking is on the map.
+                        </div>
+                        <div>10) No temporary structures like gazebos or tents are allowed.</div>
+                      </div>
+                    ),
+                  })
+                }
+              }}
               checked={acceptTerms}
               type="checkbox"
             />{' '}
