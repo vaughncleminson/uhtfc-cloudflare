@@ -77,7 +77,7 @@ export const Festivals: CollectionConfig = {
     {
       name: 'extraMeals',
       type: 'number',
-      label: 'Extra Meals Cost Per Person Per Day',
+      label: 'Extra Meals Cost Per Person in Total',
     },
     {
       name: 'giveAwayType', // required

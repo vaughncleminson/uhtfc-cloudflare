@@ -154,6 +154,15 @@ export const POST = async (request: Request) => {
           <li>Team Members: ${teamMembers.map((member) => member.fullName).join(', ')}</li>
           <li>Extra Meals: ${extraMeals}</li>
         </ul>
+        <p>
+        Banking Details for Payment:
+        <br/>Bank: Standard Bank
+        <br/>Account Name: Underberg-Himeville Trout Fishing Club
+        <br/>Account Number: 052256405        
+        <br/>Reference: ${getTrimmedString(parsedData.teamName)}
+        </p>
+        <p>Please ensure that you make the payment within 7 days to secure your entry.</p>
+        <p>If you have any questions, please contact us at <a href="mailto:uhtfc.office@gmail.com">uhtfc.office@gmail.com</a> or by phone at 082-636-3985.</p>
         <p>Best regards,<br/>The Underberg-Himeville Trout Fishing Club</p>`
 
       await mailerSendTemplateAdapter(
