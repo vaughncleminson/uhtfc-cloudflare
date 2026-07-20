@@ -16,8 +16,9 @@ import { Navigation } from '@/payload-types'
 import { getPayload } from 'payload'
 import './globals.css'
 
-// Force dynamic rendering so build-time prerender does not query D1.
-export const dynamic = 'force-dynamic'
+// we use below export to force dynamic rendering of the layout,
+// this is a workaround when D1 throws 502 errors, like if it ran out of connections
+// export const dynamic = 'force-dynamic'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()

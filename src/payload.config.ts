@@ -33,7 +33,6 @@ const cwd =
   typeof process !== 'undefined' && typeof process.cwd === 'function' ? process.cwd() : undefined
 const dirname = path.resolve(typeof cwd === 'string' && cwd.length > 0 ? cwd : '.', 'src')
 const isProduction = process.env.NODE_ENV === 'production'
-const runProdMigrations = process.env.RUN_PAYLOAD_PROD_MIGRATIONS === 'true'
 
 // In development, let Payload infer the origin from the incoming request.
 // Forcing a production URL here can cause admin server-actions to lose auth context.
@@ -148,9 +147,7 @@ export default buildConfig({
   },
   db: sqliteD1Adapter({
     binding: cloudflare.env.D1,
-    push: false, //do not push migrations to D1 in production, as this is handled by the migration script
-    prodMigrations: runProdMigrations ? migrations : undefined,
-    //To run startup migrations in production, set RUN_PAYLOAD_PROD_MIGRATIONS=true in your prod environment.
+    prodMigrations: migrations,
   }),
   plugins: [
     r2Storage({
