@@ -1,4 +1,4 @@
-import { sendFormattedTemplateEmail } from '@/admin/utils/mailerSendTemplateAdapter'
+import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
 import { createFestivalEntrySchema } from '@/frontend/schemas/festivalEntrySchema'
 import configPromise from '@payload-config'
 import { headers } from 'next/headers'
@@ -134,17 +134,17 @@ export const POST = async (request: Request) => {
       overrideAccess: true,
     })
 
+    const festivalRecord = festival as unknown as Record<string, unknown>
+    const festivalName =
+      getTrimmedString(festivalRecord.name) || getTrimmedString(festivalRecord.title) || 'Festival'
+
     // send a confirmation email to the first team member's email address,
     // and also email to club admin email address with the festival entry details
     const firstTeamMemberEmail = teamMembers[0].email
     if (firstTeamMemberEmail) {
       const displayName =
         teamMembers[0].fullName?.split(' ')?.[0] || teamMembers[0].fullName || 'Member'
-      const festivalRecord = festival as unknown as Record<string, unknown>
-      const festivalName =
-        getTrimmedString(festivalRecord.name) ||
-        getTrimmedString(festivalRecord.title) ||
-        'Festival'
+
       const cMessageTitle = `${festivalName} Entry Confirmation for ${getTrimmedString(parsedData.teamName)}`
       const cMessageBody = `<p>Hi ${displayName},</p>
         <p>Your festival entry has been submitted successfully.</p>
@@ -156,16 +156,32 @@ export const POST = async (request: Request) => {
         </ul>
         <p>Best regards,<br/>The Underberg-Himeville Trout Fishing Club</p>`
 
-      await sendFormattedTemplateEmail({
-        templateId: mailsendTemplateID,
-        email: firstTeamMemberEmail,
-        recipientName: displayName,
-        messageTitle: cMessageTitle,
-        messageBody: cMessageBody,
-        logger: payload.logger,
+      await mailerSendTemplateAdapter(
+        mailsendTemplateID,
+        cMessageTitle,
+        [
+          {
+            email: firstTeamMemberEmail,
+            name: teamMembers[0].fullName || 'Festival Participant',
+          },
+        ],
+        [
+          {
+            email: firstTeamMemberEmail,
+            data: {
+              recipientName: teamMembers[0].fullName || 'Festival Participant',
+              emailSubject: cMessageTitle,
+              messageTitle: cMessageTitle,
+              messageBody: cMessageBody,
+            },
+          },
+        ],
+        payload.logger,
         payload,
-      })
+      )
+    }
 
+    if (payload.logger) {
       const clubAdminEmail = process.env.UHTFC_OFFICE_EMAIL || 'uhtfc.office@gmail.com'
       const adminMessageTitle = `New Entry for ${festivalName} for ${getTrimmedString(parsedData.teamName)}`
       const adminMessageBody = `<p>A new festival entry has been submitted.</p>
@@ -178,15 +194,29 @@ export const POST = async (request: Request) => {
         </ul>
         <p>Submitted by logged-in user: ${user.email || user.id}</p>`
 
-      await sendFormattedTemplateEmail({
-        templateId: mailsendTemplateID,
-        email: clubAdminEmail,
-        recipientName: 'UHTFC Office',
-        messageTitle: adminMessageTitle,
-        messageBody: adminMessageBody,
-        logger: payload.logger,
+      await mailerSendTemplateAdapter(
+        mailsendTemplateID,
+        adminMessageTitle,
+        [
+          {
+            email: clubAdminEmail,
+            name: 'UHTFC Office',
+          },
+        ],
+        [
+          {
+            email: clubAdminEmail,
+            data: {
+              recipientName: 'UHTFC Office',
+              emailSubject: adminMessageTitle,
+              messageTitle: adminMessageTitle,
+              messageBody: adminMessageBody,
+            },
+          },
+        ],
+        payload.logger,
         payload,
-      })
+      )
     }
 
     return NextResponse.json(

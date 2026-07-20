@@ -1,6 +1,7 @@
-import { sendFormattedTemplateEmail } from '@/admin/utils/mailerSendTemplateAdapter'
+import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
 import configPromise from '@payload-config'
 import { randomUUID } from 'crypto'
+import config from '@payload-config'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 
@@ -88,14 +89,24 @@ export async function POST(request: Request) {
           <br/>
           <p>Best regards,<br/>The Underberg-Himeville Trout Fishing Club</p>`
 
-    await sendFormattedTemplateEmail({
-      templateId: mailsendTemplateID,
-      email: previousUser.email,
-      recipientName: displayName,
-      messageTitle: cMessageTitle,
-      messageBody: cMessageBody,
-      logger: payload.logger,
+    const payload = await getPayload({ config })
+    await mailerSendTemplateAdapter(
+      mailsendTemplateID,
+      cMessageTitle,
+      [{ email: previousUser.email, name: displayName }],
+      [
+        {
+          email: previousUser.email,
+          data: {
+            recipientName: displayName,
+            emailSubject: cMessageTitle,
+            messageTitle: cMessageTitle,
+            messageBody: cMessageBody,
+          },
+        },
+      ],
+      payload.logger,
       payload,
-    })
+    )
   }
 }

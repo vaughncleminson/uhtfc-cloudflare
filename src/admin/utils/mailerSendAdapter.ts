@@ -1,5 +1,6 @@
 import { EmailParams, MailerSend, Recipient, Sender } from 'mailersend'
 import type { PayloadEmailAdapter, SendEmailOptions } from 'payload'
+import { recordEmailAudit, type EmailAddress } from './emailAuditLog'
 
 type AdapterOptions = {
   apiKey: string
@@ -15,50 +16,61 @@ const splitCsv = (value: string): string[] =>
     .map((part) => part.trim())
     .filter(Boolean)
 
-const toRecipients = (value: SendEmailOptions['to']): Recipient[] => {
+const toAddressList = (
+  value: SendEmailOptions['to'] | SendEmailOptions['cc'] | SendEmailOptions['bcc'],
+): EmailAddress[] => {
   if (!value) return []
 
   if (typeof value === 'string') {
-    return splitCsv(value).map((email) => new Recipient(email))
+    return splitCsv(value).map((email) => ({ email }))
   }
 
   if (Array.isArray(value)) {
-    return value.flatMap((entry) => toRecipients(entry))
+    return value.flatMap((entry) => toAddressList(entry))
   }
 
   if (typeof value === 'object' && 'address' in value && typeof value.address === 'string') {
-    return [new Recipient(value.address, 'name' in value ? value.name : undefined)]
+    return [{ email: value.address, name: 'name' in value ? value.name : undefined }]
   }
 
   return []
 }
 
-const toRecipient = (value: SendEmailOptions['replyTo']): Recipient | undefined => {
+const toSingleAddress = (value: SendEmailOptions['replyTo']): EmailAddress | undefined => {
   if (!value) return undefined
 
   if (typeof value === 'string') {
     const [email] = splitCsv(value)
-    return email ? new Recipient(email) : undefined
+    return email ? { email } : undefined
   }
 
   if (Array.isArray(value)) {
     for (const entry of value) {
-      const recipient = toRecipient(entry)
+      const recipient = toSingleAddress(entry)
       if (recipient) return recipient
     }
     return undefined
   }
 
   if (typeof value === 'object' && 'address' in value && typeof value.address === 'string') {
-    return new Recipient(value.address, 'name' in value ? value.name : undefined)
+    return { email: value.address, name: 'name' in value ? value.name : undefined }
   }
 
   return undefined
 }
 
+const toRecipients = (value: SendEmailOptions['to']): Recipient[] => {
+  return toAddressList(value).map((entry) => new Recipient(entry.email, entry.name))
+}
+
+const toRecipient = (value: SendEmailOptions['replyTo']): Recipient | undefined => {
+  const entry = toSingleAddress(value)
+  return entry ? new Recipient(entry.email, entry.name) : undefined
+}
+
 const toStringBody = (value: unknown): string | undefined => {
   if (typeof value === 'string') return value
-  if (value instanceof Buffer) return value.toString('utf-8')
+  if (value instanceof Buffer) return value.toString()
   return undefined
 }
 
@@ -80,22 +92,57 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
         //log email message for debugging
         payload.logger.info({ msg: 'Sending email with MailerSend adapter.', message })
 
+        const toList = toAddressList(message.to)
+        const ccList = toAddressList(message.cc)
+        const bccList = toAddressList(message.bcc)
+        const defaultReplyTo = options.defaultReplyToAddress
+          ? {
+              email: options.defaultReplyToAddress,
+              name: options.defaultReplyToName,
+            }
+          : undefined
+        const replyToAddress = toSingleAddress(message.replyTo) || defaultReplyTo
+        const subject = message.subject || '(no subject)'
+
         if (!mailerSend) {
           payload.logger.warn({ msg: 'Skipping email send: MAILSEND_TOKEN is not configured.' })
+          await recordEmailAudit(payload, {
+            status: 'skipped',
+            deliveryType: 'standard',
+            subject,
+            fromEmail: options.defaultFromAddress,
+            fromName: options.defaultFromName,
+            replyToEmail: replyToAddress?.email,
+            replyToName: replyToAddress?.name,
+            to: toList,
+            cc: ccList,
+            bcc: bccList,
+            skipReason: 'MAILSEND_TOKEN is not configured',
+          })
           return
         }
 
         const to = toRecipients(message.to)
         if (to.length === 0) {
           payload.logger.warn({ msg: 'Skipping email send: no recipients provided.' })
+          await recordEmailAudit(payload, {
+            status: 'skipped',
+            deliveryType: 'standard',
+            subject,
+            fromEmail: options.defaultFromAddress,
+            fromName: options.defaultFromName,
+            replyToEmail: replyToAddress?.email,
+            replyToName: replyToAddress?.name,
+            to: toList,
+            cc: ccList,
+            bcc: bccList,
+            skipReason: 'No recipients provided',
+          })
           return
         }
 
         const from = new Sender(options.defaultFromAddress, options.defaultFromName)
-        const email = new EmailParams()
-          .setFrom(from)
-          .setTo(to)
-          .setSubject(message.subject || '(no subject)')
+        const email = new EmailParams().setFrom(from).setTo(to).setSubject(subject)
 
         const cc = toRecipients(message.cc)
         if (cc.length > 0) {
@@ -127,7 +174,46 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
           email.setHtml(html)
         }
 
-        return mailerSend.email.send(email)
+        try {
+          const result = await mailerSend.email.send(email)
+          await recordEmailAudit(payload, {
+            status: 'sent',
+            deliveryType: 'standard',
+            subject,
+            fromEmail: options.defaultFromAddress,
+            fromName: options.defaultFromName,
+            replyToEmail: replyToAddress?.email,
+            replyToName: replyToAddress?.name,
+            to: toList,
+            cc: ccList,
+            bcc: bccList,
+            response: result,
+            meta: {
+              hasText: Boolean(text),
+              hasHtml: Boolean(html),
+            },
+          })
+          return result
+        } catch (error) {
+          await recordEmailAudit(payload, {
+            status: 'failed',
+            deliveryType: 'standard',
+            subject,
+            fromEmail: options.defaultFromAddress,
+            fromName: options.defaultFromName,
+            replyToEmail: replyToAddress?.email,
+            replyToName: replyToAddress?.name,
+            to: toList,
+            cc: ccList,
+            bcc: bccList,
+            error: error instanceof Error ? error.message : String(error),
+            meta: {
+              hasText: Boolean(text),
+              hasHtml: Boolean(html),
+            },
+          })
+          throw error
+        }
       },
     }
   }
