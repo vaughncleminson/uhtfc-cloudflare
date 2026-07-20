@@ -17,6 +17,7 @@ export async function POST(request: Request) {
   if (!user) {
     return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 })
   }
+  console.log('USER !!!!!!!!!!!!!!!!!!!!!!!!')
 
   const order = await payload.findByID({
     collection: 'orders',
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
       },
     },
   })
-
+  console.log('BOOKING !!!!!!!!!!!!!!!!!!!!!!!!', bookings)
   for (const booking of bookings.docs) {
     booking.active = true
     await payload.update({
