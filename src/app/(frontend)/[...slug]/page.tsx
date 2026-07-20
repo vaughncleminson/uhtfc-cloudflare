@@ -10,17 +10,23 @@ import { generateMeta } from '@/admin/utils/generateMeta'
 import RenderBlocks from '@/frontend/components/blocks/RenderBlocks'
 
 type Args = {
-  params: Promise<{
-    slug?: string[]
-  }>
+  params: Promise<{ slug?: string[] }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function Page({ params: paramsPromise }: Args) {
+export default async function Page({
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
+}: Args) {
   const payload = await getPayload({ config: configPromise })
+  const searchParams = await searchParamsPromise
+  const status = searchParams.status
+  const orderId = searchParams.orderId
 
   const { user } = await payload.auth({
     headers: await headers(),
   })
+
   let { slug } = await paramsPromise
   if (!slug) {
     slug = ['home']
@@ -33,8 +39,15 @@ export default async function Page({ params: paramsPromise }: Args) {
     notFound()
   }
   //Authenticated routes
-  if (page.slug === 'bookings' || page.slug === 'checkout' || page.slug.includes('profile')) {
-    if (!user) {
+  const requiresAuth =
+    page.slug === 'bookings' || page.slug === 'checkout' || page.slug.includes('profile')
+
+  if (requiresAuth) {
+    // 2. Define your bypass condition for the checkout page
+    const isBypassCheckout = page.slug === 'checkout' && status && orderId
+
+    // 3. Only redirect if the user is missing AND the bypass condition is NOT met
+    if (!user && !isBypassCheckout) {
       redirect('/?auth=false')
     }
   }
