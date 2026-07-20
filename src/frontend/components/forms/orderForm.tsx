@@ -27,15 +27,15 @@ export default function OrderForm() {
   const orderId = searchParams.get('orderId')
   const confirm = useConfirm()
 
-  useEffect(() => {
-    if (!order) {
-      router.push('/')
-    }
-  }, [order])
+  // useEffect(() => {
+  //   if (!order) {
+  //     router.push('/')
+  //   }
+  // }, [order])
 
   useEffect(() => {
     const handlePaymentResult = async () => {
-      if (!status || !orderId || !order) return
+      if (!status || !orderId || !order || !user) return
       setProcessingPayment(true)
       if (status === 'success') {
         try {
@@ -105,10 +105,11 @@ export default function OrderForm() {
           alert('An error occurred while cancelling the booking')
         }
       }
+      router.push('/')
     }
 
     handlePaymentResult()
-  }, [status, orderId, order, user?.id, setOrder, router])
+  }, [status, orderId, order, user, setOrder, router])
 
   const submit = async () => {
     setLoading(true)
