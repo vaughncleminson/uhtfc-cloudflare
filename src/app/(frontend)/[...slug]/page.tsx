@@ -33,7 +33,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     notFound()
   }
   //Authenticated routes
-  if (page.slug === 'bookings' || page.slug === 'checkout' || page.slug.includes('profile')) {
+  if (page.slug === 'bookings' || page.slug.includes('profile')) {
     if (!user) {
       redirect('/?auth=false')
     }
