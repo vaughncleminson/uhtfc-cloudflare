@@ -148,7 +148,7 @@ export default buildConfig({
   },
   db: sqliteD1Adapter({
     binding: cloudflare.env.D1,
-    push: false, //do not push migrations to D1 in production, as this is handled by the migration script
+    // push: false, //do not push migrations to D1 in production, as this is handled by the migration script
     prodMigrations: runProdMigrations ? migrations : undefined,
     //To run startup migrations in production, set RUN_PAYLOAD_PROD_MIGRATIONS=true in your prod environment.
   }),
