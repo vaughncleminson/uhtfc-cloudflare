@@ -82,7 +82,8 @@ export default function FestivalEntriesForm(props: FestivalEntriesFormProps) {
           form.reset()
           await confirm({
             title: 'Entry submitted successfully',
-            message: 'Your festival entry has been saved.',
+            message:
+              'Your festival entry has been submitted successfully. Please check your email for confirmation and payment details.',
             showCancelButton: false,
             confirmTitle: 'OK',
           })

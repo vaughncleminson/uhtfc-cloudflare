@@ -2,12 +2,12 @@ Todolist 19 July 2026
 
 Vaughn
 ------
-Add note on festival booking confirmaiton popup.
+done - Add note on festival booking confirmation popup.
     check email your address xxx for banking details
-    check festival email is being sent?
-Add banking details on festival email
-Change label in admin for meals price (total not per day). Should be R 600
-Add club phone number to footer of email template
+check festival email is being sent?
+done - Add banking details on festival email
+done - Change label in admin for meals price (total not per day). Should be R 600
+done - Add club phone number to footer of email template
 
 Chris
 -----
