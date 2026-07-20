@@ -200,8 +200,8 @@ async function createYocoCheckout(order: Order): Promise<CheckoutResponse | null
     const response = await fetch('https://payments.yoco.com/api/checkouts', {
       method: 'POST',
       headers: {
-        // Authorization: 'Bearer sk_live_4acbf8b1prnV51R42614cc9ac18b',
-        Authorization: 'Bearer sk_test_88a4704eprnV51R62a043519abd5',
+        Authorization: 'Bearer sk_live_4acbf8b1prnV51R42614cc9ac18b',
+        // Authorization: 'Bearer sk_test_88a4704eprnV51R62a043519abd5',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(checkout),
