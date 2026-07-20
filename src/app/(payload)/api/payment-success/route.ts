@@ -14,10 +14,10 @@ export async function POST(request: Request) {
     collection: 'users',
     id: data.userId,
   })
+  console.info('user', user)
   if (!user) {
     return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 })
   }
-  console.log('USER !!!!!!!!!!!!!!!!!!!!!!!!')
 
   const order = await payload.findByID({
     collection: 'orders',
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       },
     },
   })
-  console.log('BOOKING !!!!!!!!!!!!!!!!!!!!!!!!', bookings)
+  console.info('BOOKING !!!!!!!!!!!!!!!!!!!!!!!!', bookings)
   for (const booking of bookings.docs) {
     booking.active = true
     await payload.update({
