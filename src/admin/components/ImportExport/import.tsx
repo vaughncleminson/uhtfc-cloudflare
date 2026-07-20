@@ -60,22 +60,30 @@ export function ImportCSVButton(props: any) {
         const text = e.target?.result as string
 
         const rows = text
-          .split('\n')
+          .split(/\r?\n/)
           .map((row) => row.trim())
           .filter(Boolean)
-          .map((row) => row.split(','))
+          // Clean regex parser that groups items between quotes or commas
+          .map((row) => row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || row.split(','))
+
+        if (rows.length === 0) throw new Error('CSV is empty')
 
         const [headers, ...data] = rows
 
+        // 2. STRIP QUOTES FROM HEADERS: Removes outer "" or ''
+        const cleanedHeaders = headers.map((h) => h.replace(/^["']|["']$/g, '').trim())
+
+        // 3. STRIP QUOTES FROM VALUES: Safely loops and sanitizes strings
         const subscribers = data.map((row) => {
-          const subscriber: Record<string, any> = Object.fromEntries(
-            headers.map((header, i) => [header.trim(), row[i]?.trim()]),
+          return Object.fromEntries(
+            cleanedHeaders.map((header, i) => {
+              const rawValue = row[i]?.trim() || ''
+              // Regex below targets single or double quotes at the absolute start and end of the string
+              const cleanValue = rawValue.replace(/^["']|["']$/g, '').trim()
+
+              return [header, cleanValue]
+            }),
           )
-
-          subscriber.unsubscribeToken = crypto.randomUUID()
-          subscriber.subscribed = true
-
-          return subscriber
         })
 
         const total = subscribers.length
