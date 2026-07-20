@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "node scripts/set-build-env.mjs && cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" SKIP_REMOTE_CLOUDFLARE=true next build --webpack",
+    "build": "payload migrate && node scripts/set-build-env.mjs && cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" SKIP_REMOTE_CLOUDFLARE=true next build --webpack",
     "build:worker": "node scripts/patch-opennext-env-shim.mjs && node scripts/set-build-env.mjs && npx @opennextjs/cloudflare build",
     "db:restore:prod-to-local": "bash scripts/restore-prod-to-local-d1.sh",
     "deploy": "node validate-env.js && pnpm run deploy:database && pnpm run deploy:app",
