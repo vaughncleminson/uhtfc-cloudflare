@@ -36,17 +36,17 @@ const isProduction = process.env.NODE_ENV === 'production'
 
 // In development, let Payload infer the origin from the incoming request.
 // Forcing a production URL here can cause admin server-actions to lose auth context.
-const payloadServerURL = isProduction
-  ? process.env.NEXT_PUBLIC_PAYLOAD_URL ||
-    process.env.PAYLOAD_PUBLIC_SERVER_URL ||
-    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-    ''
-  : undefined
 
 const cloudflare = await getCloudflareContextSafe()
 const mailerSendToken = process.env.MAILSEND_TOKEN || ''
 
 export default buildConfig({
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'https://uhtfc.org.za',
+  csrf: [
+    'https://uhtfc.org.za',
+    'https://uhtfc.org.za', // include the apex domain just in case
+  ],
+  cors: ['https://uhtfc.org.za', 'https://uhtfc.org.za'],
   admin: {
     user: Admins.slug,
     autoRefresh: true,
@@ -144,7 +144,6 @@ export default buildConfig({
     },
   ],
   secret: process.env.PAYLOAD_SECRET || '',
-  serverURL: payloadServerURL,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
