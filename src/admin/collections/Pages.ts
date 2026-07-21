@@ -41,7 +41,23 @@ export const Pages: CollectionConfig<'pages'> = {
     maxPerDoc: 50,
   },
   access: {
+    // Anyone (public users) can read pages
     read: () => true,
+
+    // Only logged-in users with the 'admin' role can create pages
+    create: ({ req: { user } }) => {
+      return Boolean(user && user.role.includes('admin'))
+    },
+
+    // Only 'admin' can update pages (this fixes your autosave error)
+    update: ({ req: { user } }) => {
+      return Boolean(user && user.role.includes('admin'))
+    },
+
+    // Only 'admin' can delete pages
+    delete: ({ req: { user } }) => {
+      return Boolean(user && user.role.includes('admin'))
+    },
   },
   defaultPopulate: {
     title: true,
