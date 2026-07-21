@@ -37,7 +37,10 @@ const isProduction = process.env.NODE_ENV === 'production'
 // In development, let Payload infer the origin from the incoming request.
 // Forcing a production URL here can cause admin server-actions to lose auth context.
 const payloadServerURL = isProduction
-  ? process.env.NEXT_PUBLIC_PAYLOAD_URL || process.env.NEXT_PUBLIC_PAYLOAD_URL || ''
+  ? process.env.NEXT_PUBLIC_PAYLOAD_URL ||
+    process.env.PAYLOAD_PUBLIC_SERVER_URL ||
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+    ''
   : undefined
 
 const cloudflare = await getCloudflareContextSafe()
@@ -148,6 +151,7 @@ export default buildConfig({
   db: sqliteD1Adapter({
     binding: cloudflare.env.D1,
     prodMigrations: migrations,
+    //push: false, //If false, this will disable automatic migrations on startup. This is useful if you want to manage migrations manually.
   }),
   plugins: [
     r2Storage({

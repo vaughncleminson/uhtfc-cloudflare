@@ -4,7 +4,13 @@ export const getServerSideURL = () => {
   let url = process.env.NEXT_PUBLIC_PAYLOAD_URL
 
   if (!url && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    // check process.env.VERCEL_PROJECT_PRODUCTION_URL
+    // append https:// to the front of the url if it doesn't already have it
+    if (!process.env.VERCEL_PROJECT_PRODUCTION_URL.toLowerCase().startsWith('https://')) {
+      return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    } else {
+      return process.env.VERCEL_PROJECT_PRODUCTION_URL
+    }
   }
 
   if (!url) {
@@ -24,7 +30,13 @@ export const getClientSideURL = () => {
   }
 
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    // check process.env.VERCEL_PROJECT_PRODUCTION_URL
+    // append https:// to the front of the url if it doesn't already have it
+    if (!process.env.VERCEL_PROJECT_PRODUCTION_URL.toLowerCase().startsWith('https://')) {
+      return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    } else {
+      return process.env.VERCEL_PROJECT_PRODUCTION_URL
+    }
   }
 
   return process.env.NEXT_PUBLIC_PAYLOAD_URL || ''

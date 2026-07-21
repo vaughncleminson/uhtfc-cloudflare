@@ -58,12 +58,6 @@ if [[ -z "$OUT_DIR" ]]; then
   exit 1
 fi
 
-if ! command -v sqlite3 >/dev/null 2>&1; then
-  echo "sqlite3 is required but not installed." >&2
-  echo "Install it first, for example: sudo apt-get install sqlite3" >&2
-  exit 1
-fi
-
 if [[ "$ASSUME_YES" != true ]]; then
   echo "This will DELETE local D1 sqlite files under: $LOCAL_D1_DIR"
   echo "It does NOT modify the remote database."
@@ -83,13 +77,19 @@ mkdir -p "$OUT_DIR"
 timestamp="$(date +%F-%H%M%S)"
 dump_file="$OUT_DIR/prod-$timestamp.sql"
 
-echo "[1/6] Exporting remote D1 to $dump_file"
+echo "[1/7] Exporting remote D1 to $dump_file"
 npx wrangler d1 export "$DB_NAME" --remote --output="$dump_file" -y
 
-echo "[2/6] Clearing local D1 sqlite state"
+echo "[2/7] Clearing local D1 sqlite state"
 rm -f "$LOCAL_D1_DIR"/*.sqlite 2>/dev/null || true
 
-echo "[3/6] Recreating local D1 sqlite file"
+echo "[3/7] Wiping local uncommitted migrations"
+if [ -d "src/migrations" ]; then
+  echo "Cleaning untracked local migration files..."
+  git clean -fd src/migrations/ 2>/dev/null || true
+fi
+
+echo "[4/7] Recreating local D1 sqlite file"
 npx wrangler d1 execute "$DB_NAME" --local --command "SELECT 1" -y >/dev/null
 
 db_file="$(find "$LOCAL_D1_DIR" -maxdepth 1 -type f -name '*.sqlite' ! -name 'metadata.sqlite' | head -n 1)"
@@ -98,17 +98,19 @@ if [[ -z "$db_file" ]]; then
   exit 1
 fi
 
-echo "[4/6] Importing dump into local D1 via sqlite3"
+echo "[5/7] Importing dump into local D1 via sqlite3 CLI"
+# We stream the pragmas along with the file contents directly into the targeted sqlite file.
+# This avoids Wrangler parsing constraints entirely.
 {
-  printf 'PRAGMA foreign_keys=OFF;\n'
+  echo "PRAGMA foreign_keys = OFF;"
   cat "$dump_file"
-  printf '\nPRAGMA foreign_keys=ON;\n'
+  echo "PRAGMA foreign_keys = ON;"
 } | sqlite3 "$db_file"
 
-echo "[5/6] Verifying admins row count"
+echo "[6/7] Verifying admins row count"
 npx wrangler d1 execute "$DB_NAME" --local --command "SELECT COUNT(*) AS admins_count FROM admins;" -y
 
-echo "[6/6] Listing migration-related tables"
+echo "[7/7] Listing migration-related tables"
 npx wrangler d1 execute "$DB_NAME" --local --command "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%migration%';" -y
 
 echo "Done. Local D1 now reflects the exported prod snapshot."
