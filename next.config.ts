@@ -11,7 +11,10 @@ if (existsSync('.env.build')) loadDotenv({ path: '.env.build', override: true })
 const nextConfig = {
   // 1. Bypass TypeScript build errors
   images: {
-    remotePatterns: [new URL('https://uhtfc-cloudflare.vaughn-710.workers.dev/api/media/file/**')],
+    remotePatterns: [
+      new URL('https://uhtfc-cloudflare.vaughn-710.workers.dev/api/media/file/**'),
+      new URL('https://uhtfc.org.za/api/media/file/**'),
+    ],
   },
   typescript: {
     ignoreBuildErrors: true,
