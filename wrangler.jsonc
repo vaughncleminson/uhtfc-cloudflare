@@ -27,9 +27,9 @@
   // but for now, we will set all 3 to the same value,
   // which is the production URL of the Payload CMS instance
   "vars": {
-    "NEXT_PUBLIC_PAYLOAD_URL": "https://www.uhtfc.org.za",
-    "VERCEL_PROJECT_PRODUCTION_URL": "https://www.uhtfc.org.za",
-    "PAYLOAD_PUBLIC_SERVER_URL": "https://www.uhtfc.org.za",
+    "NEXT_PUBLIC_PAYLOAD_URL": "https://uhtfc.org.za",
+    "VERCEL_PROJECT_PRODUCTION_URL": "https://uhtfc.org.za",
+    "PAYLOAD_PUBLIC_SERVER_URL": "https://uhtfc.org.za",
   },
   // PRODUCTION DEFAULT
   "d1_databases": [

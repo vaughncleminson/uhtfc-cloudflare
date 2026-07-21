@@ -77,7 +77,7 @@ export default function MFALoginForm(props: any) {
       <div className="login-holder">
         <div className="logo">
           <Image
-            src="https://uhtfc-cloudflare.vaughn-710.workers.dev/api/media/file/payload_logo.png"
+            src="https://uhtfc.org.za/api/media/file/payload_logo.png"
             alt="Payload"
             width={200}
             height={200}
