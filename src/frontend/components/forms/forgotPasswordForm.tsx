@@ -1,5 +1,5 @@
 'use client'
-
+import { useConfirm } from '../ui/ModalProvider'
 import { FormEvent, useState } from 'react'
 import Button from '../ui/Button'
 
@@ -7,6 +7,7 @@ export default function ForgotPasswordForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const confirm = useConfirm()
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -39,8 +40,19 @@ export default function ForgotPasswordForm() {
         return
       }
 
-      setSuccessMessage(`If an account exists for email ${email}, a reset link has been sent.`)
+      setSuccessMessage(
+        `We will email a reset link if the email address ${email} matches an account.
+        If you do not get an email, please check spelling or try another email address.
+        For assistance, please contact us at uhtfc.office@gmail.com or 082 636 3985`,
+      )
       form.reset()
+      const confirmed = await confirm({
+        title: 'Email Reset Link',
+        message: successMessage || '',
+        showCancelButton: false,
+        confirmTitle: 'OK',
+      })
+      if (!confirmed) return
     } catch (err) {
       setError('Unable to send reset email right now. Please try again.')
     } finally {
@@ -62,7 +74,9 @@ export default function ForgotPasswordForm() {
       <input name="email" className="input" type="email" autoComplete="email" />
 
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-      {successMessage && <p className="text-green-400 text-sm mt-2">{successMessage}</p>}
+      {successMessage && (
+        <p className="text-green-400 text-sm mt-2 whitespace-pre-line">{successMessage}</p>
+      )}
 
       <Button type="submit" loading={loading} title="EMAIL RESET LINK" />
     </form>
