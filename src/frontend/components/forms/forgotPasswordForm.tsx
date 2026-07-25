@@ -40,15 +40,15 @@ export default function ForgotPasswordForm() {
         return
       }
 
-      setSuccessMessage(
-        `We will email a reset link if the email address ${email} matches an account.
-        If you do not get an email, please check spelling or try another email address.
-        For assistance, please contact us at uhtfc.office@gmail.com or 082 636 3985`,
-      )
+      const message = `We will email a reset link if the email address ${email} matches an account.
+If you do not get an email, please check spelling or try another email address.
+For assistance, please contact us at uhtfc.office@gmail.com or 082 636 3985`
+
+      setSuccessMessage(message)
       form.reset()
       const confirmed = await confirm({
         title: 'Email Reset Link',
-        message: successMessage || '',
+        message,
         showCancelButton: false,
         confirmTitle: 'OK',
       })
