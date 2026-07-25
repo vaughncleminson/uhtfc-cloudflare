@@ -33,6 +33,7 @@ const cwd =
   typeof process !== 'undefined' && typeof process.cwd === 'function' ? process.cwd() : undefined
 const dirname = path.resolve(typeof cwd === 'string' && cwd.length > 0 ? cwd : '.', 'src')
 const isProduction = process.env.NODE_ENV === 'production'
+const d1AutoPushMigrations = parseBooleanEnv(process.env.D1_AUTO_PUSH_MIGRATIONS, true)
 
 // In development, let Payload infer the origin from the incoming request.
 // Forcing a production URL here can cause admin server-actions to lose auth context.
@@ -150,7 +151,7 @@ export default buildConfig({
   db: sqliteD1Adapter({
     binding: cloudflare.env.D1,
     prodMigrations: migrations,
-    //push: false, //If false, this will disable automatic migrations on startup. This is useful if you want to manage migrations manually.
+    push: d1AutoPushMigrations,
   }),
   plugins: [
     r2Storage({
@@ -193,4 +194,22 @@ async function getCloudflareContextSafe() {
   } catch {
     return getCloudflareContext({ async: true })
   }
+}
+
+function parseBooleanEnv(value: string | undefined, defaultValue: boolean): boolean {
+  if (value == null || value.trim() === '') {
+    return defaultValue
+  }
+
+  const normalized = value.trim().toLowerCase()
+
+  if (normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'on') {
+    return true
+  }
+
+  if (normalized === 'false' || normalized === '0' || normalized === 'no' || normalized === 'off') {
+    return false
+  }
+
+  return defaultValue
 }
