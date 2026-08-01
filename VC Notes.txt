@@ -58,3 +58,26 @@ pnpm -s tsc --noEmit
 * To add secret vars
 npx wrangler secret put PAYLOAD_SECRET
 npx wrangler secret put MAILSEND_TOKEN
+
+* SQL to copy previous_users into email_subscribers
+INSERT INTO email_subscribers (
+  id,
+  email,
+  first_name,
+  last_name,
+  subscribed,
+  unsubscribe_token,
+  updated_at,
+  created_at
+)
+SELECT
+1000 + id,
+  email,
+  full_name AS first_name,
+  '' AS last_name,
+  1 AS subscribed,
+  1000 +  id AS unsubscribe_token,
+  CURRENT_TIMESTAMP AS updated_at,
+  CURRENT_TIMESTAMP AS created_at
+FROM previous_users
+  where email like 'vaughn@pulsesoftware.co.za';
