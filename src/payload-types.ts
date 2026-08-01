@@ -524,6 +524,11 @@ export interface EmailSubscriber {
   firstName: string;
   lastName: string;
   subscribed: boolean;
+  sent?: boolean | null;
+  sentDate?: string | null;
+  failed?: boolean | null;
+  failedDate?: string | null;
+  failedReason?: string | null;
   unsubscribeToken: string;
   createdAt: string;
   updatedAt: string;
@@ -1465,6 +1470,11 @@ export interface EmailSubscribersSelect<T extends boolean = true> {
   firstName?: T;
   lastName?: T;
   subscribed?: T;
+  sent?: T;
+  sentDate?: T;
+  failed?: T;
+  failedDate?: T;
+  failedReason?: T;
   unsubscribeToken?: T;
   createdAt?: T;
   updatedAt?: T;

@@ -41,6 +41,36 @@ export const EmailSubscribers: CollectionConfig = {
       required: true,
     },
     {
+      type: 'checkbox',
+      name: 'sent',
+      label: 'Sent',
+      required: false,
+    },
+    {
+      type: 'date',
+      name: 'sentDate',
+      label: 'Sent Date',
+      required: false,
+    },
+    {
+      type: 'checkbox',
+      name: 'failed',
+      label: 'Failed',
+      required: false,
+    },
+    {
+      type: 'date',
+      name: 'failedDate',
+      label: 'Failed Date',
+      required: false,
+    },
+    {
+      type: 'text',
+      name: 'failedReason',
+      label: 'Failed Reason',
+      required: false,
+    },
+    {
       type: 'text',
       name: 'unsubscribeToken',
       label: 'Unsubscribe Token',

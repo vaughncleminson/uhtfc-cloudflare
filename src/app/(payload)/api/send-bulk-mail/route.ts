@@ -1,9 +1,33 @@
+import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
 import config from '@payload-config'
-import { EmailParams, MailerSend, Recipient, Sender } from 'mailersend'
 import { getPayload } from 'payload'
 
-const mailerSend = new MailerSend({
-  apiKey: process.env.MAILSEND_TOKEN || '',
+const mailsendTemplateID = '3vz9dle2xrnlkj50' //https://app.mailersend.com/templates/3vz9dle2xrnlkj50/edit
+
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message
+  if (typeof error === 'string') return error
+
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return 'Unknown send failure'
+  }
+}
+
+const buildRequiredSubscriberFields = (subscriber: {
+  email?: string | null
+  firstName?: string | null
+  id: number | string
+  lastName?: string | null
+  subscribed?: boolean | null
+  unsubscribeToken?: string | null
+}) => ({
+  email: subscriber.email || `unknown-${subscriber.id}@invalid.local`,
+  firstName: subscriber.firstName?.trim() || 'Unknown',
+  lastName: subscriber.lastName?.trim() || 'Unknown',
+  subscribed: subscriber.subscribed ?? true,
+  unsubscribeToken: subscriber.unsubscribeToken || String(subscriber.id),
 })
 
 export async function POST(request: Request) {
@@ -14,39 +38,107 @@ export async function POST(request: Request) {
       subscribed: {
         equals: true,
       },
+      sent: {
+        equals: false || null,
+      },
+      failed: {
+        equals: false || null,
+      },
     },
     pagination: false,
   })
 
-  const sentFrom = new Sender('no-reply@uhtfc.org.za', 'The Underberg-Himeville Trout Fishing Club')
-  const replyTo = new Sender('uhtfc.office@gmail.com', 'The Underberg-Himeville Trout Fishing Club')
-  const bulkEmails = []
-
   if (subscribers && subscribers.docs.length > 0) {
-    for (const subscriber of subscribers.docs) {
-      const personalization = [
-        {
-          email: subscriber.email,
-          data: {
-            name: subscriber.firstName,
-            account_name: 'UHTFC',
-          },
-        },
-      ]
-      const emailParams = new EmailParams()
-        .setFrom(sentFrom)
-        .setTo([new Recipient(subscriber.email, `${subscriber.firstName} ${subscriber.lastName}`)])
-        .setReplyTo(replyTo)
-        .setSubject('UHTFC AGM - 27th September 2025')
-        .setPersonalization(personalization)
-        .setTemplateId('z86org8onyn4ew13')
+    let successCount = 0
+    let failedCount = 0
 
-      bulkEmails.push(emailParams)
+    for (const subscriber of subscribers.docs) {
+      const requiredSubscriberFields = buildRequiredSubscriberFields(subscriber)
+
+      try {
+        await mailerSendTemplateAdapter(
+          mailsendTemplateID,
+          'Bulk Mail Sender - Stillwater Festival 2026',
+          [
+            {
+              email: subscriber.email,
+              name: subscriber.firstName || '',
+            },
+          ],
+          [
+            {
+              email: subscriber.email,
+              data: {
+                recipientName: subscriber.firstName || '',
+                emailSubject: 'Bulk Mail Sender - Stillwater Festival 2026',
+                messageTitle: 'Bulk Mail Sender - Stillwater Festival 2026',
+                messageBody: 'Bulk Mail Sender - Stillwater Festival 2026',
+              },
+            },
+          ],
+          payload.logger,
+          payload,
+        )
+
+        await payload.update({
+          collection: 'emailSubscribers',
+          id: subscriber.id,
+          data: {
+            ...requiredSubscriberFields,
+            sent: true,
+            sentDate: new Date().toISOString(),
+            failed: false,
+            failedDate: null,
+            failedReason: null,
+          },
+          overrideAccess: true,
+        })
+
+        successCount += 1
+      } catch (error) {
+        try {
+          await payload.update({
+            collection: 'emailSubscribers',
+            id: subscriber.id,
+            data: {
+              ...requiredSubscriberFields,
+              sent: false,
+              failed: true,
+              failedDate: new Date().toISOString(),
+              failedReason: getErrorMessage(error),
+            },
+            overrideAccess: true,
+          })
+        } catch (updateError) {
+          payload.logger.error(
+            {
+              subscriberId: subscriber.id,
+              updateError: getErrorMessage(updateError),
+            },
+            'Failed to persist failure state for email subscriber',
+          )
+        }
+
+        failedCount += 1
+      }
     }
-    const messagesSent = await mailerSend.email.sendBulk(bulkEmails)
-    console.log(messagesSent)
-    return Response.json({ mailSent: true })
+
+    console.log(
+      `Attempted ${subscribers.docs.length} messages. Sent: ${successCount}, Failed: ${failedCount}`,
+    )
+    return Response.json({
+      mailSent: successCount > 0,
+      attempted: subscribers.docs.length,
+      success: successCount,
+      failed: failedCount,
+    })
   } else {
-    return Response.json({ mailSent: false })
+    return Response.json({
+      mailSent: false,
+      attempted: 0,
+      success: 0,
+      failed: 0,
+      message: 'No subscribers found to send mail to.',
+    })
   }
 }

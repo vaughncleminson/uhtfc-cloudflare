@@ -1,64 +1,68 @@
 'use client'
 
-// import { EmailParams, MailerSend, Recipient, Sender } from 'mailersend'
-import { useState } from 'react'
-// const mailerSend = new MailerSend({
-//   apiKey: process.env.MAILSEND_TOKEN || '',
-// })
+import { useEffect, useState } from 'react'
+
+type SendBulkMailResponse = {
+  attempted?: number
+  failed?: number
+  mailSent?: boolean
+  message?: string
+  success?: number
+}
 
 export function SendBulkMail(props: any) {
   const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [sendData, setSendData] = useState<SendBulkMailResponse | null>(null)
 
-  const sendBulkMail = async (): Promise<boolean> => {
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const sendBulkMail = async (): Promise<void> => {
+    setLoading(true)
+
     try {
-      const req = await fetch(`${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/send-bulk-mail`, {
+      const req = await fetch('/api/send-bulk-mail', {
         method: 'POST',
-        body: JSON.stringify({}),
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       })
+
+      if (!req.ok) {
+        throw new Error(await req.text())
+      }
+
       const data = await req.json()
-      console.log(data)
-      // const sentFrom = new Sender('uhtfc.office@gmail.com', 'UHTFC')
-
-      // const recipients = [
-      //   new Recipient('chrisg@codified.co.za', 'Chris1'),
-      //   new Recipient('chris.trevor.green@gmail.com', 'Chris2'),
-      // ]
-      // const personalization = [
-      //   {
-      //     email: 'chrisg@codified.co.za',
-      //     data: {
-      //       name: 'ChrisCodified',
-      //     },
-      //   },
-      //   {
-      //     email: 'chris.trevor.green@gmail.com',
-      //     data: {
-      //       name: 'ChrisGmail',
-      //     },
-      //   },
-      // ]
-      // const emailParams = new EmailParams()
-      //   .setFrom(sentFrom)
-      //   .setTo(recipients)
-      //   .setReplyTo(sentFrom)
-      //   .setSubject('Rivers in May Festival')
-      //   .setPersonalization(personalization)
-      //   .setTemplateId('3vz9dle2xrnlkj50')
-
-      // const mailSent = await mailerSend.email.send(emailParams)
-      // console.log(mailSent)
+      setSendData(data as SendBulkMailResponse)
     } catch (err) {
       console.log(err)
+      setSendData({
+        mailSent: false,
+        message: err instanceof Error ? err.message : 'Bulk mail request failed.',
+      })
+    } finally {
+      setLoading(false)
     }
-    return false
   }
+
+  if (!mounted) return null
 
   return (
     <div>
-      <button onClick={sendBulkMail}>Send Mail</button>
+      <button onClick={sendBulkMail} type="button" disabled={loading}>
+        {loading ? 'Sending Bulk Mail...' : 'Send Bulk Mail'}
+      </button>
       {loading && <p>Sending...</p>}
+      {sendData && (
+        <div>
+          <p>Mail Sent: {sendData.mailSent ? 'Yes' : 'No'}</p>
+          <p>Attempted: {sendData.attempted}</p>
+          <p>Success: {sendData.success}</p>
+          <p>Failed: {sendData.failed}</p>
+          {sendData.message && <p>Message: {sendData.message}</p>}
+        </div>
+      )}
     </div>
   )
 }
