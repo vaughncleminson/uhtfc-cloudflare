@@ -3,6 +3,12 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 const mailsendTemplateID = '3vz9dle2xrnlkj50' //https://app.mailersend.com/templates/3vz9dle2xrnlkj50/edit
+const mailersendRateLimitPerMinute = 60
+const mailersendBufferMS = 100
+const mailersendIntervalMS = Math.ceil(60000 / mailersendRateLimitPerMinute) + mailersendBufferMS
+
+const mailerSendSleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms))
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) return error.message
@@ -51,8 +57,15 @@ export async function POST(request: Request) {
   if (subscribers && subscribers.docs.length > 0) {
     let successCount = 0
     let failedCount = 0
+    let nextAllowedSendAt = Date.now()
 
     for (const subscriber of subscribers.docs) {
+      const waitMS = nextAllowedSendAt - Date.now()
+      if (waitMS > 0) {
+        await mailerSendSleep(waitMS)
+      }
+      nextAllowedSendAt = Date.now() + mailersendIntervalMS
+
       const requiredSubscriberFields = buildRequiredSubscriberFields(subscriber)
 
       try {
