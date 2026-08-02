@@ -1,6 +1,6 @@
 import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
 import config from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 
 const mailsendTemplateID = '3vz9dle2xrnlkj50' //https://app.mailersend.com/templates/3vz9dle2xrnlkj50/edit
 const mailersendRateLimitPerMinute = 60
@@ -36,9 +36,10 @@ const buildRequiredSubscriberFields = (subscriber: {
   unsubscribeToken: subscriber.unsubscribeToken || String(subscriber.id),
 })
 
-export async function POST(request: Request) {
-  const payload = await getPayload({ config })
-  const subscribers = await payload.find({
+const getReadySubscribers = async (payload: Payload) => {
+  // Fetch all subscribers who are subscribed
+  // and have not been sent or failed to receive the bulk mail
+  return payload.find({
     collection: 'emailSubscribers',
     where: {
       subscribed: {
@@ -53,6 +54,20 @@ export async function POST(request: Request) {
     },
     pagination: false,
   })
+}
+
+export async function GET(request: Request) {
+  const payload = await getPayload({ config })
+  const subscribers = await getReadySubscribers(payload)
+
+  return Response.json({
+    readyToSend: subscribers.docs.length,
+  })
+}
+
+export async function POST(request: Request) {
+  const payload = await getPayload({ config })
+  const subscribers = await getReadySubscribers(payload)
 
   if (subscribers && subscribers.docs.length > 0) {
     let successCount = 0
