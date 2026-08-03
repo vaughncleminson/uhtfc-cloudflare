@@ -34,6 +34,13 @@ const cwd =
 const dirname = path.resolve(typeof cwd === 'string' && cwd.length > 0 ? cwd : '.', 'src')
 const isProduction = process.env.NODE_ENV === 'production'
 const d1AutoPushMigrations = parseBooleanEnv(process.env.D1_AUTO_PUSH_MIGRATIONS, true)
+const configuredServerURL = process.env.PAYLOAD_PUBLIC_SERVER_URL?.trim()
+
+const productionOrigins = ['https://uhtfc.org.za', 'https://www.uhtfc.org.za']
+const developmentOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000']
+const allowedOrigins = isProduction
+  ? productionOrigins
+  : [...productionOrigins, ...developmentOrigins]
 
 // In development, let Payload infer the origin from the incoming request.
 // Forcing a production URL here can cause admin server-actions to lose auth context.
@@ -42,12 +49,11 @@ const cloudflare = await getCloudflareContextSafe()
 const mailerSendToken = process.env.MAILSEND_TOKEN || ''
 
 export default buildConfig({
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'https://uhtfc.org.za',
-  csrf: [
-    'https://uhtfc.org.za',
-    'https://uhtfc.org.za', // include the apex domain just in case
-  ],
-  cors: ['https://uhtfc.org.za', 'https://uhtfc.org.za'],
+  // Keep serverURL unset in development so admin server actions use the incoming request origin.
+  // This preserves auth cookies for calls such as /api/payload-preferences.
+  serverURL: isProduction ? configuredServerURL || 'https://uhtfc.org.za' : configuredServerURL,
+  csrf: allowedOrigins,
+  cors: allowedOrigins,
   admin: {
     user: Admins.slug,
     autoRefresh: true,

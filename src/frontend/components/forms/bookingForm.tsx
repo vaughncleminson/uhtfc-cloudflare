@@ -710,7 +710,7 @@ export default function BookingForm(props: BookingFormProps) {
                 checked={fmdSprayRequired}
                 type="checkbox"
               />{' '}
-              I understand that I must use FMD spray on my vehicle before entering the location.
+              I will visit Engen Garage to spray my vehicle for FMD before entering the location.
             </label>
           )}
           <Button className="w-full" onClick={() => submit()} title="BOOK NOW" loading={loading} />
