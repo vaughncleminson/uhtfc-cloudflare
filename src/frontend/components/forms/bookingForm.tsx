@@ -54,6 +54,9 @@ type Angler = {
 export default function BookingForm(props: BookingFormProps) {
   const searchParams = useSearchParams()
   const toast = useToast()
+  const requireFMDSprayWhenBooking = Boolean(
+    props.settings?.bookingRules?.requireFMDSprayWhenBooking,
+  )
   const selectedLocationId = parseInt(searchParams.get('location')!)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [order, setOrder] = useAtom<Order | null>(orderAtom)
@@ -68,6 +71,7 @@ export default function BookingForm(props: BookingFormProps) {
   const hasShown = useRef(false)
   const [mainContact, setMainContact] = useState<Angler>()
   const [acceptTerms, setAcceptTerms] = useState(false)
+  const [fmdSprayRequired, setFmdSprayRequired] = useState(false)
   const router = useRouter()
   const [cartBookings, setCartBookings] = useState<BookingHistory[]>([])
   const { user } = useAuth() as { user: User }
@@ -155,6 +159,12 @@ export default function BookingForm(props: BookingFormProps) {
         }
       }
     }
+
+    if (requireFMDSprayWhenBooking && !fmdSprayRequired) {
+      toast.error('You must confirm FMD spray before booking.')
+      return
+    }
+
     const bookingObject: Booking = {
       productType: 'booking',
       userId: mainContact!.userId || 0,
@@ -179,6 +189,7 @@ export default function BookingForm(props: BookingFormProps) {
         },
       ],
       acceptTerms: acceptTerms,
+      fmdSprayRequired: requireFMDSprayWhenBooking ? fmdSprayRequired : false,
     }
 
     const result = bookingSchema.safeParse(bookingObject)
@@ -664,7 +675,7 @@ export default function BookingForm(props: BookingFormProps) {
                       <div className="text-left">
                         <div>1) Fly fishing only</div>
                         <div>2) No electric or petrol motors.</div>
-                        <div>3) Only members may enter the location or paid member guests.</div>
+                        <div>3) Only members or paid member guests may enter the location.</div>
                         <div>4) No fires.</div>
                         <div>5) No Pets.</div>
                         <div>
@@ -690,6 +701,18 @@ export default function BookingForm(props: BookingFormProps) {
             />{' '}
             I accept the terms and conditions of this booking.
           </label>
+          {requireFMDSprayWhenBooking && (
+            <label className="text-white flex items-center gap-2">
+              <input
+                onChange={(e) => {
+                  setFmdSprayRequired(e.target.checked)
+                }}
+                checked={fmdSprayRequired}
+                type="checkbox"
+              />{' '}
+              I understand that I must use FMD spray on my vehicle before entering the location.
+            </label>
+          )}
           <Button className="w-full" onClick={() => submit()} title="BOOK NOW" loading={loading} />
         </div>
       )}
