@@ -38,6 +38,7 @@ export const bookingSchema = z.object({
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: 'You must accept the terms and conditions.',
   }),
+  fmdSprayRequired: z.boolean().optional(),
 })
 
 export type Booking = z.infer<typeof bookingSchema>

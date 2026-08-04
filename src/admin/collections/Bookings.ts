@@ -165,5 +165,10 @@ export const Bookings: CollectionConfig = {
       name: 'acceptTerms',
       defaultValue: false,
     },
+    {
+      type: 'checkbox',
+      name: 'fmdSprayRequired',
+      defaultValue: false,
+    },
   ],
 }

@@ -264,6 +264,7 @@ export interface Booking {
       }[]
     | null;
   acceptTerms?: boolean | null;
+  fmdSprayRequired?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1364,6 +1365,7 @@ export interface BookingsSelect<T extends boolean = true> {
         id?: T;
       };
   acceptTerms?: T;
+  fmdSprayRequired?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2142,6 +2144,7 @@ export interface Setting {
     sameLocationBookingInWeek: number;
     sameLocationBookingInMonth: number;
     sameLocationBookingConsecutiveDays: boolean;
+    requireFMDSprayWhenBooking: boolean;
   };
   subsSettings: {
     joiningFee: number;
@@ -2237,6 +2240,7 @@ export interface SettingsSelect<T extends boolean = true> {
         sameLocationBookingInWeek?: T;
         sameLocationBookingInMonth?: T;
         sameLocationBookingConsecutiveDays?: T;
+        requireFMDSprayWhenBooking?: T;
       };
   subsSettings?:
     | T

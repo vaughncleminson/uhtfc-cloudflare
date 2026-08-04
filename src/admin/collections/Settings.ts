@@ -84,6 +84,13 @@ export const Settings: GlobalConfig = {
           defaultValue: true,
           required: true,
         },
+        {
+          name: 'requireFMDSprayWhenBooking',
+          type: 'checkbox',
+          label: 'Require FMD Spray to book a location',
+          defaultValue: true,
+          required: true,
+        },
       ],
     },
     {
