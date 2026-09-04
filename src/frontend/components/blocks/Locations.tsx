@@ -50,20 +50,22 @@ export default function Locations(props: LocationsBlock) {
         })
         const data = (await req.json()) as any
         console.log(data)
-        const cards: LocationCard[] = data.docs.map((location: Location) => {
-          const hero = location.layout[0] as LocationHeroBlock
-          const details = location.layout[1] as LocationDetailsBlock
+        const cards: LocationCard[] = data.docs
+          .filter((location: Location) => (location.layout[0] as LocationHeroBlock)?.image)
+          .map((location: Location) => {
+            const hero = location.layout[0] as LocationHeroBlock
+            const details = location.layout[1] as LocationDetailsBlock
 
-          return {
-            id: location.id,
-            title: hero.title || '',
-            type: location.type || 'stillwater',
-            image: hero.image as Media,
-            membersOnly: details.membersOnly || false,
-            rodLimit: details.rodLimit,
-            slug: location.slug || '',
-          }
-        })
+            return {
+              id: location.id,
+              title: hero.title || '',
+              type: location.type || 'stillwater',
+              image: hero.image as Media,
+              membersOnly: details.membersOnly || false,
+              rodLimit: details.rodLimit,
+              slug: location.slug || '',
+            }
+          })
         console.log(cards)
         setLocations(cards)
       } catch (err) {
@@ -83,7 +85,7 @@ export default function Locations(props: LocationsBlock) {
             >
               <div className="h-full w-full top-0 left-0">
                 <Image
-                  src={card.image.url!}
+                  src={card.image?.url || '/assets/shade_outer.png'}
                   alt={card.title}
                   width={1024}
                   height={1024}
