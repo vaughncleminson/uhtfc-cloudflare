@@ -1,0 +1,20 @@
+.dashboard-details-modal {
+  background: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-150);
+  color: var(--theme-text);
+  height: fit-content;
+  left: 50%;
+  margin: 0;
+  max-width: min(32rem, calc(100vw - 2rem));
+  min-height: 0;
+  padding: 1.5rem;
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: fit-content;
+  z-index: 1000;
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+  }
+}

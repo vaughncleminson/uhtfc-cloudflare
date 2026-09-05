@@ -1,8 +1,10 @@
 import { sql } from '@payloadcms/db-d1-sqlite'
-import type { Payload } from 'payload'
+import type { Params, Payload } from 'payload'
+import { DashboardDetailsModal } from './DashboardDetailsModal'
 
 type AdminDashboardProps = {
   payload: Payload
+  searchParams?: Params
 }
 
 type BookingSummary = {
@@ -25,13 +27,23 @@ const formatFriendlyDashboardDate = (date: Date) =>
     year: 'numeric',
   })
 
-export const AdminDashboard = async ({ payload }: AdminDashboardProps) => {
-  const endDate = new Date()
-  const startDate = new Date(endDate)
-  startDate.setDate(startDate.getDate() - 30)
+const getSelectedDate = (value: string | string[] | undefined, fallback: Date) => {
+  const date = Array.isArray(value) ? value[0] : value
 
-  const formattedEndDate = formatDashboardDate(endDate)
-  const formattedStartDate = formatDashboardDate(startDate)
+  return typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)
+    ? date
+    : formatDashboardDate(fallback)
+}
+
+export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardProps) => {
+  const defaultEndDate = new Date()
+  const defaultStartDate = new Date(defaultEndDate)
+  defaultStartDate.setDate(defaultStartDate.getDate() - 30)
+
+  const formattedEndDate = getSelectedDate(searchParams?.endDate, defaultEndDate)
+  const formattedStartDate = getSelectedDate(searchParams?.startDate, defaultStartDate)
+  const endDate = new Date(`${formattedEndDate}T00:00:00`)
+  const startDate = new Date(`${formattedStartDate}T00:00:00`)
 
   const [bookingSummaries, catchReturnSummaries] = await Promise.all([
     payload.db.drizzle.all<BookingSummary>(sql`
@@ -121,6 +133,7 @@ export const AdminDashboard = async ({ payload }: AdminDashboardProps) => {
           </table>
         </div>
       </section>
+      <DashboardDetailsModal endDate={formattedEndDate} startDate={formattedStartDate} />
     </div>
   )
 }
