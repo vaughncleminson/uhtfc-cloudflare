@@ -70,7 +70,7 @@ export const AdminDashboard = async ({ payload }: AdminDashboardProps) => {
       <section
         aria-label="Bookings"
         style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'minmax(140px, 1fr) 3fr' }}
-        class="card"
+        className="card"
       >
         <h2>Bookings</h2>
         <div>
@@ -95,7 +95,7 @@ export const AdminDashboard = async ({ payload }: AdminDashboardProps) => {
       <section
         aria-label="Catch Returns"
         style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'minmax(140px, 1fr) 3fr' }}
-        class="card"
+        className="card"
       >
         <h2>Catch Returns</h2>
         <div>
