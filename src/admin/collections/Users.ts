@@ -7,7 +7,8 @@ export const Users: CollectionConfig = {
   defaultSort: 'email',
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'role'],
+    listSearchableFields: ['email', 'firstName', 'lastName'],
+    defaultColumns: ['email', 'firstName', 'lastName', 'role'],
   },
   auth: {
     forgotPassword: {
