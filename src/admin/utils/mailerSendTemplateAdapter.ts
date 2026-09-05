@@ -73,6 +73,7 @@ export default async function mailerSendTemplateAdapter(
     .setSubject(subject)
     .setTemplateId(templateId)
     .setPersonalization(personalizationData)
+  const firstPersonalizationData = personalizationData[0]?.data
 
   try {
     const messagesSent = await mailerSend.email.send(emailParams)
@@ -91,6 +92,8 @@ export default async function mailerSendTemplateAdapter(
         to: recipients,
         response: messagesSent,
         meta: {
+          messageTitle: firstPersonalizationData?.messageTitle,
+          messageBody: firstPersonalizationData?.messageBody,
           personalizationCount: personalizationData.length,
         },
       })
@@ -111,6 +114,8 @@ export default async function mailerSendTemplateAdapter(
         to: recipients,
         error: error instanceof Error ? error.message : String(error),
         meta: {
+          messageTitle: firstPersonalizationData?.messageTitle,
+          messageBody: firstPersonalizationData?.messageBody,
           personalizationCount: personalizationData.length,
         },
       })

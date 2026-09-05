@@ -7,6 +7,22 @@ type EmailAddress = {
 
 type EmailAuditStatus = 'sent' | 'skipped' | 'failed'
 type EmailDeliveryType = 'standard' | 'template'
+type EmailAuditJsonValue = { [k: string]: unknown } | unknown[] | string | number | boolean | null
+
+const toEmailAuditJsonValue = (value: unknown): EmailAuditJsonValue | undefined => {
+  if (value === undefined) return undefined
+  if (value === null) return null
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return value
+  }
+
+  try {
+    const serializedValue = JSON.stringify(value)
+    return serializedValue ? (JSON.parse(serializedValue) as EmailAuditJsonValue) : null
+  } catch {
+    return String(value)
+  }
+}
 
 type EmailAuditRecordInput = {
   status: EmailAuditStatus
@@ -46,8 +62,8 @@ export async function recordEmailAudit(payload: Payload, record: EmailAuditRecor
         bcc: record.bcc,
         skipReason: record.skipReason,
         error: record.error,
-        response: record.response,
-        meta: record.meta,
+        response: toEmailAuditJsonValue(record.response),
+        meta: toEmailAuditJsonValue(record.meta),
       },
       overrideAccess: true,
     })
