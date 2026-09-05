@@ -8,22 +8,30 @@ npx wrangler tail uhtfc-cloudflare
 * How to Export database from cloudflare D1 and restore locally
 # 1) Stop dev server first
 
-# 2) Export prod D1 to a single variable (avoid filename mismatch)
+# 2) Recommended: run the restore script
+pnpm run db:restore:prod-to-local
+
+# Manual version if needed:
+
+# 3) Export prod D1 to a single variable (avoid filename mismatch)
 DUMP="./database-exports/prod-$(date +%F-%H%M%S).sql"
-npx wrangler d1 export d1-uhtfc-cloudflare --remote --output="$DUMP"
+npx wrangler d1 export d1-uhtfc-cloudflare --remote --output="$DUMP" -y
 
-# 3) Reset local D1 state
-rm -f .wrangler/state/v3/d1/miniflare-D1DatabaseObject/*.sqlite
+# 4) Reset local D1 state
+LOCAL_D1_DIR=".wrangler/state/v3/d1/miniflare-D1DatabaseObject"
+rm -f "$LOCAL_D1_DIR"/*.sqlite
 
-# 4) Recreate empty local DB file
-npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT 1" >/dev/null
+# 5) Recreate empty local DB file
+npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT 1" -y >/dev/null
 
-# 5) Import using Wrangler (preferred over direct sqlite file plumbing)
-npx wrangler d1 execute d1-uhtfc-cloudflare --local --file "$DUMP"
+# 6) Import directly into the local sqlite file
+# Wrangler local --file can fail when the D1 export lists child tables before parent tables.
+DB_FILE="$(find "$LOCAL_D1_DIR" -maxdepth 1 -type f -name '*.sqlite' ! -name 'metadata.sqlite' | head -n 1)"
+{ echo "PRAGMA foreign_keys = OFF;"; cat "$DUMP"; echo "PRAGMA foreign_keys = ON;"; } | sqlite3 "$DB_FILE"
 
-# 6) Verify key tables
-npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT COUNT(*) AS admins_count FROM admins;"
-npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%migration%';"
+# 7) Verify key tables
+npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT COUNT(*) AS admins_count FROM admins;" -y
+npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%migration%';" -y
 
 * End Steps
 

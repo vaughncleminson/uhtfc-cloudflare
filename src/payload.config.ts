@@ -62,6 +62,7 @@ export default buildConfig({
     },
     components: {
       afterNavLinks: ['@/admin/components/BuildInfo/AdminBuildInfo#AdminBuildInfo'],
+      beforeDashboard: ['@/admin/components/Dashboard/AdminDashboard#AdminDashboard'],
     },
     livePreview: {
       breakpoints: [

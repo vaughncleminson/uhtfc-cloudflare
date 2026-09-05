@@ -50,6 +50,7 @@ import { JobsNoteCell as JobsNoteCell_b9693af6fe304d3ca687ac134de7918b } from '@
 import { TriggerCatchReturnJobButton as TriggerCatchReturnJobButton_c306faa3eb1c291296b3e481a612936a } from '@/admin/components/Jobs/triggerNow'
 import { JobsQuickFilters as JobsQuickFilters_f88cf0aef388fef7e253a56606013935 } from '@/admin/components/Jobs/quickFilters'
 import { AdminBuildInfo as AdminBuildInfo_cbfc96e976ee74b2e56f53c715ef9644 } from '@/admin/components/BuildInfo/AdminBuildInfo'
+import { AdminDashboard as AdminDashboard_08c0de0a9d39f668b664e8357fd11e4a } from '@/admin/components/Dashboard/AdminDashboard'
 import { R2ClientUploadHandler as R2ClientUploadHandler_85cc02ed84006fcc91d3aff39dda669d } from '@payloadcms/storage-r2/client'
 import { ImportExportProvider as ImportExportProvider_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -108,6 +109,7 @@ export const importMap = {
   "@/admin/components/Jobs/triggerNow#TriggerCatchReturnJobButton": TriggerCatchReturnJobButton_c306faa3eb1c291296b3e481a612936a,
   "@/admin/components/Jobs/quickFilters#JobsQuickFilters": JobsQuickFilters_f88cf0aef388fef7e253a56606013935,
   "@/admin/components/BuildInfo/AdminBuildInfo#AdminBuildInfo": AdminBuildInfo_cbfc96e976ee74b2e56f53c715ef9644,
+  "@/admin/components/Dashboard/AdminDashboard#AdminDashboard": AdminDashboard_08c0de0a9d39f668b664e8357fd11e4a,
   "@payloadcms/storage-r2/client#R2ClientUploadHandler": R2ClientUploadHandler_85cc02ed84006fcc91d3aff39dda669d,
   "@payloadcms/plugin-import-export/rsc#ImportExportProvider": ImportExportProvider_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
