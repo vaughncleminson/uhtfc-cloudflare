@@ -39,7 +39,7 @@ const buildRequiredSubscriberFields = (subscriber: {
 const getReadySubscribers = async (payload: Payload) => {
   // Fetch all subscribers who are subscribed
   // and have not been sent or failed to receive the bulk mail
-  return payload.find({
+  return await payload.find({
     collection: 'emailSubscribers',
     where: {
       subscribed: {
