@@ -1,106 +1,62 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
-type SendBulkMailResponse = {
-  attempted?: number
-  failed?: number
-  mailSent?: boolean
-  message?: string
-  success?: number
-}
-
-type ReadyToSendResponse = {
-  readyToSend?: number
-}
+// import { EmailParams, MailerSend, Recipient, Sender } from 'mailersend'
+import { useState } from 'react'
+// const mailerSend = new MailerSend({
+//   apiKey: process.env.MAILSEND_TOKEN || '',
+// })
 
 export function SendBulkMail(props: any) {
   const [loading, setLoading] = useState(false)
-  const [readyCount, setReadyCount] = useState<number | null>(null)
-  const [readyCountLoading, setReadyCountLoading] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const [sendData, setSendData] = useState<SendBulkMailResponse | null>(null)
 
-  const loadReadyCount = async (): Promise<void> => {
-    setReadyCountLoading(true)
-
+  const sendBulkMail = async (): Promise<boolean> => {
     try {
-      const req = await fetch('/api/send-bulk-mail', {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      })
-
-      if (!req.ok) {
-        throw new Error(await req.text())
-      }
-
-      const data = (await req.json()) as ReadyToSendResponse
-      setReadyCount(data.readyToSend ?? 0)
-    } catch (err) {
-      console.log(err)
-      setReadyCount(null)
-    } finally {
-      setReadyCountLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    setMounted(true)
-    void loadReadyCount()
-  }, [])
-
-  const sendBulkMail = async (): Promise<void> => {
-    setLoading(true)
-
-    try {
-      const req = await fetch('/api/send-bulk-mail', {
+      const req = await fetch(`${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/send-bulk-mail`, {
         method: 'POST',
+        body: JSON.stringify({}),
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       })
-
-      if (!req.ok) {
-        throw new Error(await req.text())
-      }
-
       const data = await req.json()
-      setSendData(data as SendBulkMailResponse)
+      console.log(data)
+      // const sentFrom = new Sender('uhtfc.office@gmail.com', 'UHTFC')
+
+      // const recipients = [new Recipient('chris.trevor.green@gmail.com', 'Chris')]
+      const personalization = [
+        {
+          email: 'chrisg@codified.co.za',
+          data: {
+            recipientName: 'Chris Codified',
+            emailSubject: 'UHTFC AGM - 26th September 2025',
+            messageTitle: 'Please Join Us for the 71st UHTFC AGM',
+            messageBody: `
+            <p>Minutes and agenda for the 71st annual general meeting of the Underberg-Himeville Trout Fishing Club to be held at the Underberg Bowls Club on Saturday the 26th September 2026 at 19H00.</p>
+            <p>If you cannot attend, please find a link to the proxy letter below:</p>
+            <a href="https://uhtfc.s3.af-south-1.amazonaws.com/Proxy+letter+-+2026.docx" target="_blank">UHTFC AGM Proxy Letter</a>
+            `,
+          },
+        },
+      ]
+      // const emailParams = new EmailParams()
+      //   .setFrom(sentFrom)
+      //   .setTo(recipients)
+      //   .setReplyTo(sentFrom)
+      //   .setSubject('Rivers in May Festival')
+      //   .setPersonalization(personalization)
+      //   .setTemplateId('3vz9dle2xrnlkj50')
+
+      // const mailSent = await mailerSend.email.send(emailParams)
+      // console.log(mailSent)
     } catch (err) {
       console.log(err)
-      setSendData({
-        mailSent: false,
-        message: err instanceof Error ? err.message : 'Bulk mail request failed.',
-      })
-    } finally {
-      setLoading(false)
-      await loadReadyCount()
     }
+    return false
   }
-
-  if (!mounted) return null
 
   return (
     <div>
-      <p>
-        Ready to send: Subscribed true, sent false, failed false
-        <br />
-        Count: {readyCountLoading ? 'Loading...' : readyCount !== null ? readyCount : 'Unavailable'}
-        <br />
-        <button onClick={sendBulkMail} type="button" disabled={loading}>
-          {loading ? 'Sending Bulk Mail...' : 'Send Bulk Mail'}
-        </button>
-      </p>
+      <button onClick={sendBulkMail}>Send Mail</button>
       {loading && <p>Sending...</p>}
-      {sendData && (
-        <div>
-          <p>Mail Sent: {sendData.mailSent ? 'Yes' : 'No'}</p>
-          <p>Attempted: {sendData.attempted}</p>
-          <p>Success: {sendData.success}</p>
-          <p>Failed: {sendData.failed}</p>
-          {sendData.message && <p>Message: {sendData.message}</p>}
-        </div>
-      )}
     </div>
   )
 }
