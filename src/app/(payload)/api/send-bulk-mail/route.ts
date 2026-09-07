@@ -2,7 +2,7 @@ import mailerSendTemplateAdapter from '@/admin/utils/mailerSendTemplateAdapter'
 import config from '@payload-config'
 import { getPayload, type Payload } from 'payload'
 
-const mailsendTemplateID = '3vz9dle2xrnlkj50' //https://app.mailersend.com/templates/3vz9dle2xrnlkj50/edit
+const mailsendTemplateID = 'z86org8onyn4ew13' //https://app.mailersend.com/templates/3vz9dle2xrnlkj50/edit
 const mailersendRateLimitPerMinute = 60
 const mailersendBufferMS = 100
 const mailersendIntervalMS = Math.ceil(60000 / mailersendRateLimitPerMinute) + mailersendBufferMS
@@ -98,9 +98,13 @@ export async function POST(request: Request) {
               email: subscriber.email,
               data: {
                 recipientName: subscriber.firstName || '',
-                emailSubject: 'Bulk Mail Sender - Stillwater Festival 2026',
-                messageTitle: 'Bulk Mail Sender - Stillwater Festival 2026',
-                messageBody: 'Bulk Mail Sender - Stillwater Festival 2026',
+                emailSubject: 'UHTFC AGM - 26th September 2026',
+                messageTitle: 'Please Join Us for the 71st UHTFC AGM',
+                messageBody: `
+                  <p>Minutes and agenda for the 71st annual general meeting of the Underberg-Himeville Trout Fishing Club to be held at the Underberg Bowls Club on Saturday the 26th September 2026 at 19H00.</p>
+                  <p>If you cannot attend, please find a link to the proxy letter below:</p>
+                  <a href="https://uhtfc.s3.af-south-1.amazonaws.com/Proxy+letter+-+2026.docx" target="_blank">UHTFC AGM Proxy Letter</a>
+                  `,
               },
             },
           ],
