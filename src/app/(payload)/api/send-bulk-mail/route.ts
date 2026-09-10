@@ -48,9 +48,9 @@ const getReadySubscribers = async (payload: Payload) => {
       sent: {
         equals: false || null,
       },
-      failed: {
-        equals: false || null,
-      },
+      // failed: {
+      //   equals: false || null,
+      // },
     },
     pagination: false,
   })
