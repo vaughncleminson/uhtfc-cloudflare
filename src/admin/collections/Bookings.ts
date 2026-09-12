@@ -10,6 +10,7 @@ export const Bookings: CollectionConfig = {
   // Sets the default order for the Admin UI list view
   defaultSort: 'date',
   admin: {
+    listSearchableFields: ['firstName', 'lastName'],
     defaultColumns: ['firstName', 'lastName', 'location', 'role', 'date'],
   },
   hooks: {},

@@ -56,10 +56,10 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const colors: Record<ToastType, string> = {
-    success: 'bg-lime-700',
-    error: 'bg-red-700',
-    warning: 'bg-amber-600',
-    info: 'bg-sky-800',
+    success: 'bg-success-surface',
+    error: 'bg-danger-surface',
+    warning: 'bg-warning-surface',
+    info: 'bg-info-surface',
   }
 
   return (

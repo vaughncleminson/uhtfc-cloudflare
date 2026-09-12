@@ -4,11 +4,11 @@ import { UserRole } from '../fields/UserRole'
 export const Users: CollectionConfig = {
   slug: 'users',
   // Sets the default order for the Admin UI list view
-  defaultSort: 'email',
+  defaultSort: ['firstName', 'lastName'],
   admin: {
-    useAsTitle: 'email',
+    useAsTitle: 'fullName',
     listSearchableFields: ['email', 'firstName', 'lastName'],
-    defaultColumns: ['email', 'firstName', 'lastName', 'role'],
+    defaultColumns: ['firstName', 'lastName', 'email', 'role'],
   },
   auth: {
     forgotPassword: {
@@ -37,6 +37,21 @@ export const Users: CollectionConfig = {
       type: 'text',
       name: 'lastName',
       required: true,
+    },
+    {
+      type: 'text',
+      name: 'fullName',
+      label: 'Full Name',
+      virtual: true,
+      admin: {
+        hidden: true,
+      },
+      hooks: {
+        afterRead: [
+          ({ siblingData }) =>
+            [siblingData.firstName, siblingData.lastName].filter(Boolean).join(' '),
+        ],
+      },
     },
     {
       type: 'text',

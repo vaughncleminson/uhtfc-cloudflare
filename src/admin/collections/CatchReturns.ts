@@ -5,7 +5,11 @@ const isValidPublicId = (value: unknown): value is string =>
 
 export const CatchReturns: CollectionConfig = {
   slug: 'catchReturns',
-  admin: {},
+  defaultSort: 'date',
+  admin: {
+    listSearchableFields: ['locationName'],
+    defaultColumns: ['booking', 'userId', 'locationName', 'returnCompleted', 'nilReturn'],
+  },
   hooks: {},
   fields: [
     {
@@ -14,11 +18,21 @@ export const CatchReturns: CollectionConfig = {
       label: 'Booking',
       // required: true,
       relationTo: 'bookings',
+      admin: {
+        components: {
+          Cell: '@/admin/components/CatchReturns/BookingDateCell#BookingDateCell',
+        },
+      },
     },
     {
       type: 'number',
       name: 'userId',
-      label: 'User ID',
+      label: 'User',
+      admin: {
+        components: {
+          Cell: '@/admin/components/CatchReturns/UserNameCell#UserNameCell',
+        },
+      },
     },
     {
       type: 'text',

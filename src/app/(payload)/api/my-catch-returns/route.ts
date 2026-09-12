@@ -20,20 +20,15 @@ export async function GET() {
     where: {
       and: [
         {
-          booking: {
+          userId: {
             equals: user.id,
-          },
-        },
-        {
-          returnCompleted: {
-            equals: false,
           },
         },
       ],
     },
     sort: 'date',
   })
-  console.log(catchReturns)
+  //console.log('catchReturns: ' + JSON.stringify(catchReturns))
 
   return NextResponse.json(catchReturns.docs)
 }

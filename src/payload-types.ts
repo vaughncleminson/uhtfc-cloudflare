@@ -931,6 +931,7 @@ export interface User {
   id: number;
   firstName: string;
   lastName: string;
+  fullName?: string | null;
   mobileNumber: string;
   idNumber?: string | null;
   vehicles?:
@@ -1939,6 +1940,7 @@ export interface TwoColumnTextLeftBlockSelect<T extends boolean = true> {
 export interface UsersSelect<T extends boolean = true> {
   firstName?: T;
   lastName?: T;
+  fullName?: T;
   mobileNumber?: T;
   idNumber?: T;
   vehicles?:
