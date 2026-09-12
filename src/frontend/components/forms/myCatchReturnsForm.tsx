@@ -38,7 +38,7 @@ export default function MyCatchReturnsForm() {
     >
       {!loading && catchReturns.length === 0 && (
         <div className="flex h-[16rem] justify-center items-center uppercase">
-          YOU HAVE NO NEW CATCH RETURNS
+          YOU HAVE NO CATCH RETURNS
         </div>
       )}
       {loading && (
@@ -63,6 +63,7 @@ export default function MyCatchReturnsForm() {
               <div className="w-10">#</div>
               <div className="w-44">Date</div>
               <div className="w-44">Location</div>
+              <div className="w-44">Return Status</div>
               <div className=" w-32 text-left">Actions</div>
             </div>
             {catchReturns.length &&
@@ -80,11 +81,18 @@ export default function MyCatchReturnsForm() {
                     ).format('DD-MM-YYYY')}
                   </div>
                   <div className="w-44 truncate text-nowrap">{catchReturn.locationName}</div>
+                  <div
+                    className={`w-44 truncate text-nowrap ${
+                      catchReturn.returnCompleted ? 'text-success' : 'text-danger'
+                    }`}
+                  >
+                    {catchReturn.returnCompleted ? 'Completed' : 'No Return'}
+                  </div>
                   <Link
                     href={`/catch-return/?publicId=${catchReturn.publicId}`}
                     className=" w-32 bg-slate-800 text-white p-1 text-left rounded-sm"
                   >
-                    View
+                    {catchReturn.returnCompleted ? 'View' : 'Capture'}
                   </Link>
                 </div>
               ))}

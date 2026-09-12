@@ -186,11 +186,9 @@ export default function CatchReturnsForm() {
           message: 'Catch return submitted successfully.',
           showCancelButton: false,
           confirmTitle: 'OK',
-          confirmUrl: `/`,
+          confirmUrl: '/profile/my-catch-returns',
         })
         if (!confirmed) return
-
-        // Optionally, you could redirect the user or reset the form here
       } else {
         setErrors({ submit: result.message || 'Failed to submit catch return' })
       }
@@ -283,7 +281,11 @@ export default function CatchReturnsForm() {
                 ))
               ) : (
                 <div className="flex w-full justify-between items-center border-b py-2 px-5 rounded-sm text-sm">
-                  <div className="w-full text-center">No returns recorded</div>
+                  {formData.nilReturn ? (
+                    <div className="w-full text-center">Nil Return</div>
+                  ) : (
+                    <div className="w-full text-center">No returns recorded</div>
+                  )}
                 </div>
               )}
             </div>

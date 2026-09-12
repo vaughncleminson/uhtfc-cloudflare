@@ -1,4 +1,6 @@
 import { MFA as MFA_b9b3fe7b9c362006432a298e54ddae71 } from '@/admin/components/MFA/MFA'
+import { BookingDateCell as BookingDateCell_5be95e74ee700a456dfe1873da8fc000 } from '@/admin/components/CatchReturns/BookingDateCell'
+import { UserNameCell as UserNameCell_b0937fdd6e97622fc73cdcedd712694d } from '@/admin/components/CatchReturns/UserNameCell'
 import { ImportCSVButton as ImportCSVButton_933a9ef49d8aeee8c44890bb36054756 } from '@/admin/components/ImportExport/import'
 import { SendBulkMail as SendBulkMail_dc0f05fdfaaccce1ac18114e9f856977 } from '@/admin/components/Mailsend/sendBulkMail'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -58,6 +60,8 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 /** @type import('payload').ImportMap */
 export const importMap = {
   "@/admin/components/MFA/MFA#MFA": MFA_b9b3fe7b9c362006432a298e54ddae71,
+  "@/admin/components/CatchReturns/BookingDateCell#BookingDateCell": BookingDateCell_5be95e74ee700a456dfe1873da8fc000,
+  "@/admin/components/CatchReturns/UserNameCell#UserNameCell": UserNameCell_b0937fdd6e97622fc73cdcedd712694d,
   "@/admin/components/ImportExport/import#ImportCSVButton": ImportCSVButton_933a9ef49d8aeee8c44890bb36054756,
   "@/admin/components/Mailsend/sendBulkMail#SendBulkMail": SendBulkMail_dc0f05fdfaaccce1ac18114e9f856977,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
