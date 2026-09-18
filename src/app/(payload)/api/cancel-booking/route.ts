@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  await payload.delete({
+  const bookingResult = await payload.update({
     collection: 'bookings',
     where: {
       and: [
@@ -36,25 +36,10 @@ export async function GET(request: NextRequest) {
         },
       ],
     },
-  })
-
-  const bookingHistoryResult = await payload.delete({
-    collection: 'bookingHistory',
-    where: {
-      and: [
-        {
-          userId: {
-            equals: user.id,
-          },
-        },
-        {
-          bookingId: {
-            equals: bookingId,
-          },
-        },
-      ],
+    data: {
+      active: false,
     },
   })
 
-  return NextResponse.json(bookingHistoryResult)
+  return NextResponse.json(bookingResult)
 }
