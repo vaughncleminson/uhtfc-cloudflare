@@ -945,9 +945,10 @@ export interface User {
   physicalAddress?: string | null;
   role?: ('non-member' | 'member' | 'member-guest' | 'admin') | null;
   membershipType?: ('OM' | 'OMW' | 'F' | 'J' | 'S' | 'C' | 'COMP' | 'R') | null;
-  blocked?: boolean | null;
+  accountNumber?: string | null;
   subsDue?: boolean | null;
   arrearsAmount?: number | null;
+  blocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1954,9 +1955,10 @@ export interface UsersSelect<T extends boolean = true> {
   physicalAddress?: T;
   role?: T;
   membershipType?: T;
-  blocked?: T;
+  accountNumber?: T;
   subsDue?: T;
   arrearsAmount?: T;
+  blocked?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
