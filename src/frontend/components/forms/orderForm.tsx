@@ -3,7 +3,7 @@ import { CheckoutResponse } from '@/admin/types/checkout'
 import { orderAtom } from '@/frontend/atoms/orderAtom'
 import { LineItem } from '@/frontend/schemas/lineItemSchema'
 import { User } from '@/payload-types'
-import dayjs from 'dayjs'
+import { formatDisplayDate } from '@/utils/date'
 import { useAtom } from 'jotai'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -168,7 +168,7 @@ export default function OrderForm() {
               <div className="flex w-full justify-between items-center py-2 px-5 rounded-sm text-sm bg-slate-900">
                 <div className="w-10"></div>
                 <div className="text-nowrap w-full">
-                  {item.locationName!} ({dayjs(item.date).format('DD-MM-YYYY')})
+                  {item.locationName!} ({formatDisplayDate(item.date)})
                 </div>
                 <div className=" w-1/2"></div>
                 <div className="w-36 relative h-6">
@@ -250,7 +250,7 @@ export default function OrderForm() {
               <div>{user?.email}</div>
               <div>{user?.role}</div>
             </div>
-            <div>{dayjs().format('DD-MM-YYYY')}</div>
+            <div>{formatDisplayDate()}</div>
           </div>
           <div className="w-full bg-slate-800">
             <div className="flex w-full justify-between border-b py-2 px-5 rounded-sm text-sm">

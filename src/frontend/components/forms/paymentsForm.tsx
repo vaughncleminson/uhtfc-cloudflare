@@ -1,6 +1,6 @@
 'use client'
 import { Payment, User } from '@/payload-types'
-import dayjs from 'dayjs'
+import { formatDisplayDate } from '@/utils/date'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../ui/AuthProvider'
 
@@ -52,7 +52,7 @@ export default function PaymentsForm() {
               <div>{user?.email}</div>
               <div>{user?.role}</div>
             </div>
-            <div>{dayjs().format('DD-MM-YYYY')}</div>
+            <div>{formatDisplayDate()}</div>
           </div>
           <div className="w-full bg-slate-800">
             <div className="flex w-full justify-between border-b py-2 px-5 rounded-sm text-sm">
@@ -69,9 +69,7 @@ export default function PaymentsForm() {
                   className={`flex w-full justify-between items-center border-b last:border-0 py-2 px-5 rounded-sm text-sm`}
                 >
                   <div className="w-10">{index + 1}.</div>
-                  <div className="w-44 truncate text-nowrap">
-                    {dayjs(payment.date).format('DD-MM-YYYY')}
-                  </div>
+                  <div className="w-44 truncate text-nowrap">{formatDisplayDate(payment.date)}</div>
                   <div className="w-full truncate text-nowrap">{payment.summary}</div>
                   <div className=" w-36">{`R${payment.totalAmount}.00`}</div>
                   <div className=" w-44 bg-slate-800 text-white p-1 text-left rounded-sm">

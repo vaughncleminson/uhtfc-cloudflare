@@ -28,6 +28,7 @@ import { Settings } from './admin/collections/Settings'
 import { Users } from './admin/collections/Users'
 import { jobs } from './admin/jobs'
 import { mailerSendAdapter } from './admin/utils/mailerSendAdapter'
+import { DATE_PICKER_DISPLAY_FORMAT } from './utils/date'
 
 const cwd =
   typeof process !== 'undefined' && typeof process.cwd === 'function' ? process.cwd() : undefined
@@ -57,6 +58,7 @@ export default buildConfig({
   admin: {
     user: Admins.slug,
     autoRefresh: true,
+    dateFormat: DATE_PICKER_DISPLAY_FORMAT,
     importMap: {
       baseDir: path.resolve(dirname),
     },
