@@ -86,19 +86,30 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
 
     return {
       name: 'mailersend',
-      defaultFromAddress: options.defaultFromAddress,
-      defaultFromName: options.defaultFromName,
+      defaultFromAddress: '',
+      defaultFromName: '',
       sendEmail: async (message: SendEmailOptions) => {
+        // Fetch global email settings
+        const settings = await payload.findGlobal({
+          slug: 'settings',
+          depth: 0,
+          overrideAccess: true,
+        })
+        const fromEmail = settings.emailSettings.fromEmail || options.defaultFromAddress
+        const fromName = settings.emailSettings.fromName || options.defaultFromName
+        const replyToEmail = options.defaultReplyToAddress
+        const replyToName = options.defaultReplyToName
+
         //log email message for debugging
         payload.logger.info({ msg: 'Sending email with MailerSend adapter.', message })
 
         const toList = toAddressList(message.to)
         const ccList = toAddressList(message.cc)
         const bccList = toAddressList(message.bcc)
-        const defaultReplyTo = options.defaultReplyToAddress
+        const defaultReplyTo = replyToEmail
           ? {
-              email: options.defaultReplyToAddress,
-              name: options.defaultReplyToName,
+              email: replyToEmail,
+              name: replyToName,
             }
           : undefined
         const replyToAddress = toSingleAddress(message.replyTo) || defaultReplyTo
@@ -110,8 +121,8 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
             status: 'skipped',
             deliveryType: 'standard',
             subject,
-            fromEmail: options.defaultFromAddress,
-            fromName: options.defaultFromName,
+            fromEmail,
+            fromName,
             replyToEmail: replyToAddress?.email,
             replyToName: replyToAddress?.name,
             to: toList,
@@ -129,8 +140,8 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
             status: 'skipped',
             deliveryType: 'standard',
             subject,
-            fromEmail: options.defaultFromAddress,
-            fromName: options.defaultFromName,
+            fromEmail,
+            fromName,
             replyToEmail: replyToAddress?.email,
             replyToName: replyToAddress?.name,
             to: toList,
@@ -141,7 +152,7 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
           return
         }
 
-        const from = new Sender(options.defaultFromAddress, options.defaultFromName)
+        const from = new Sender(fromEmail, fromName)
         const email = new EmailParams().setFrom(from).setTo(to).setSubject(subject)
 
         const cc = toRecipients(message.cc)
@@ -153,12 +164,9 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
         if (bcc.length > 0) {
           email.setBcc(bcc)
         }
-
         const replyTo =
           toRecipient(message.replyTo) ||
-          (options.defaultReplyToAddress
-            ? new Recipient(options.defaultReplyToAddress, options.defaultReplyToName)
-            : undefined)
+          (replyToEmail ? new Recipient(replyToEmail, replyToName) : undefined)
         if (replyTo) {
           email.setReplyTo(replyTo)
         }
@@ -180,8 +188,8 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
             status: 'sent',
             deliveryType: 'standard',
             subject,
-            fromEmail: options.defaultFromAddress,
-            fromName: options.defaultFromName,
+            fromEmail,
+            fromName,
             replyToEmail: replyToAddress?.email,
             replyToName: replyToAddress?.name,
             to: toList,
@@ -199,8 +207,8 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
             status: 'failed',
             deliveryType: 'standard',
             subject,
-            fromEmail: options.defaultFromAddress,
-            fromName: options.defaultFromName,
+            fromEmail,
+            fromName,
             replyToEmail: replyToAddress?.email,
             replyToName: replyToAddress?.name,
             to: toList,
