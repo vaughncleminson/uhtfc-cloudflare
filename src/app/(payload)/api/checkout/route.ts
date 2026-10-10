@@ -10,6 +10,7 @@ import { BookingHistory, Location, Setting } from '@/payload-types'
 import { formatDisplayDate } from '@/utils/date'
 import config from '@payload-config'
 import dayjs from 'dayjs'
+import { headers } from 'next/headers'
 import { getPayload } from 'payload'
 
 const mailsendTemplateID = process.env.MAILSEND_SHARED_WEBSITE_TEMPLATE_ID || 'z86org8onyn4ew13'
@@ -36,52 +37,74 @@ export async function POST(request: Request) {
   const data = (await request.json()) as RequestBody
   const payload = await getPayload({ config })
   const order = data.order as Order
+  const { user: authenticatedUser } = await payload.auth({ headers: await headers() })
+
+  if (!authenticatedUser) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  if (authenticatedUser.id !== order.userId) {
+    return Response.json({ error: 'You cannot create a booking for another user' }, { status: 403 })
+  }
+
   const user = await payload.findByID({
     collection: 'users',
-    id: order.userId,
+    id: authenticatedUser.id,
+    depth: 0,
   })
 
   // Get booking history so we can validate the booking
   const bookingHistorySettings = (await getBookingSettings()) || []
   const bookingsInOrder = checkCartBookings(order)
+
+  if (bookingsInOrder.some((booking) => booking.userId !== authenticatedUser.id)) {
+    return Response.json({ error: 'You cannot create a booking for another user' }, { status: 403 })
+  }
+
+  if (bookingsInOrder.length > 0 && (user.arrearsAmount ?? 0) > 0) {
+    return Response.json({ error: 'Membership Subscription Unpaid' }, { status: 403 })
+  }
+
   const locations = await getLocations()
   const settings = await getSettings()
   console.log(bookingsInOrder)
 
-  if (locations && settings && user) {
-    for (let booking of bookingsInOrder) {
-      const validation = validateBookingDates({
-        date: dayjs(booking.date).toDate(),
-        locations: locations,
-        user: user,
-        bookingSettings: [...bookingHistorySettings],
-        selectedLocationId: booking.location,
-        settings: settings,
-      })
-      const v = validation.find((v) => v.locationId === booking.location) as LocationOption
-      if (v) {
-        if (v.available) {
-          //check the rod limit
-          if (v.rodsAvailable && booking.anglers.length > v.rodsAvailable) {
-            v.reason = 'No more rods available'
-            return Response.json(v)
-          } else {
-            console.log('Booking valid')
-          }
-        } else {
+  if (!locations || !settings) {
+    return Response.json({ error: 'Booking availability could not be validated' }, { status: 503 })
+  }
+
+  for (let booking of bookingsInOrder) {
+    const validation = validateBookingDates({
+      date: dayjs(booking.date).toDate(),
+      locations: locations,
+      user: user,
+      bookingSettings: [...bookingHistorySettings],
+      selectedLocationId: booking.location,
+      settings: settings,
+    })
+    const v = validation.find((v) => v.locationId === booking.location) as LocationOption
+    if (v) {
+      if (v.available) {
+        //check the rod limit
+        if (v.rodsAvailable && booking.anglers.length > v.rodsAvailable) {
+          v.reason = 'No more rods available'
           return Response.json(v)
+        } else {
+          console.log('Booking valid')
         }
       } else {
-        return Response.json({
-          locationId: booking.location,
-          locationTitle: booking.locationName,
-          available: false,
-          rodLimit: 0,
-          rodsAvailable: 0,
-          rodsBooked: 0,
-          reason: 'Location is unavailable',
-        } as LocationOption)
+        return Response.json(v)
       }
+    } else {
+      return Response.json({
+        locationId: booking.location,
+        locationTitle: booking.locationName,
+        available: false,
+        rodLimit: 0,
+        rodsAvailable: 0,
+        rodsBooked: 0,
+        reason: 'Location is unavailable',
+      } as LocationOption)
     }
   }
   // if there is no amount to pay (member bookings are free)

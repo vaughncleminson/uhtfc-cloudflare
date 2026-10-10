@@ -125,8 +125,19 @@ export default function OrderForm() {
         },
         body: JSON.stringify({ order }),
       })
-      const data = (await req.json()) as CheckoutResponse
+      const data = (await req.json()) as CheckoutResponse & { error?: string; reason?: string }
       console.log(data)
+
+      if (!req.ok || !data.checkout) {
+        await confirm({
+          title: 'Booking unavailable',
+          message: data.error || data.reason || 'The booking could not be completed.',
+          confirmTitle: 'Continue',
+          showCancelButton: false,
+        })
+        return
+      }
+
       router.push(data.checkout.redirectUrl)
     } catch (err) {
       console.log(err)

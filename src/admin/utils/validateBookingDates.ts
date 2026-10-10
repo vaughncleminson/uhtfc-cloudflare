@@ -36,6 +36,16 @@ export const validateBookingDates = (props: ValidateBookingProps): LocationOptio
     }
   })
 
+  // Users with arrears may not book any location under any conditions.
+  // note this includes both membersOnly and non-membersOnly locations
+  if ((user.arrearsAmount ?? 0) > 0) {
+    return locationOptions.map((location) => ({
+      ...location,
+      available: false,
+      reason: 'Club Membership in Arrears',
+    }))
+  }
+
   // CHECK TEMPORARY CLOSURES AND USER SPECIFIC BOOKINGS
   for (let i = 0; i < locations.length; i++) {
     const loc = locations[i]
@@ -67,7 +77,6 @@ export const validateBookingDates = (props: ValidateBookingProps): LocationOptio
         }
       }
     }
-
     let userBookings = bookingSettings.filter(
       (booking) =>
         booking.userId === user.id &&
@@ -117,13 +126,14 @@ export const validateBookingDates = (props: ValidateBookingProps): LocationOptio
         (location) => location.locationId === futureBooking.locationId,
       )
       if (location) {
+        const hasCapacity = futureBooking.rodsBooked < location.rodLimit
         const updatedLocation = {
           ...location,
-          available: futureBooking.rodsBooked < location.rodLimit,
+          available: location.available && hasCapacity,
           rodsBooked: futureBooking.rodsBooked,
           rodsAvailable: location.rodLimit - futureBooking.rodsBooked,
         }
-        if (!updatedLocation.available) {
+        if (!hasCapacity) {
           updatedLocation.reason = 'Fully Booked'
         }
         locationOptions[locationIndex] = updatedLocation
