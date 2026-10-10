@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import { APIError, type CollectionConfig } from 'payload'
 import { LineItems } from '../fields/LineItems'
 import { UserRole } from '../fields/UserRole'
 
@@ -7,13 +7,39 @@ const isValidPublicId = (value: unknown): value is string =>
 
 export const Bookings: CollectionConfig = {
   slug: 'bookings',
+  access: {
+    create: ({ req: { user } }) => Boolean(user),
+  },
   // Sets the default order for the Admin UI list view
   defaultSort: 'date',
   admin: {
     listSearchableFields: ['firstName', 'lastName'],
     defaultColumns: ['firstName', 'lastName', 'location', 'role', 'date'],
   },
-  hooks: {},
+  hooks: {
+    beforeChange: [
+      async ({ data, operation, req }) => {
+        if (operation !== 'create') return data
+
+        if (req.user && req.user.id !== data.userId && req.user.role !== 'admin') {
+          throw new APIError('You cannot create a booking for another user', 403)
+        }
+
+        const user = await req.payload.findByID({
+          collection: 'users',
+          id: data.userId,
+          depth: 0,
+          req,
+        })
+
+        if ((user.arrearsAmount ?? 0) > 0) {
+          throw new APIError('Membership Subscription Unpaid', 403)
+        }
+
+        return data
+      },
+    ],
+  },
   fields: [
     {
       type: 'text',

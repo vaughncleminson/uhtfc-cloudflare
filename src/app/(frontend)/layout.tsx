@@ -29,7 +29,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { user } = await payload.auth({
     headers: await headers(),
   })
-  //test
+  const currentUser =
+    user?.collection === 'users'
+      ? await payload.findByID({ collection: 'users', id: user.id, depth: 0 })
+      : user
+
   return (
     <html lang="en" suppressHydrationWarning className={`${oswald.className} bg-slate-800`}>
       <head>
@@ -38,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <LivePreviewListener />
-        <AuthProvider user={user}>
+        <AuthProvider user={currentUser}>
           <Header navigation={navigation} />
           <ConfirmProvider>
             <ToastProvider>{children}</ToastProvider>
