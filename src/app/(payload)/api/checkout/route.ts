@@ -7,6 +7,7 @@ import { LineItem, YocoLineItem } from '@/frontend/schemas/lineItemSchema'
 import { Membership } from '@/frontend/schemas/membershipSchema'
 import { Order } from '@/frontend/schemas/orderSchema'
 import { BookingHistory, Location, Setting } from '@/payload-types'
+import { formatDisplayDate } from '@/utils/date'
 import config from '@payload-config'
 import dayjs from 'dayjs'
 import { getPayload } from 'payload'
@@ -348,7 +349,7 @@ const sendBookingEmails = async (order: Order) => {
   const products = order.products as (Booking | Membership)[]
   const bookings = products.filter((p) => p.productType === 'booking') as Booking[]
   for (let booking of bookings) {
-    const bookingDate = dayjs(booking.date).format('MMMM D, YYYY')
+    const bookingDate = formatDisplayDate(booking.date)
     const anglerNames = booking.anglers
       .map((angler) => {
         if (angler.fullName) return angler.fullName

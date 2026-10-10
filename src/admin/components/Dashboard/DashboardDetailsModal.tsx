@@ -1,7 +1,11 @@
 'use client'
 
+import { DATE_PICKER_DISPLAY_FORMAT } from '@/utils/date'
+import dayjs from 'dayjs'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useRef } from 'react'
+import { useState } from 'react'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import { Button, Modal, useModal } from '@payloadcms/ui'
 import './DashboardDetailsModal.scss'
 
@@ -15,20 +19,19 @@ export function DashboardDetailsModal({ endDate, startDate }: DashboardDetailsMo
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const startDateInput = useRef<HTMLInputElement>(null)
-  const endDateInput = useRef<HTMLInputElement>(null)
+  const [selectedStartDate, setSelectedStartDate] = useState(
+    () => new Date(`${startDate}T00:00:00`),
+  )
+  const [selectedEndDate, setSelectedEndDate] = useState(() => new Date(`${endDate}T00:00:00`))
 
   const applyDateRange = () => {
-    const selectedStartDate = startDateInput.current?.value
-    const selectedEndDate = endDateInput.current?.value
-
-    if (!selectedStartDate || !selectedEndDate || selectedStartDate > selectedEndDate) {
+    if (selectedStartDate > selectedEndDate) {
       return
     }
 
     const params = new URLSearchParams(searchParams.toString())
-    params.set('startDate', selectedStartDate)
-    params.set('endDate', selectedEndDate)
+    params.set('startDate', dayjs(selectedStartDate).format('YYYY-MM-DD'))
+    params.set('endDate', dayjs(selectedEndDate).format('YYYY-MM-DD'))
     router.replace(`${pathname}?${params.toString()}`)
     router.refresh()
     closeModal('dashboard-details')
@@ -42,10 +45,22 @@ export function DashboardDetailsModal({ endDate, startDate }: DashboardDetailsMo
 
       <Modal className="dashboard-details-modal" slug="dashboard-details">
         <h2>Select Date Range</h2>
-        Start Date
-        <input defaultValue={startDate} ref={startDateInput} type="date" />
-        End Date
-        <input defaultValue={endDate} ref={endDateInput} type="date" />
+        <label htmlFor="dashboard-start-date">Start Date</label>
+        <DatePicker
+          dateFormat={DATE_PICKER_DISPLAY_FORMAT}
+          id="dashboard-start-date"
+          onChange={(date: Date | null) => date && setSelectedStartDate(date)}
+          selected={selectedStartDate}
+        />
+        <br />
+        <label htmlFor="dashboard-end-date">End Date</label>
+        <DatePicker
+          dateFormat={DATE_PICKER_DISPLAY_FORMAT}
+          id="dashboard-end-date"
+          onChange={(date: Date | null) => date && setSelectedEndDate(date)}
+          selected={selectedEndDate}
+        />
+        <br />
         <Button onClick={applyDateRange}>Apply</Button>
       </Modal>
     </>

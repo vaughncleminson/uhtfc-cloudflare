@@ -1,6 +1,6 @@
 'use client'
 import { Booking, CatchReturn, User } from '@/payload-types'
-import dayjs from 'dayjs'
+import { formatDisplayDate } from '@/utils/date'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../ui/AuthProvider'
@@ -56,7 +56,7 @@ export default function MyCatchReturnsForm() {
               <div>{user?.email}</div>
               <div>{user?.role}</div>
             </div>
-            <div>{dayjs().format('DD-MM-YYYY')}</div>
+            <div>{formatDisplayDate()}</div>
           </div>
           <div className="w-full bg-slate-800">
             <div className="flex w-full justify-between border-b py-2 px-5 rounded-sm text-sm">
@@ -74,11 +74,11 @@ export default function MyCatchReturnsForm() {
                 >
                   <div className="w-10">{index + 1}.</div>
                   <div className="w-44 truncate text-nowrap">
-                    {dayjs(
+                    {formatDisplayDate(
                       typeof catchReturn.booking === 'object'
                         ? catchReturn.booking.date
                         : catchReturn.createdAt,
-                    ).format('DD-MM-YYYY')}
+                    )}
                   </div>
                   <div className="w-44 truncate text-nowrap">{catchReturn.locationName}</div>
                   <div

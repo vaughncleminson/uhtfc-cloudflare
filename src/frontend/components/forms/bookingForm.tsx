@@ -7,6 +7,7 @@ import { LineItem } from '@/frontend/schemas/lineItemSchema'
 import { Membership } from '@/frontend/schemas/membershipSchema'
 import { Order } from '@/frontend/schemas/orderSchema'
 import { BookingHistory, Location, Setting, User } from '@/payload-types'
+import { DATE_PICKER_DISPLAY_FORMAT, formatDisplayDate } from '@/utils/date'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import dayjs from 'dayjs'
@@ -219,7 +220,7 @@ export default function BookingForm(props: BookingFormProps) {
             lineItems: [
               {
                 displayName: 'Permit fees',
-                description: `${bookingObject.locationName} (${dayjs(bookingObject.date).format('DD-MM-YYYY hh:mm')})`,
+                description: `${bookingObject.locationName} (${formatDisplayDate(bookingObject.date)} ${dayjs(bookingObject.date).format('hh:mm')})`,
                 quantity: 1,
                 price: bookingObject.totalAmount,
               },
@@ -230,7 +231,7 @@ export default function BookingForm(props: BookingFormProps) {
           order.totalAmount += bookingObject.totalAmount
           order.lineItems.push({
             displayName: 'Permit fees',
-            description: `${bookingObject.locationName} (${dayjs(bookingObject.date).format('DD-MM-YYYY hh:mm')})`,
+            description: `${bookingObject.locationName} (${formatDisplayDate(bookingObject.date)} ${dayjs(bookingObject.date).format('hh:mm')})`,
             quantity: 1,
             price: bookingObject.totalAmount,
           })
@@ -488,7 +489,7 @@ export default function BookingForm(props: BookingFormProps) {
         <DatePicker
           id="date"
           className="input z-50"
-          dateFormat="dd/MM/yyyy"
+          dateFormat={DATE_PICKER_DISPLAY_FORMAT}
           minDate={new Date()}
           maxDate={maxDate()}
           selected={selectedDate}

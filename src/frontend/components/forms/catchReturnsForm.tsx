@@ -1,9 +1,9 @@
 'use client'
 import { catchReturnSchema } from '@/frontend/schemas/catchReturnSchema'
 import { Booking, CatchReturn } from '@/payload-types'
+import { formatDisplayDate } from '@/utils/date'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import dayjs from 'dayjs'
 import { useSearchParams } from 'next/navigation'
 import { FormEvent, useEffect, useState } from 'react'
 import Button from '../ui/Button'
@@ -212,7 +212,7 @@ export default function CatchReturnsForm() {
     >
       <div className="flex justify-between items-center">
         <h1 className="text-2xl mb-2 text-white uppercase">Catch Return</h1>
-        <div>{booking ? dayjs(new Date()).format('DD-MM-YYYY') : ''}</div>
+        <div>{booking ? formatDisplayDate() : ''}</div>
       </div>
       <div className="flex flex-col gap-5">
         <div className="text-sm">
@@ -230,7 +230,7 @@ export default function CatchReturnsForm() {
           </div>
           <div className="flex w-full justify-between items-center py-2 px-5 rounded-sm text-sm">
             <div className="w-44 truncate text-nowrap">
-              {booking ? dayjs(booking.date).format('DD-MM-YYYY') : ''}
+              {booking ? formatDisplayDate(booking.date) : ''}
             </div>
             <div className="w-full truncate text-nowrap">
               {booking ? booking.locationName : ''} ({returnCatchReturnBookingAnglerCountByRole()})

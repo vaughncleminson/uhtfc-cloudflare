@@ -1,6 +1,8 @@
 import { sql } from '@payloadcms/db-d1-sqlite'
 import type { Params, Payload } from 'payload'
+import { formatDisplayDate } from '@/utils/date'
 import { DashboardDetailsModal } from './DashboardDetailsModal'
+import './AdminDashboard.scss'
 
 type AdminDashboardProps = {
   payload: Payload
@@ -20,12 +22,6 @@ type CatchReturnSummary = {
 }
 
 const formatDashboardDate = (date: Date) => date.toISOString().slice(0, 10)
-const formatFriendlyDashboardDate = (date: Date) =>
-  date.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
 
 const getSelectedDate = (value: string | string[] | undefined, fallback: Date) => {
   const date = Array.isArray(value) ? value[0] : value
@@ -60,13 +56,17 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
     payload.db.drizzle.all<CatchReturnSummary>(sql`
       SELECT
         locations.type AS LocationType,
-        SUM(catch_returns.stats_total) AS TotalCatches,
-        CAST(ROUND(AVG(catch_returns.stats_average_length), 0) AS INTEGER) AS AvgLength,
-        MAX(catch_returns.stats_large_fish) AS MaxLargeFish
+        COALESCE(SUM(catch_returns_returns.quantity), 0) AS TotalCatches,
+        CAST(ROUND(COALESCE(
+          SUM(catch_returns_returns.length * catch_returns_returns.quantity)
+            / NULLIF(SUM(catch_returns_returns.quantity), 0),
+          0
+        ), 0) AS INTEGER) AS AvgLength,
+        COALESCE(MAX(catch_returns_returns.length), 0) AS MaxLargeFish
       FROM bookings
       INNER JOIN locations ON locations.id = bookings.location_id
-      INNER JOIN bookings_anglers ON bookings_anglers._parent_id = bookings.id
       LEFT JOIN catch_returns ON catch_returns.booking_id = bookings.id
+      LEFT JOIN catch_returns_returns ON catch_returns_returns._parent_id = catch_returns.id
       WHERE DATE(bookings.date) >= DATE(${formattedStartDate})
         AND DATE(bookings.date) <= DATE(${formattedEndDate})
       GROUP BY locations.type
@@ -76,17 +76,12 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
   return (
     <div>
       <h1>
-        Dashboard for {formatFriendlyDashboardDate(startDate)} to{' '}
-        {formatFriendlyDashboardDate(endDate)}
+        Dashboard - {formatDisplayDate(startDate)} to {formatDisplayDate(endDate)}
       </h1>
-      <section
-        aria-label="Bookings"
-        style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'minmax(140px, 1fr) 3fr' }}
-        className="card"
-      >
+      <section aria-label="Bookings" className="card dashboard-summary">
         <h2>Bookings</h2>
-        <div>
-          <table>
+        <div className="dashboard-summary__table-wrap">
+          <table className="dashboard-summary__table">
             <thead>
               <tr>
                 <th>Location Type</th>
@@ -97,21 +92,17 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
               {bookingSummaries.map((summary) => (
                 <tr key={summary.LocationType}>
                   <td>{summary.LocationType}</td>
-                  <td align="right">{summary.CountOfRods}</td>
+                  <td className="dashboard-summary__text">{summary.CountOfRods}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </section>
-      <section
-        aria-label="Catch Returns"
-        style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'minmax(140px, 1fr) 3fr' }}
-        className="card"
-      >
+      <section aria-label="Catch Returns" className="card dashboard-summary">
         <h2>Catch Returns</h2>
-        <div>
-          <table>
+        <div className="dashboard-summary__table-wrap">
+          <table className="dashboard-summary__table">
             <thead>
               <tr>
                 <th>Location Type</th>
@@ -124,9 +115,9 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
               {catchReturnSummaries.map((summary) => (
                 <tr key={summary.LocationType}>
                   <td>{summary.LocationType}</td>
-                  <td align="right">{summary.TotalCatches ?? 0}</td>
-                  <td align="right">{summary.AvgLength ?? 0}</td>
-                  <td align="right">{summary.MaxLargeFish ?? 0}</td>
+                  <td className="dashboard-summary__text">{summary.TotalCatches ?? 0}</td>
+                  <td className="dashboard-summary__text">{summary.AvgLength ?? 0}</td>
+                  <td className="dashboard-summary__text">{summary.MaxLargeFish ?? 0}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,6 +1,6 @@
+import { formatDisplayDate } from '@/utils/date'
 import { FestivalBlock, Media } from '@/payload-types'
 import config from '@payload-config'
-import dayjs from 'dayjs'
 import Image from 'next/image'
 import { getPayload } from 'payload'
 import FestivalEntriesForm from '../forms/festivalEntriesForm'
@@ -39,7 +39,7 @@ export default async function FestivalDetails(props: FestivalBlock) {
               <div className="flex justify-between border-b border-slate-600 px-5 py-2">
                 <div className="uppercase">Date</div>
                 <div>
-                  {`${dayjs(festivalDetails.startDate).format('D MMM')} - ${dayjs(festivalDetails.endDate).format('D MMM YYYY')}`}
+                  {`${formatDisplayDate(festivalDetails.startDate)} - ${formatDisplayDate(festivalDetails.endDate)}`}
                 </div>
               </div>
               <div className="flex justify-between border-b border-slate-600 px-5 py-2">

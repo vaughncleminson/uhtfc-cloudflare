@@ -1,5 +1,5 @@
 import type { DefaultServerCellComponentProps } from 'payload'
-import dayjs from 'dayjs'
+import { formatDisplayDate } from '@/utils/date'
 
 export async function BookingDateCell({ cellData, payload }: DefaultServerCellComponentProps) {
   if (typeof cellData !== 'number') {
@@ -16,7 +16,7 @@ export async function BookingDateCell({ cellData, payload }: DefaultServerCellCo
       },
     })
 
-    return <span>{booking.date ? dayjs(booking.date).format('DD-MM-YYYY') : '-'}</span>
+    return <span>{booking.date ? formatDisplayDate(booking.date) : '-'}</span>
   } catch {
     return <span>-</span>
   }

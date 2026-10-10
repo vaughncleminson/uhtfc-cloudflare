@@ -1,7 +1,7 @@
 'use client'
 import { Booking } from '@/frontend/schemas/bookingSchema'
 import { User } from '@/payload-types'
-import dayjs from 'dayjs'
+import { formatDisplayDate } from '@/utils/date'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../ui/AuthProvider'
 import { useConfirm } from '../ui/ModalProvider'
@@ -80,7 +80,7 @@ export default function MyBookingsForm() {
               <div>{user?.email}</div>
               <div>{user?.role}</div>
             </div>
-            <div>{dayjs().format('DD-MM-YYYY')}</div>
+            <div>{formatDisplayDate()}</div>
           </div>
           <div className="w-full bg-slate-800">
             <div className="flex w-full justify-between border-b py-2 px-5 rounded-sm text-sm">
@@ -97,9 +97,7 @@ export default function MyBookingsForm() {
                   className={`flex w-full justify-between items-center border-b last:border-0 py-2 px-5 rounded-sm text-sm`}
                 >
                   <div className="w-10">{index + 1}.</div>
-                  <div className="w-44 truncate text-nowrap">
-                    {dayjs(booking.date).format('DD-MM-YYYY')}
-                  </div>
+                  <div className="w-44 truncate text-nowrap">{formatDisplayDate(booking.date)}</div>
                   <div className="w-full truncate text-nowrap">
                     <span>{booking.locationName} - </span>
                     {booking.anglers.map((angler, idx) => (
