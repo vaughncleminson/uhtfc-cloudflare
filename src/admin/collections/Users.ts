@@ -8,7 +8,7 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'fullName',
     listSearchableFields: ['email', 'firstName', 'lastName'],
-    defaultColumns: ['firstName', 'lastName', 'email', 'role'],
+    defaultColumns: ['firstName', 'lastName', 'email', 'role', 'arrearsAmount'],
   },
   auth: {
     forgotPassword: {
@@ -96,6 +96,10 @@ export const Users: CollectionConfig = {
       type: 'select',
       name: 'membershipType',
       label: 'Membership Type',
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.role === 'member' || siblingData?.role === 'admin',
+      },
       options: [
         {
           label: 'Ordinary Member',
@@ -132,15 +136,23 @@ export const Users: CollectionConfig = {
       ],
     },
     {
-      type: 'checkbox',
-      name: 'blocked',
-      label: 'Blocked',
-      defaultValue: false,
+      type: 'text',
+      name: 'accountNumber',
+      label: 'Account Number',
+      defaultValue: '',
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.role === 'member' || siblingData?.role === 'admin',
+      },
     },
     {
       type: 'checkbox',
       name: 'subsDue',
       label: 'Subs Due',
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.role === 'member' || siblingData?.role === 'admin',
+      },
       defaultValue: false,
     },
     {
@@ -152,7 +164,16 @@ export const Users: CollectionConfig = {
         condition: (data, siblingData) => {
           return siblingData?.subsDue === true
         },
+        components: {
+          Cell: '@/admin/components/Users/ArrearsAmountCell#ArrearsAmountCell',
+        },
       },
+    },
+    {
+      type: 'checkbox',
+      name: 'blocked',
+      label: 'Blocked',
+      defaultValue: false,
     },
   ],
 }

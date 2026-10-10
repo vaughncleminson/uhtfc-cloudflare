@@ -25,6 +25,7 @@ import * as migration_20260719_151500_add_email_audit_logs from './20260719_1515
 import * as migration_20260801_143115 from './20260801_143115';
 import * as migration_20260801_145435 from './20260801_145435';
 import * as migration_20260803_181517 from './20260803_181517';
+import * as migration_20261010_103325 from './20261010_103325';
 
 export const migrations = [
   {
@@ -160,6 +161,11 @@ export const migrations = [
   {
     up: migration_20260803_181517.up,
     down: migration_20260803_181517.down,
-    name: '20260803_181517'
+    name: '20260803_181517',
+  },
+  {
+    up: migration_20261010_103325.up,
+    down: migration_20261010_103325.down,
+    name: '20261010_103325'
   },
 ];
