@@ -39,12 +39,22 @@ export const EmailSubscribers: CollectionConfig = {
       name: 'subscribed',
       label: 'Subscribed',
       required: true,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       type: 'checkbox',
       name: 'sent',
       label: 'Sent',
       required: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       type: 'date',
@@ -57,6 +67,11 @@ export const EmailSubscribers: CollectionConfig = {
       name: 'failed',
       label: 'Failed',
       required: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       type: 'date',

@@ -114,6 +114,11 @@ export const NewMemberships: CollectionConfig = {
       type: 'checkbox',
       name: 'acceptTerms',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       name: 'createdAt',

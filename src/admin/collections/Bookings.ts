@@ -145,6 +145,11 @@ export const Bookings: CollectionConfig = {
       name: 'active',
       label: 'Active',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       type: 'array',
@@ -191,11 +196,21 @@ export const Bookings: CollectionConfig = {
       type: 'checkbox',
       name: 'acceptTerms',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       type: 'checkbox',
       name: 'fmdSprayRequired',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
   ],
 }

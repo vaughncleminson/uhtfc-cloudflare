@@ -38,6 +38,11 @@ export const PreviousUsers: CollectionConfig = {
       label: 'Has reset',
       name: 'reset',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
   ],
 }
