@@ -86,8 +86,8 @@ export const mailerSendAdapter = (options: AdapterOptions): PayloadEmailAdapter 
 
     return {
       name: 'mailersend',
-      defaultFromAddress: '',
-      defaultFromName: '',
+      defaultFromAddress: options.defaultFromAddress,
+      defaultFromName: options.defaultFromName,
       sendEmail: async (message: SendEmailOptions) => {
         // Fetch global email settings
         const settings = await payload.findGlobal({
