@@ -99,12 +99,22 @@ export const Locations: CollectionConfig<'pages'> = {
       label: 'Location Enabled',
       type: 'checkbox',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       name: 'temporarilyClosed',
       label: 'Temporarily Closed',
       type: 'checkbox',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       name: 'closureReason',

@@ -8,7 +8,7 @@ export const CatchReturns: CollectionConfig = {
   defaultSort: 'date',
   admin: {
     listSearchableFields: ['locationName'],
-    defaultColumns: ['booking', 'userId', 'locationName', 'returnCompleted', 'nilReturn'],
+    defaultColumns: ['booking', 'userId', 'locationName', 'returnCompleted', 'caught'],
   },
   hooks: {},
   fields: [
@@ -45,12 +45,33 @@ export const CatchReturns: CollectionConfig = {
       label: 'Return Completed',
       required: true,
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       type: 'checkbox',
       name: 'nilReturn',
       label: 'Nil Return',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
+    },
+    {
+      type: 'ui',
+      name: 'caught',
+      label: 'Caught',
+      admin: {
+        disableListColumn: false,
+        components: {
+          Cell: '@/admin/components/CatchReturns/CaughtCell#CaughtCell',
+        },
+      },
     },
     {
       type: 'text',
@@ -125,6 +146,11 @@ export const CatchReturns: CollectionConfig = {
           name: 'released',
           label: 'Fish Released',
           defaultValue: true,
+          admin: {
+            components: {
+              Cell: '@/admin/components/BooleanCell#BooleanCell',
+            },
+          },
         },
       ],
     },

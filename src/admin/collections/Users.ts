@@ -152,6 +152,9 @@ export const Users: CollectionConfig = {
       admin: {
         condition: (_, siblingData) =>
           siblingData?.role === 'member' || siblingData?.role === 'admin',
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
       },
       defaultValue: false,
     },
@@ -174,6 +177,11 @@ export const Users: CollectionConfig = {
       name: 'blocked',
       label: 'Blocked',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
   ],
 }

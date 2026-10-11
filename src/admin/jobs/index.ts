@@ -15,6 +15,19 @@ export const jobs: JobsConfig = {
   jobsCollectionOverrides: ({ defaultJobsCollection }) => {
     const updateLogField = (fields: any[] = []): any[] =>
       fields.map((field) => {
+        if (field?.type === 'checkbox') {
+          return {
+            ...field,
+            admin: {
+              ...field.admin,
+              components: {
+                ...field.admin?.components,
+                Cell: '@/admin/components/BooleanCell#BooleanCell',
+              },
+            },
+          }
+        }
+
         if (field?.name === 'log') {
           return {
             ...field,

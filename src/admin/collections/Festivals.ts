@@ -42,6 +42,11 @@ export const Festivals: CollectionConfig = {
       type: 'checkbox',
       label: 'Bookings Open',
       defaultValue: false,
+      admin: {
+        components: {
+          Cell: '@/admin/components/BooleanCell#BooleanCell',
+        },
+      },
     },
     {
       name: 'numberOfTeams',
