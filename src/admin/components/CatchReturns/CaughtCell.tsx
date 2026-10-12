@@ -5,8 +5,8 @@ type CatchStats = {
   total?: number | null
 }
 
-export function CaughtCell({ rowData }: DefaultServerCellComponentProps) {
-  const stats = rowData.stats as CatchStats | null | undefined
+export function CaughtCell({ rowData }: Pick<DefaultServerCellComponentProps, 'rowData'>) {
+  const stats = rowData?.stats as CatchStats | null | undefined
   const total = stats?.total ?? 0
 
   if (total === 0) {

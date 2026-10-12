@@ -79,6 +79,7 @@ export default function CatchReturnsForm() {
               booking: bookingId,
               returnCompleted: data.catchReturn?.returnCompleted ?? false,
               nilReturn: data.catchReturn?.nilReturn ?? false,
+              comments: data.catchReturn?.comments ?? '',
               publicId,
               stats: {
                 total: data.catchReturn?.stats?.total ?? 0,
@@ -113,6 +114,7 @@ export default function CatchReturnsForm() {
     booking: booking?.id || null,
     returnCompleted: false,
     nilReturn: false,
+    comments: '',
     publicId: publicId,
     stats: {
       total: 0,
@@ -212,7 +214,7 @@ export default function CatchReturnsForm() {
     >
       <div className="flex justify-between items-center">
         <h1 className="text-2xl mb-2 text-white uppercase">Catch Return</h1>
-        <div>{booking ? formatDisplayDate() : ''}</div>
+        <div>{formatDisplayDate(booking?.date ?? new Date())}</div>
       </div>
       <div className="flex flex-col gap-5">
         <div className="text-sm">
@@ -289,6 +291,13 @@ export default function CatchReturnsForm() {
                 </div>
               )}
             </div>
+
+            {bFormDisabled && formData.comments && (
+              <div className="flex w-full justify-between items-center border-b py-2 px-5 rounded-sm text-sm">
+                <div className="w-full whitespace-pre-wrap">{formData.comments}</div>
+              </div>
+            )}
+
             {!bFormDisabled && (
               <div id="spanUpdateCatchReturn" className="w-full">
                 <div className="w-full">
@@ -380,9 +389,22 @@ export default function CatchReturnsForm() {
                     type="button"
                   />
                 </div>
+                <div className="w-full">
+                  <label className="label" htmlFor="catch-return-comments">
+                    Comments
+                  </label>
+                  <textarea
+                    id="catch-return-comments"
+                    className="input min-h-24"
+                    value={formData.comments}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, comments: e.target.value }))}
+                    placeholder="Any comments, such as maintenance needed"
+                  />
+                </div>
                 <div className="flex w-full gap-2">
                   {errors.submit && <p className="text-red-500 text-xs">{errors.submit}</p>}
                 </div>
+
                 <div className="flex w-full gap-2">
                   {formData.returns.length > 0 && (
                     <Button className="w-full" title="Submit" type="submit" loading={loading} />

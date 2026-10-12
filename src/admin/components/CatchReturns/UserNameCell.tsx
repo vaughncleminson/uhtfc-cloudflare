@@ -1,6 +1,9 @@
 import type { DefaultServerCellComponentProps } from 'payload'
 
-export async function UserNameCell({ cellData, payload }: DefaultServerCellComponentProps) {
+export async function UserNameCell({
+  cellData,
+  payload,
+}: Pick<DefaultServerCellComponentProps, 'cellData' | 'payload'>) {
   if (typeof cellData !== 'number') {
     return <span>-</span>
   }

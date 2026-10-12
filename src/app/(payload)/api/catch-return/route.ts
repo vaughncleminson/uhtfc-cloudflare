@@ -90,6 +90,7 @@ export async function POST(request: NextRequest) {
         booking: data.booking ?? null,
         returnCompleted: true,
         nilReturn: data.nilReturn,
+        comments: data.comments ?? '',
         returns: normalizedReturns,
         stats: {
           total,

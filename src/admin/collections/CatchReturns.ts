@@ -35,6 +35,15 @@ export const CatchReturns: CollectionConfig = {
       },
     },
     {
+      type: 'ui',
+      name: 'userName',
+      admin: {
+        components: {
+          Field: '@/admin/components/CatchReturns/UserNameField#UserNameField',
+        },
+      },
+    },
+    {
       type: 'text',
       name: 'locationName',
       label: 'Location Name',
@@ -181,6 +190,13 @@ export const CatchReturns: CollectionConfig = {
           required: true,
         },
       ],
+    },
+    {
+      type: 'textarea',
+      name: 'comments',
+      label: 'Any comments, such as maintenance needed',
+      defaultValue: '',
+      required: false,
     },
   ],
 }

@@ -46,6 +46,10 @@ npx wrangler d1 execute d1-uhtfc-cloudflare --local --command "SELECT COUNT(*) A
 * Nice sqlite browser:
 sudo apt-get install sqlitebrowser
 
+* Create and apply a migration to local D1 after adding fields to a collection,
+  regenerate types/import map, and typecheck
+pnpm run schema:update
+
 * How to generate Payload types
 npm run generate:types
 
