@@ -453,6 +453,7 @@ export interface CatchReturn {
     averageLength: number;
     largeFish: number;
   };
+  comments?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1418,6 +1419,7 @@ export interface CatchReturnsSelect<T extends boolean = true> {
         averageLength?: T;
         largeFish?: T;
       };
+  comments?: T;
   updatedAt?: T;
   createdAt?: T;
 }

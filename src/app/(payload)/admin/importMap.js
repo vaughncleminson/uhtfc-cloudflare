@@ -2,6 +2,7 @@ import { MFA as MFA_b9b3fe7b9c362006432a298e54ddae71 } from '@/admin/components/
 import { BooleanCell as BooleanCell_a94128ad5b5826cd597e82a9fa498cba } from '@/admin/components/BooleanCell'
 import { BookingDateCell as BookingDateCell_5be95e74ee700a456dfe1873da8fc000 } from '@/admin/components/CatchReturns/BookingDateCell'
 import { UserNameCell as UserNameCell_b0937fdd6e97622fc73cdcedd712694d } from '@/admin/components/CatchReturns/UserNameCell'
+import { UserNameField as UserNameField_813f509df95cc8fc19a22d6abb1c6535 } from '@/admin/components/CatchReturns/UserNameField'
 import { CaughtCell as CaughtCell_b4b45aa73b139681c273ea2d95e65c3c } from '@/admin/components/CatchReturns/CaughtCell'
 import { ImportCSVButton as ImportCSVButton_933a9ef49d8aeee8c44890bb36054756 } from '@/admin/components/ImportExport/import'
 import { SendBulkMail as SendBulkMail_dc0f05fdfaaccce1ac18114e9f856977 } from '@/admin/components/Mailsend/sendBulkMail'
@@ -66,6 +67,7 @@ export const importMap = {
   "@/admin/components/BooleanCell#BooleanCell": BooleanCell_a94128ad5b5826cd597e82a9fa498cba,
   "@/admin/components/CatchReturns/BookingDateCell#BookingDateCell": BookingDateCell_5be95e74ee700a456dfe1873da8fc000,
   "@/admin/components/CatchReturns/UserNameCell#UserNameCell": UserNameCell_b0937fdd6e97622fc73cdcedd712694d,
+  "@/admin/components/CatchReturns/UserNameField#UserNameField": UserNameField_813f509df95cc8fc19a22d6abb1c6535,
   "@/admin/components/CatchReturns/CaughtCell#CaughtCell": CaughtCell_b4b45aa73b139681c273ea2d95e65c3c,
   "@/admin/components/ImportExport/import#ImportCSVButton": ImportCSVButton_933a9ef49d8aeee8c44890bb36054756,
   "@/admin/components/Mailsend/sendBulkMail#SendBulkMail": SendBulkMail_dc0f05fdfaaccce1ac18114e9f856977,

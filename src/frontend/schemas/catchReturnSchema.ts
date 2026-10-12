@@ -5,6 +5,7 @@ export const catchReturnSchema = z.object({
   booking: z.number().optional().nullable(),
   returnCompleted: z.boolean(),
   nilReturn: z.boolean(),
+  comments: z.string().optional(),
   publicId: z.string(),
   stats: z.object({
     total: z.number(),

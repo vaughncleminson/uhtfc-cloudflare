@@ -1,6 +1,9 @@
 import { sql } from '@payloadcms/db-d1-sqlite'
 import type { Params, Payload } from 'payload'
+import { formatAdminURL } from 'payload/shared'
 import { formatDisplayDate } from '@/utils/date'
+import { CaughtCell } from '../CatchReturns/CaughtCell'
+import { UserNameCell } from '../CatchReturns/UserNameCell'
 import { DashboardDetailsModal } from './DashboardDetailsModal'
 import './AdminDashboard.scss'
 
@@ -41,7 +44,7 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
   const endDate = new Date(`${formattedEndDate}T00:00:00`)
   const startDate = new Date(`${formattedStartDate}T00:00:00`)
 
-  const [bookingSummaries, catchReturnSummaries] = await Promise.all([
+  const [bookingSummaries, catchReturnSummaries, recentCatchReturnsResult] = await Promise.all([
     payload.db.drizzle.all<BookingSummary>(sql`
       SELECT
         locations.type AS LocationType,
@@ -71,6 +74,24 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
         AND DATE(bookings.date) <= DATE(${formattedEndDate})
       GROUP BY locations.type
     `),
+    payload.find({
+      collection: 'catchReturns',
+      where: {
+        returnCompleted: {
+          equals: true,
+        },
+      },
+      depth: 0,
+      limit: 5,
+      sort: '-updatedAt',
+      select: {
+        updatedAt: true,
+        userId: true,
+        locationName: true,
+        stats: true,
+        comments: true,
+      },
+    }),
   ])
 
   return (
@@ -118,6 +139,46 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
                   <td className="dashboard-summary__text">{summary.TotalCatches ?? 0}</td>
                   <td className="dashboard-summary__text">{summary.AvgLength ?? 0}</td>
                   <td className="dashboard-summary__text">{summary.MaxLargeFish ?? 0}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section aria-label="Latest completed catch returns" className="card dashboard-summary">
+        <h2>Latest Completed Catch Returns</h2>
+        <div className="dashboard-summary__table-wrap">
+          <table className="dashboard-summary__table">
+            <thead>
+              <tr>
+                <th>Updated</th>
+                <th>User</th>
+                <th>Location</th>
+                <th>Caught</th>
+                <th>Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentCatchReturnsResult.docs.map((catchReturn) => (
+                <tr key={catchReturn.id}>
+                  <td>
+                    <a
+                      href={formatAdminURL({
+                        adminRoute: payload.config.routes.admin,
+                        path: `/collections/catchReturns/${encodeURIComponent(String(catchReturn.id))}`,
+                      })}
+                    >
+                      {formatDisplayDate(catchReturn.updatedAt)}
+                    </a>
+                  </td>
+                  <td>
+                    <UserNameCell cellData={catchReturn.userId} payload={payload} />
+                  </td>
+                  <td>{catchReturn.locationName}</td>
+                  <td>
+                    <CaughtCell rowData={catchReturn} />
+                  </td>
+                  <td>{catchReturn.comments || ''}</td>
                 </tr>
               ))}
             </tbody>
