@@ -1,7 +1,38 @@
+.dashboard-title {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .dashboard-summary {
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(140px, 1fr) 3fr;
+  grid-template-columns: 1fr;
+
+  &__heading,
+  &__filters,
+  &__filters label {
+    align-items: center;
+    display: flex;
+  }
+
+  &__heading {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  &__heading h2 {
+    margin: 0;
+  }
+
+  &__filters {
+    gap: 12px;
+  }
+
+  &__filters label {
+    gap: 6px;
+  }
 
   &__table-wrap {
     border: 1px solid var(--theme-border-color);
@@ -36,10 +67,8 @@
   &__number {
     text-align: right !important;
   }
-}
 
-@media (max-width: 768px) {
-  .dashboard-summary {
-    grid-template-columns: 1fr;
+  &__nowrap {
+    white-space: nowrap;
   }
 }

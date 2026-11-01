@@ -1,0 +1,14 @@
+.date-time-picker .react-datepicker__month-select,
+.date-time-picker .react-datepicker__year-select {
+	color: #101010;
+	color-scheme: light;
+
+	option {
+		background-color: #fff;
+		color: #101010;
+	}
+}
+
+.date-time-picker .react-datepicker__day-name {
+	color: #fff !important;
+}

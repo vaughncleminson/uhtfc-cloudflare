@@ -50,9 +50,6 @@ sudo apt-get install sqlitebrowser
   regenerate types/import map, and typecheck
 pnpm run schema:update
 
-* How to generate Payload types
-npm run generate:types
-
 * How to create a migration after db/collection changes
 pnpm payload migrate:create
 pnpm generate:types

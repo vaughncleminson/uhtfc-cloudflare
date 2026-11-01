@@ -1,3 +1,24 @@
+.dashboard-date-trigger {
+  display: inline-block;
+  vertical-align: middle !important;
+
+  .btn {
+    align-items: center !important;
+    border: 0 !important;
+    display: inline-flex !important;
+    height: 32px !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 32px !important;
+
+    svg {
+      height: 18px;
+      width: 18px;
+    }
+  }
+}
+
 .dashboard-details-modal {
   background: var(--theme-elevation-50);
   border: 1px solid var(--theme-elevation-150);
