@@ -10,14 +10,29 @@ import { useEffect, useRef, useState } from 'react'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
 
+const supportsWebGL = () => {
+  try {
+    return Boolean(document.createElement('canvas').getContext('webgl2'))
+  } catch {
+    return false
+  }
+}
+
 export default function Map(props: MapBlock) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
   const [fullscreen, setFullscreen] = useState(false)
   const [destinationMarker, setDestinationMarker] = useState<Marker | null>(null)
+  const [mapUnavailable, setMapUnavailable] = useState(false)
   // const [newMarkers, setNewMarkers] = useState<mapboxgl.Marker[]>([])
 
   // "https://www.google.com/maps/dir/?api=1&destination=${marker.coords![1]},${marker.coords![0]}"
+  useEffect(() => {
+    if (!supportsWebGL()) {
+      setMapUnavailable(true)
+    }
+  }, [])
+
   useEffect(() => {
     if (map.current) {
       setTimeout(() => {
@@ -26,13 +41,23 @@ export default function Map(props: MapBlock) {
     }
   }, [fullscreen])
   useEffect(() => {
+    if (!supportsWebGL()) {
+      setMapUnavailable(true)
+      return
+    }
+
     mapboxgl.accessToken = mapboxgl.accessToken
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current!,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [29.493226, -29.78995],
-      zoom: 12,
-    })
+    try {
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current!,
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [29.493226, -29.78995],
+        zoom: 12,
+      })
+    } catch {
+      setMapUnavailable(true)
+      return
+    }
     const markers: Marker[] =
       typeof props.map === 'string' ? JSON.parse(props.map) : props.map || []
 
@@ -119,10 +144,10 @@ export default function Map(props: MapBlock) {
   return (
     <div
       id="map"
-      onClick={() => setFullscreen(true)}
+      onClick={() => !mapUnavailable && setFullscreen(true)}
       className={`${fullscreen ? 'fixed z-50 top-0 w-screen' : 'px-5 relative lg:px-40 w-full'} h-screen `}
     >
-      {!fullscreen && (
+      {!fullscreen && !mapUnavailable && (
         <div className="absolute flex justify-center items-center top-0 left-0 z-20 w-full h-full">
           <div className="text-slate border border-black bg-white bg-opacity-80 px-4 py-3 uppercase">
             Click to Explore
@@ -157,6 +182,11 @@ export default function Map(props: MapBlock) {
         </>
       )}
       <div className={`${fullscreen ? 'absolute w-screen h-screen' : 'relative h-full w-full'}  `}>
+        {mapUnavailable && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-100 px-6 text-center text-slate-800">
+            <p>This interactive map is unavailable because this browser does not support WebGL.</p>
+          </div>
+        )}
         <div
           className="absolute top-0 left-0 h-full w-full"
           id="map-container"
