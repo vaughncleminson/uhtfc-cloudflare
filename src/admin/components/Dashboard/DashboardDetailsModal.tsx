@@ -1,6 +1,8 @@
 'use client'
 
 import { DATE_PICKER_DISPLAY_FORMAT } from '@/utils/date'
+import { faCalendarDays } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import dayjs from 'dayjs'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
@@ -39,9 +41,15 @@ export function DashboardDetailsModal({ endDate, startDate }: DashboardDetailsMo
 
   return (
     <>
-      <Button buttonStyle="secondary" onClick={() => openModal('dashboard-details')}>
-        Select Dates
-      </Button>
+      <span className="dashboard-date-trigger" title="Select dates">
+        <Button
+          aria-label="Select dates"
+          buttonStyle="secondary"
+          onClick={() => openModal('dashboard-details')}
+        >
+          <FontAwesomeIcon icon={faCalendarDays} />
+        </Button>
+      </span>
 
       <Modal className="dashboard-details-modal" slug="dashboard-details">
         <h2>Select Date Range</h2>

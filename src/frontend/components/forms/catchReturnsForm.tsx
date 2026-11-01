@@ -160,7 +160,12 @@ export default function CatchReturnsForm() {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
-    const result = catchReturnSchema.safeParse(formData)
+    const submissionData = {
+      ...formData,
+      //if total catch is 0, set nilReturn to true
+      nilReturn: formData.stats.total === 0 ? true : formData.nilReturn,
+    }
+    const result = catchReturnSchema.safeParse(submissionData)
     if (!result.success) {
       const fieldErrors: Record<string, string> = {}
       result.error.errors.forEach((err) => {
@@ -178,7 +183,7 @@ export default function CatchReturnsForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       })
 
       const result = (await response.json()) as any
