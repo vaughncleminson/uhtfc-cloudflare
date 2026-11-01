@@ -948,6 +948,7 @@ export interface User {
   membershipType?: ('OM' | 'OMW' | 'F' | 'J' | 'S' | 'C' | 'COMP' | 'R') | null;
   accountNumber?: string | null;
   subsDue?: boolean | null;
+  committeeMember?: boolean | null;
   arrearsAmount?: number | null;
   blocked?: boolean | null;
   updatedAt: string;
@@ -1959,6 +1960,7 @@ export interface UsersSelect<T extends boolean = true> {
   membershipType?: T;
   accountNumber?: T;
   subsDue?: T;
+  committeeMember?: T;
   arrearsAmount?: T;
   blocked?: T;
   updatedAt?: T;

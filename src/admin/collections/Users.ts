@@ -8,7 +8,7 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'fullName',
     listSearchableFields: ['email', 'firstName', 'lastName'],
-    defaultColumns: ['firstName', 'lastName', 'email', 'role', 'arrearsAmount'],
+    defaultColumns: ['firstName', 'lastName', 'email', 'role', 'committeeMember', 'arrearsAmount'],
   },
   auth: {
     forgotPassword: {
@@ -156,6 +156,12 @@ export const Users: CollectionConfig = {
           Cell: '@/admin/components/BooleanCell#BooleanCell',
         },
       },
+      defaultValue: false,
+    },
+    {
+      type: 'checkbox',
+      name: 'committeeMember',
+      label: 'Committee Member',
       defaultValue: false,
     },
     {
