@@ -16,7 +16,6 @@ type Props = {
 }
 
 export default function Nav(props: Props) {
-  const [mainSections, setMainSections] = useState<NavigationType>(props.navigation)
   const [subSections, setSubSections] = useState<NavigationType | null>(null)
   const [subSubSections, setSubSubSections] = useState<NavigationType | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
@@ -25,6 +24,16 @@ export default function Nav(props: Props) {
   const [order, setOrder] = useAtom(orderAtom)
   const { user } = useAuth()
   const navRef = useRef<HTMLDivElement>(null)
+  const isCommitteeMember = Boolean(
+    user && 'committeeMember' in user && user.committeeMember === true,
+  )
+  const mainSections = React.useMemo<NavigationType>(() => {
+    if (!isCommitteeMember) return props.navigation
+    if (props.navigation.some((section) => section.link === '/dashboard')) return props.navigation
+
+    const dashboardLink = { auth: true, link: '/dashboard', title: 'Dashboard' }
+    return [dashboardLink, ...props.navigation]
+  }, [isCommitteeMember, props.navigation])
 
   const getSubSection = (index: number) => {
     if (mainSections[index].children?.length) {
