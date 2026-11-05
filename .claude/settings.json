@@ -1,0 +1,59 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash(pnpm lint)",
+      "Bash(pnpm exec tsc --noEmit)",
+      "Bash(pnpm test)",
+      "Bash(pnpm test:int)",
+      "Bash(pnpm test:int *)",
+      "Bash(pnpm test:e2e)",
+      "Bash(pnpm test:e2e *)",
+      "Bash(pnpm build)",
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff)",
+      "Bash(git diff *)",
+      "Bash(git log)",
+      "Bash(git log *)",
+      "Bash(git show)",
+      "Bash(git show *)",
+      "Bash(git branch)",
+      "Bash(git branch *)",
+      "Bash(pnpm run generate:types)",
+      "Bash(pnpm run generate:types:cloudflare)",
+      "Bash(pnpm run generate:types:payload)",
+      "Bash(pnpm run generate:importmap)",
+      "Bash(pnpm payload generate:types)",
+      "Bash(pnpm payload generate:importmap)"
+    ],
+    "ask": [
+      "Bash(pnpm deploy)",
+      "Bash(pnpm run deploy:app)",
+      "Bash(pnpm run deploy:database)",
+      "Bash(pnpm run db:restore:prod-to-local)",
+      "Bash(wrangler d1 execute *)",
+      "Bash(git push)",
+      "Bash(git push *)",
+      "Bash(git reset --hard)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean)",
+      "Bash(git clean *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '(.tool_input.file_path // .tool_input.notebook_path // \"\")'); case \"$f\" in *payload-types.ts|*cloudflare-env.d.ts|*tsconfig.tsbuildinfo|*migrations/*.json) echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"This file is generated (payload-types.ts / cloudflare-env.d.ts / tsconfig.tsbuildinfo / migrations/*.json). Do not hand-edit it -- run pnpm run schema:update (or the specific generate:* script) instead.\"}}' ;; esac"
+          }
+        ]
+      }
+    ]
+  }
+}
