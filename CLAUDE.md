@@ -19,7 +19,6 @@ hooks, queries, endpoints, adapters, components, plugin-development, field-type-
 - `pnpm build` — Next.js build only (no worker bundling)
 - `pnpm build:worker` — full OpenNext Cloudflare worker build
 - `pnpm preview` — build the worker and preview it via `opennextjs-cloudflare preview`
-- `pnpm deploy` — validates env, runs DB migrations against remote D1, builds the worker, deploys
 - `pnpm lint` — Next.js/ESLint
 - `pnpm exec tsc --noEmit` — typecheck (do this after any schema/type change)
 - `pnpm test` — runs both integration and e2e suites
@@ -47,6 +46,27 @@ whenever admin component paths change.
 `pnpm run db:restore:prod-to-local` (wraps `scripts/restore-prod-to-local-d1.sh`) exports the
 remote prod D1 database and reimports it into the local Wrangler/Miniflare SQLite state. Destructive
 to local DB state — confirm with the user before running.
+
+### Deployment — **not** `pnpm deploy`
+
+`pnpm deploy` / `pnpm run deploy:app` exist in `package.json` (leftover from the Cloudflare template)
+but this team does **not** deploy from a developer workstation — both are blocked in
+`.claude/settings.json`. The actual release process is git-driven, with Cloudflare building
+server-side and a human promoting the build in the dashboard:
+
+1. `pnpm run build` locally to confirm a clean build.
+2. Commit, then `git push` the branch — this triggers a Cloudflare server-side build of that branch.
+3. Once the branch build is green on Cloudflare (checked in the dashboard, not locally), open a PR
+   to `main`.
+4. Merge the PR — this triggers a Cloudflare build of `main`.
+5. Once the `main` build is green, a human marks it **"Promote"** in the Cloudflare dashboard — this
+   is what actually ships it to production.
+6. Only then, back on `main` locally (`git pull`), run the production migration:
+   `pnpm run deploy:database` (`NODE_ENV=production PAYLOAD_SECRET=ignore pnpm payload migrate`
+   followed by `wrangler d1 execute D1 --command "PRAGMA optimize" --remote` — see `VC Notes.txt`).
+
+Use `/deploy` (in `.claude/commands/`) to walk through this — it has the checkpoints that need human
+confirmation (dashboard build status, the promote step) built in.
 
 ## Architecture
 
@@ -126,8 +146,9 @@ write cycles/day and SQLite busy/locked errors).
 - `scripts/patch-opennext-env-shim.mjs` patches `@opennextjs/cloudflare`'s `env.js` shim in
   `node_modules` to add a default export, needed before `build:worker` runs — don't remove this
   from the `build:worker` script.
-- `validate-env.js` is a pre-deploy gate checking required env vars are present; it runs before
-  migrations/build in `pnpm deploy`.
+- `validate-env.js` is a pre-deploy gate checking required env vars are present; it's invoked by the
+  (unused-by-this-team) `pnpm deploy` script — Cloudflare's own server-side build is what actually
+  gates the real deploys.
 
 ## Testing
 
@@ -138,11 +159,28 @@ write cycles/day and SQLite busy/locked errors).
 ## Claude Code setup
 
 - `.claude/settings.json` allowlists safe, read-only/local commands (lint, typecheck, test, build,
-  read-only git, type/importmap generation) and explicitly marks production-affecting commands
-  (`pnpm deploy`, `db:restore:prod-to-local`, `wrangler d1 execute ... --remote`, force-push/reset/clean)
-  for confirmation.
+  read-only git, type/importmap generation); gates `db:restore:prod-to-local`, the production
+  migration step (`deploy:database`), `wrangler d1 execute ... --remote`, and force-push/reset/clean
+  behind confirmation; and outright blocks `pnpm deploy` / `pnpm run deploy:app` since this team
+  never deploys from a workstation (see "Deployment" above).
 - A `PreToolUse` hook blocks direct Edit/Write to generated files (`src/payload-types.ts`,
   `cloudflare-env.d.ts`, `tsconfig.tsbuildinfo`, `migrations/*.json`) — run `pnpm run schema:update`
   instead.
 - Use `/deploy`, `/schema-update`, and `/db-restore-prod-to-local` (in `.claude/commands/`) for those
   respective workflows — they wrap the right confirmation steps.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in this repo's GitHub Issues (`vaughncleminson/uhtfc-cloudflare`), via the `gh` CLI. See
+`docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five canonical roles (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`,
+`wontfix`) used as-is. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.

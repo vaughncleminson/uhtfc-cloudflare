@@ -1,31 +1,39 @@
 ---
-description: Deploy UHTFC to Cloudflare (runs remote D1 migrations, builds the worker, deploys to production)
+description: Walk through UHTFC's actual release process (git/PR + Cloudflare build+promote, not a CLI deploy)
 ---
 
-This runs `pnpm deploy`, which in order: validates required env vars (`validate-env.js`), runs
-Payload migrations **against the remote production D1 database**, then builds and deploys the
-OpenNext worker to Cloudflare. This is a production-affecting, hard-to-reverse action.
+**This team does not deploy from a developer workstation with `pnpm deploy`.** That script (and
+`pnpm run deploy:app`) builds and deploys the worker directly and is deliberately blocked in this
+project's settings — do not run it, and do not suggest it as a shortcut. The real release flow is
+git-driven, with Cloudflare building server-side and a human promoting the build:
 
-Before running anything:
+1. **Local sanity build** — run `pnpm run build` to confirm the branch builds cleanly before
+   pushing anything.
+2. **Commit** — commit the changes with a proper message (ask the user for confirmation per normal
+   git-safety rules; never skip this with `--no-verify`).
+3. **Push the branch** — `git push`. This triggers a Cloudflare server-side build of the branch.
+   This is a shared/visible action — confirm with the user before pushing.
+4. **Wait for the branch build to pass on Cloudflare.** You cannot check Cloudflare build status
+   yourself (no Cloudflare API access configured) — ask the user to confirm the branch build passed
+   in the Cloudflare dashboard before continuing.
+5. **Open a PR to `main`** (once the branch build is green) — use `gh pr create`.
+6. **Merge the PR** once there are no conflicts and the user is ready (this triggers a Cloudflare
+   build of `main`). Confirm with the user before merging — don't merge unprompted.
+7. **Wait for the `main` build to pass, then the user promotes it** in the Cloudflare dashboard
+   ("Promote" action). This is a manual portal step you cannot perform — ask the user to confirm
+   the build passed and was promoted before moving on to migrations.
+8. **Run any pending migration against production** — only after promotion is confirmed. On the
+   local dev machine: `git checkout main && git pull`, then run the production migration step:
 
-1. Run `git status` and `git log --oneline -5`. Confirm the working tree is clean and you're on the
-   branch/commit the user actually intends to ship — if not, stop and ask.
-2. Check whether `$CLOUDFLARE_ENV` is set (both `deploy:database` and `deploy:app` depend on it via
-   `--env=$CLOUDFLARE_ENV`). If it's unset, ask the user which environment they mean before doing
-   anything else — don't guess production vs. staging.
-3. Summarize to the user exactly what's about to happen (remote D1 migration + production worker
-   deploy) and get explicit confirmation before proceeding. Do not treat a general "yes, deploy" from
-   earlier in the conversation as covering this specific run — confirm now.
+   ```bash
+   pnpm run deploy:database
+   ```
 
-Only after confirmation, run:
+   (equivalent to `NODE_ENV=production PAYLOAD_SECRET=ignore pnpm payload migrate && wrangler d1
+   execute D1 --command "PRAGMA optimize" --env=$CLOUDFLARE_ENV --remote` — see `VC Notes.txt`).
+   This is gated to prompt for confirmation in settings; confirm with the user it's expected before
+   running it, since it writes to production D1.
 
-```bash
-pnpm deploy
-```
-
-If it fails partway (e.g. migration succeeds but worker build/deploy fails), report exactly which
-step failed and the error — don't retry blindly, since `deploy:database` having already run against
-remote D1 changes the state for any retry.
-
-After a successful deploy, report the outcome back to the user (don't just say "done" — mention
-whether migrations ran, and the deploy target).
+Do not skip steps or collapse this into a single command — each numbered step above has a human
+checkpoint (dashboard build status, promote action, or an explicit go-ahead) that you cannot verify
+or perform yourself except where noted.
