@@ -29,9 +29,11 @@
       "Bash(pnpm payload generate:types)",
       "Bash(pnpm payload generate:importmap)"
     ],
-    "ask": [
+    "deny": [
       "Bash(pnpm deploy)",
-      "Bash(pnpm run deploy:app)",
+      "Bash(pnpm run deploy:app)"
+    ],
+    "ask": [
       "Bash(pnpm run deploy:database)",
       "Bash(pnpm run db:restore:prod-to-local)",
       "Bash(wrangler d1 execute *)",
