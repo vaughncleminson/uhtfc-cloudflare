@@ -168,3 +168,19 @@ write cycles/day and SQLite busy/locked errors).
   instead.
 - Use `/deploy`, `/schema-update`, and `/db-restore-prod-to-local` (in `.claude/commands/`) for those
   respective workflows — they wrap the right confirmation steps.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in this repo's GitHub Issues (`vaughncleminson/uhtfc-cloudflare`), via the `gh` CLI. See
+`docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five canonical roles (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`,
+`wontfix`) used as-is. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
