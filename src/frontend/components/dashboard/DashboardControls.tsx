@@ -1,5 +1,6 @@
 'use client'
 
+import type { LocationOption } from '@/dashboard/getLocationOptions'
 import { DATE_PICKER_DISPLAY_FORMAT } from '@/utils/date'
 import dayjs from 'dayjs'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -9,12 +10,13 @@ import { useState } from 'react'
 
 type DashboardControlsRodsAndCatchesProps = {
   endDate: string
+  locationId?: string
+  locationOptions: LocationOption[]
   startDate: string
 }
 
 type DashboardControlsCatchReturnsProps = {
-  showCaught: boolean
-  showComments: boolean
+  requireCaughtOrComments: boolean
 }
 
 function useReplaceDashboardParams() {
@@ -22,9 +24,15 @@ function useReplaceDashboardParams() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  return (updates: Record<string, string>) => {
+  return (updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString())
-    Object.entries(updates).forEach(([name, value]) => params.set(name, value))
+    Object.entries(updates).forEach(([name, value]) => {
+      if (value) {
+        params.set(name, value)
+      } else {
+        params.delete(name)
+      }
+    })
     router.replace(`${pathname}?${params.toString()}`)
     router.refresh()
   }
@@ -32,6 +40,8 @@ function useReplaceDashboardParams() {
 
 export function DashboardControlsRodsAndCatches({
   endDate,
+  locationId,
+  locationOptions,
   startDate,
 }: DashboardControlsRodsAndCatchesProps) {
   const replaceParams = useReplaceDashboardParams()
@@ -39,12 +49,14 @@ export function DashboardControlsRodsAndCatches({
   const [selectedStartDate, setSelectedStartDate] = useState(
     () => new Date(`${startDate}T00:00:00`),
   )
+  const [selectedLocationId, setSelectedLocationId] = useState(locationId ?? '')
 
-  const applyDateRange = () => {
+  const applyFilters = () => {
     if (selectedStartDate > selectedEndDate) return
 
     replaceParams({
       endDate: dayjs(selectedEndDate).format('YYYY-MM-DD'),
+      locationId: selectedLocationId || undefined,
       startDate: dayjs(selectedStartDate).format('YYYY-MM-DD'),
     })
   }
@@ -71,9 +83,24 @@ export function DashboardControlsRodsAndCatches({
           selected={selectedEndDate}
         />
       </label>
+      <label className="flex flex-col gap-1 text-sm font-normal text-slate-300">
+        <select
+          aria-label="Location"
+          className="input"
+          onChange={(event) => setSelectedLocationId(event.target.value)}
+          value={selectedLocationId}
+        >
+          <option value="">All Locations</option>
+          {locationOptions.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
       <button
         className="h-11 bg-teal-700 px-5 text-base font-normal text-white hover:bg-teal-600"
-        onClick={applyDateRange}
+        onClick={applyFilters}
         type="button"
       >
         Apply
@@ -83,36 +110,26 @@ export function DashboardControlsRodsAndCatches({
 }
 
 export function DashboardControlsCatchReturns({
-  showCaught,
-  showComments,
+  requireCaughtOrComments,
 }: DashboardControlsCatchReturnsProps) {
   const replaceParams = useReplaceDashboardParams()
-  const [caught, setCaught] = useState(showCaught)
-  const [comments, setComments] = useState(showComments)
+  const [caughtOrComments, setCaughtOrComments] = useState(requireCaughtOrComments)
 
   return (
     <span className="inline-flex flex-wrap items-center gap-4 text-base font-normal text-white">
       <label className="flex cursor-pointer items-center gap-2">
         <input
-          checked={caught}
+          checked={caughtOrComments}
           className="h-4 w-4 accent-teal-600"
-          onChange={(event) => setCaught(event.target.checked)}
+          onChange={(event) => setCaughtOrComments(event.target.checked)}
           type="checkbox"
         />
-        Caught
+        Only Caught or Comments
       </label>
-      <label className="flex cursor-pointer items-center gap-2">
-        <input
-          checked={comments}
-          className="h-4 w-4 accent-teal-600"
-          onChange={(event) => setComments(event.target.checked)}
-          type="checkbox"
-        />
-        Comments
-      </label>
+
       <button
         className="h-11 bg-teal-700 px-5 font-normal text-white hover:bg-teal-600"
-        onClick={() => replaceParams({ caught: String(caught), comments: String(comments) })}
+        onClick={() => replaceParams({ caughtOrComments: String(caughtOrComments) })}
         type="button"
       >
         Apply

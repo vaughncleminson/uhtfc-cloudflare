@@ -6,7 +6,9 @@ import { notFound, redirect } from 'next/navigation'
 import type { Params } from 'payload'
 import { getPayload } from 'payload'
 
+import { CaughtCell } from '@/admin/components/CatchReturns/CaughtCell'
 import { getDashboardData } from '@/dashboard/getDashboardData'
+import { getLocationOptions } from '@/dashboard/getLocationOptions'
 import {
   DashboardControlsCatchReturns,
   DashboardControlsRodsAndCatches,
@@ -41,8 +43,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     notFound()
   }
 
-  const { bookingSummaries, endDate, recentCatchReturns, showCaught, showComments, startDate } =
-    await getDashboardData(payload, await searchParams)
+  const {
+    bookingSummaries,
+    endDate,
+    locationId,
+    recentCatchReturns,
+    requireCaughtOrComments,
+    startDate,
+  } = await getDashboardData(payload, await searchParams)
+  const locationOptions = await getLocationOptions(payload)
 
   return (
     <main className="min-h-screen bg-slate-800 px-5 pb-24 pt-[120px] text-white lg:px-40">
@@ -54,7 +63,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <section aria-labelledby="rods-catches-heading" className="flex flex-col gap-4">
           <h2 className="flex flex-wrap items-end gap-4" id="rods-catches-heading">
             <span>Rods and Catches</span>
-            <DashboardControlsRodsAndCatches endDate={endDate} startDate={startDate} />
+            <DashboardControlsRodsAndCatches
+              endDate={endDate}
+              locationId={locationId}
+              locationOptions={locationOptions}
+              startDate={startDate}
+            />
           </h2>
           <div className="overflow-x-auto border border-slate-600">
             <table className="w-full min-w-[720px] border-collapse text-left">
@@ -85,7 +99,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <section aria-labelledby="catch-returns-heading" className="flex flex-col gap-4">
           <h2 className="flex flex-wrap items-center gap-4" id="catch-returns-heading">
             <span>Last Catch Returns</span>
-            <DashboardControlsCatchReturns showCaught={showCaught} showComments={showComments} />
+            <DashboardControlsCatchReturns requireCaughtOrComments={requireCaughtOrComments} />
           </h2>
           <div className="overflow-x-auto border border-slate-600">
             <table className="w-full min-w-[760px] border-collapse text-left">
@@ -107,9 +121,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                     <td className="p-3">{catchReturn.location_name}</td>
                     <td className="p-3">{catchReturn.userName || '-'}</td>
                     <td className="whitespace-nowrap p-3">
-                      {catchReturn.stats_total > 0
-                        ? `${catchReturn.stats_total}, largest ${catchReturn.stats_large_fish}`
-                        : ''}
+                      <CaughtCell rowData={catchReturn} />
                     </td>
                     <td className="p-3">{catchReturn.comments || ''}</td>
                   </tr>

@@ -12,7 +12,7 @@ export function CaughtCell({ rowData }: Pick<DefaultServerCellComponentProps, 'r
     stats?.largeFish ?? (rowData?.stats_large_fish as number | null | undefined) ?? 0
 
   if (total === 0) {
-    return
+    return <span>nil</span>
   }
 
   return <span>{`${total}, largest ${largeFish}`}</span>
