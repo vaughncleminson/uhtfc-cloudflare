@@ -1,26 +1,23 @@
 'use client'
 
+import { Button } from '@payloadcms/ui'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 type CatchReturnFiltersProps = {
-  showCaught: boolean
-  showComments: boolean
+  requireCaughtOrComments: boolean
 }
 
-export function CatchReturnFilters({ showCaught, showComments }: CatchReturnFiltersProps) {
+export function CatchReturnFilters({ requireCaughtOrComments }: CatchReturnFiltersProps) {
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [caught, setCaught] = useState(showCaught)
-  const [comments, setComments] = useState(showComments)
+  const [requireCaughtOrCommentsState, setRequireCaughtOrCommentsState] =
+    useState(requireCaughtOrComments)
 
-  const updateFilter = (name: 'caught' | 'comments', checked: boolean) => {
-    if (name === 'caught') setCaught(checked)
-    if (name === 'comments') setComments(checked)
-
+  const applyFilter = () => {
     const params = new URLSearchParams(searchParams.toString())
-    params.set(name, String(checked))
+    params.set('caughtOrComments', String(requireCaughtOrCommentsState))
     router.replace(`${pathname}?${params.toString()}`)
     router.refresh()
   }
@@ -29,20 +26,13 @@ export function CatchReturnFilters({ showCaught, showComments }: CatchReturnFilt
     <div className="dashboard-summary__filters">
       <label>
         <input
-          checked={caught}
-          onChange={(event) => updateFilter('caught', event.target.checked)}
+          checked={requireCaughtOrCommentsState}
+          onChange={(event) => setRequireCaughtOrCommentsState(event.target.checked)}
           type="checkbox"
         />
-        Caught
+        Only Caught or Comments
       </label>
-      <label>
-        <input
-          checked={comments}
-          onChange={(event) => updateFilter('comments', event.target.checked)}
-          type="checkbox"
-        />
-        Comments
-      </label>
+      <Button onClick={applyFilter}>Apply</Button>
     </div>
   )
 }

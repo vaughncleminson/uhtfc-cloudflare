@@ -39,6 +39,14 @@ const getSelectedDate = (value: string | string[] | undefined, fallback: Date) =
     : formatDashboardDate(fallback)
 }
 
+const getSelectedLocationId = (value: string | string[] | undefined) => {
+  const selectedValue = Array.isArray(value) ? value[0] : value
+
+  return typeof selectedValue === 'string' && /^\d+$/.test(selectedValue)
+    ? selectedValue
+    : undefined
+}
+
 export async function getDashboardData(payload: Payload, searchParams?: Params) {
   const defaultEndDate = new Date()
   const defaultStartDate = new Date(defaultEndDate)
@@ -46,8 +54,8 @@ export async function getDashboardData(payload: Payload, searchParams?: Params) 
 
   const endDate = getSelectedDate(searchParams?.endDate, defaultEndDate)
   const startDate = getSelectedDate(searchParams?.startDate, defaultStartDate)
-  const showCaught = getSelectedBoolean(searchParams?.caught)
-  const showComments = getSelectedBoolean(searchParams?.comments)
+  const requireCaughtOrComments = getSelectedBoolean(searchParams?.caughtOrComments)
+  const locationId = getSelectedLocationId(searchParams?.locationId)
 
   const [bookingSummaries, recentCatchReturns] = await Promise.all([
     payload.db.drizzle.all<BookingSummary>(sql`
@@ -65,15 +73,17 @@ export async function getDashboardData(payload: Payload, searchParams?: Params) 
       INNER JOIN locations ON locations.id = bookings.location_id
       INNER JOIN bookings_anglers ON bookings_anglers._parent_id = bookings.id
       LEFT JOIN catch_returns ON catch_returns.booking_id = bookings.id
+      AND catch_returns.return_completed = 1        
       LEFT JOIN catch_returns_returns ON catch_returns_returns._parent_id = catch_returns.id
       WHERE DATE(bookings.date) >= DATE(${startDate})
         AND DATE(bookings.date) <= DATE(${endDate})
+        ${locationId ? sql`AND locations.id = ${Number(locationId)}` : sql``}
       GROUP BY locations.type
     `),
     payload.db.drizzle.all<RecentCatchReturn>(sql`
       SELECT
         catch_returns.id,
-        catch_returns.return_completed,
+        bookings.date AS bookingDate,
         catch_returns.created_at,
         catch_returns.nil_return,
         catch_returns.location_name,
@@ -83,23 +93,23 @@ export async function getDashboardData(payload: Payload, searchParams?: Params) 
         catch_returns.stats_large_fish,
         TRIM(COALESCE(users.first_name, '') || ' ' || COALESCE(users.last_name, '')) AS userName
       FROM catch_returns
+      INNER JOIN bookings ON bookings.id = catch_returns.booking_id
       LEFT JOIN users ON users.id = catch_returns.user_id
-      WHERE catch_returns.return_completed = 1
-        AND (
-          (${showCaught ? 1 : 0} = 1 AND catch_returns.nil_return = 0)
-          OR (${showComments ? 1 : 0} = 1 AND catch_returns.comments <> '')
-        )
+      WHERE catch_returns.return_completed = 1          
+          AND DATE(bookings.date) >= DATE(${startDate})
+        AND DATE(bookings.date) <= DATE(${endDate})
+        ${requireCaughtOrComments ? sql` AND (catch_returns.nil_return = 0 OR catch_returns.comments <> '')` : sql``}
+        ${locationId ? sql`AND bookings.location_id = ${Number(locationId)}` : sql``}
       ORDER BY catch_returns.created_at DESC
-      LIMIT 7
     `),
   ])
 
   return {
     bookingSummaries,
     endDate,
+    locationId,
     recentCatchReturns,
-    showCaught,
-    showComments,
+    requireCaughtOrComments,
     startDate,
   }
 }

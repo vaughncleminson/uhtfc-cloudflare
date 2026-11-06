@@ -28,10 +28,28 @@
 
   &__filters {
     gap: 12px;
+
+    .btn {
+      margin: 0;
+    }
   }
 
   &__filters label {
     gap: 6px;
+  }
+
+  &__location-filter {
+    align-items: flex-end;
+    display: flex;
+    gap: 8px;
+
+    .react-select {
+      min-width: 240px;
+    }
+
+    .btn {
+      margin: 0;
+    }
   }
 
   &__table-wrap {

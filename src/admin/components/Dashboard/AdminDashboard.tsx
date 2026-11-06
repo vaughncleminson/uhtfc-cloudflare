@@ -1,11 +1,13 @@
 import type { Params, Payload } from 'payload'
 import { formatAdminURL } from 'payload/shared'
 import { getDashboardData } from '@/dashboard/getDashboardData'
+import { getLocationOptions } from '@/dashboard/getLocationOptions'
 import { formatDisplayDate } from '@/utils/date'
 import { CaughtCell } from '../CatchReturns/CaughtCell'
 import { UserNameCell } from '../CatchReturns/UserNameCell'
 import { CatchReturnFilters } from './CatchReturnFilters'
 import { DashboardDetailsModal } from './DashboardDetailsModal'
+import { LocationFilter } from './LocationFilter'
 import './AdminDashboard.scss'
 
 type AdminDashboardProps = {
@@ -17,11 +19,12 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
   const {
     bookingSummaries,
     endDate,
+    locationId,
     recentCatchReturns: recentCatchReturnsResult,
-    showCaught,
-    showComments,
+    requireCaughtOrComments,
     startDate,
   } = await getDashboardData(payload, searchParams)
+  const locationOptions = await getLocationOptions(payload)
 
   const formattedEndDate = endDate
   const formattedStartDate = startDate
@@ -29,10 +32,13 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
   return (
     <div>
       <section aria-label="Bookings" className="card dashboard-summary">
-        <h2>
-          Rods and Catches - {formatDisplayDate(startDate)} to {formatDisplayDate(endDate)}
+        <div className="dashboard-summary__heading">
+          <h2>
+            Rods and Catches - {formatDisplayDate(startDate)} to {formatDisplayDate(endDate)}
+          </h2>
           <DashboardDetailsModal endDate={formattedEndDate} startDate={formattedStartDate} />
-        </h2>
+          <LocationFilter locationId={locationId} locationOptions={locationOptions} />
+        </div>
 
         <div className="dashboard-summary__table-wrap">
           <table className="dashboard-summary__table">
@@ -62,7 +68,7 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
       <section aria-label="Latest completed catch returns" className="card dashboard-summary">
         <div className="dashboard-summary__heading">
           <h2>Last Catch Returns</h2>
-          <CatchReturnFilters showCaught={showCaught} showComments={showComments} />
+          <CatchReturnFilters requireCaughtOrComments={requireCaughtOrComments} />
         </div>
         <div className="dashboard-summary__table-wrap">
           <table className="dashboard-summary__table">
