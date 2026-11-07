@@ -1,6 +1,7 @@
 'use client'
 
 import { validateBookingDates, ValidateBookingProps } from '@/admin/utils/validateBookingDates'
+import type { CatchReturnGateResult } from '@/bookings/getOutstandingCatchReturnGate'
 import { orderAtom } from '@/frontend/atoms/orderAtom'
 import { Booking, bookingSchema } from '@/frontend/schemas/bookingSchema'
 import { LineItem } from '@/frontend/schemas/lineItemSchema'
@@ -152,6 +153,17 @@ export default function BookingForm(props: BookingFormProps) {
   }
 
   const submit = async () => {
+    try {
+      const gateResponse = await fetch('/api/catch-return-gate')
+      const gate = (await gateResponse.json()) as CatchReturnGateResult
+      if (gate.blocked) {
+        router.push(`/catch-return?publicId=${gate.publicId}`)
+        return
+      }
+    } catch {
+      // Courtesy check only; fail open and let the server-side hook enforce the rule.
+    }
+
     if (anglers.length > 1) {
       for (let i = 0; i < anglers.length; i++) {
         if (!anglers[i].firstName || !anglers[i].lastName || !anglers[i].role) {
