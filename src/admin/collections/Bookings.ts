@@ -1,4 +1,5 @@
 import { APIError, type CollectionConfig } from 'payload'
+import { getOutstandingCatchReturnGate } from '@/bookings/getOutstandingCatchReturnGate'
 import { LineItems } from '../fields/LineItems'
 import { UserRole } from '../fields/UserRole'
 
@@ -18,7 +19,7 @@ export const Bookings: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      async ({ data, operation, req }) => {
+      async ({ context, data, operation, req }) => {
         if (operation !== 'create') return data
 
         if (req.user && req.user.id !== data.userId && req.user.role !== 'admin') {
@@ -34,6 +35,19 @@ export const Bookings: CollectionConfig = {
 
         if ((user.arrearsAmount ?? 0) > 0) {
           throw new APIError('Membership Subscription Unpaid', 403)
+        }
+
+        if (!context.skipCatchReturnGate) {
+          const gate = await getOutstandingCatchReturnGate(
+            req.payload,
+            data.userId,
+            new Date(),
+            req,
+          )
+
+          if (gate.blocked) {
+            throw new APIError('Outstanding Catch Return must be completed before booking', 403)
+          }
         }
 
         return data
