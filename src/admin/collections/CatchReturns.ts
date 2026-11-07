@@ -16,7 +16,7 @@ export const CatchReturns: CollectionConfig = {
       type: 'relationship',
       name: 'booking',
       label: 'Booking',
-      // required: true,
+      required: true,
       relationTo: 'bookings',
       admin: {
         components: {
