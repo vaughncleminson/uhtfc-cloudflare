@@ -43,11 +43,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <LivePreviewListener />
         <AuthProvider user={currentUser}>
-          <Header navigation={navigation} />
           <ConfirmProvider>
+            <Header navigation={navigation} />
             <ToastProvider>{children}</ToastProvider>
+            <Footer navigation={navigation} />
           </ConfirmProvider>
-          <Footer navigation={navigation} />
         </AuthProvider>
       </body>
     </html>
