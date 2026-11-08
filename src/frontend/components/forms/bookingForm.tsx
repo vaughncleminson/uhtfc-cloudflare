@@ -7,6 +7,7 @@ import { LineItem } from '@/frontend/schemas/lineItemSchema'
 import { Membership } from '@/frontend/schemas/membershipSchema'
 import { Order } from '@/frontend/schemas/orderSchema'
 import { BookingHistory, Location, Setting, User } from '@/payload-types'
+import { checkCatchReturnGate } from '@/utils/checkCatchReturnGate'
 import { DATE_PICKER_DISPLAY_FORMAT, formatDisplayDate } from '@/utils/date'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -152,6 +153,12 @@ export default function BookingForm(props: BookingFormProps) {
   }
 
   const submit = async () => {
+    const gate = await checkCatchReturnGate()
+    if (gate.blocked) {
+      router.push(`/catch-return?publicId=${gate.publicId}`)
+      return
+    }
+
     if (anglers.length > 1) {
       for (let i = 0; i < anglers.length; i++) {
         if (!anglers[i].firstName || !anglers[i].lastName || !anglers[i].role) {

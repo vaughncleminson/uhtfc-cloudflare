@@ -2,13 +2,16 @@
 import { orderAtom } from '@/frontend/atoms/orderAtom'
 import { settingsAtom } from '@/frontend/atoms/settingsAtom'
 import { NavigationType } from '@/frontend/types/navigation'
+import { checkCatchReturnGate } from '@/utils/checkCatchReturnGate'
 import { useAtom } from 'jotai'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../ui/AuthProvider'
 import Caret from '../ui/Caret'
 import HamburgerButton from '../ui/Hamburger'
 import Logout from '../ui/logout'
+import { useConfirm } from '../ui/ModalProvider'
 import Profile from '../ui/profile'
 
 type Props = {
@@ -24,6 +27,8 @@ export default function Nav(props: Props) {
   const [order, setOrder] = useAtom(orderAtom)
   const { user } = useAuth()
   const navRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const confirm = useConfirm()
   const isCommitteeMember = Boolean(
     user && 'committeeMember' in user && user.committeeMember === true,
   )
@@ -85,6 +90,24 @@ export default function Nav(props: Props) {
     } catch (err) {
       console.log(err)
     }
+  }
+
+  const handleCartClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+
+    const gate = await checkCatchReturnGate()
+    if (gate.blocked) {
+      confirm({
+        title: 'OUTSTANDING CATCH RETURN',
+        message: 'Please complete your last Catch Return before proceeding to checkout.',
+        confirmTitle: 'COMPLETE CATCH RETURN',
+        confirmUrl: `/catch-return?publicId=${gate.publicId}`,
+        cancelTitle: 'CANCEL',
+      })
+      return
+    }
+
+    router.push('/checkout')
   }
 
   const isLinkAndAuthenticated = (obj: {
@@ -226,7 +249,7 @@ export default function Nav(props: Props) {
             </React.Fragment>
           ))}
           {order?.products && order?.products.length > 0 && user && (
-            <Link href="/checkout">
+            <Link href="/checkout" onClick={handleCartClick}>
               <div className="bg-black text-sm bg-opacity-60 border border-white border-opacity-60 px-2 py-1 flex items-center gap-2 relative uppercase">
                 <div className="text-sm">Cart</div>
                 <div className="absolute flex items-center justify-center border border-white border-opacity-60 px-1 h-4 bg-red-700 text-white -top-2 -right-2 text-xs">
@@ -265,7 +288,7 @@ export default function Nav(props: Props) {
           <div className=" absolute right-10 top-7 flex items-center gap-4 text-white">
             <HamburgerButton open={showNav} size={30} onClick={() => setShowNav(!showNav)} />
             {order?.products && order?.products.length > 0 && user && (
-              <Link href="/checkout">
+              <Link href="/checkout" onClick={handleCartClick}>
                 <div className="bg-black text-sm bg-opacity-60 border border-white border-opacity-60 px-2 py-1 flex items-center gap-2 relative uppercase">
                   <div className="text-sm">Cart</div>
                   <div className="absolute flex items-center justify-center border border-white border-opacity-60 px-1 h-4 bg-red-700 text-white -top-2 -right-2 text-xs">

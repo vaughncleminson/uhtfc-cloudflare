@@ -433,7 +433,7 @@ export interface BookingHistory {
  */
 export interface CatchReturn {
   id: number;
-  booking?: (number | null) | Booking;
+  booking: number | Booking;
   userId?: number | null;
   locationName?: string | null;
   returnCompleted: boolean;
