@@ -1,5 +1,3 @@
-import 'server-only'
-
 import type { Booking, CatchReturn } from '@/payload-types'
 import type { Payload, PayloadRequest } from 'payload'
 
