@@ -1,6 +1,7 @@
 import 'server-only'
 
 import { sql } from '@payloadcms/db-d1-sqlite'
+import { SQLiteAsyncDialect } from '@payloadcms/db-d1-sqlite/drizzle/sqlite-core'
 import type { Params, Payload } from 'payload'
 
 export type BookingSummary = {
@@ -57,29 +58,38 @@ export async function getDashboardData(payload: Payload, searchParams?: Params) 
   const requireCaughtOrComments = getSelectedBoolean(searchParams?.caughtOrComments)
   const locationId = getSelectedLocationId(searchParams?.locationId)
 
+  const bookingSummaryQuery = sql`
+    SELECT
+      locations.type AS LocationType,
+      COUNT(bookings_anglers.id) AS CountOfRods,
+      COALESCE(SUM(catch_returns_returns.quantity), 0) AS TotalCatches,
+      CAST(ROUND(COALESCE(
+        SUM(catch_returns_returns.length * catch_returns_returns.quantity)
+          / NULLIF(SUM(catch_returns_returns.quantity), 0),
+        0
+      ), 0) AS INTEGER) AS AvgLength,
+      COALESCE(MAX(catch_returns_returns.length), 0) AS MaxLargeFish
+    FROM bookings
+    INNER JOIN locations ON locations.id = bookings.location_id
+    INNER JOIN bookings_anglers ON bookings_anglers._parent_id = bookings.id
+    LEFT JOIN catch_returns ON catch_returns.booking_id = bookings.id
+    AND catch_returns.return_completed = 1        
+    LEFT JOIN catch_returns_returns ON catch_returns_returns._parent_id = catch_returns.id
+    WHERE DATE(bookings.date) >= DATE(${startDate})
+      AND DATE(bookings.date) <= DATE(${endDate})
+      ${locationId ? sql`AND locations.id = ${Number(locationId)}` : sql``}
+    GROUP BY locations.type
+  `
+
+  // code below is to write sql to the console for debugging purposes
+  //const compiledQuery = new SQLiteAsyncDialect().sqlToQuery(bookingSummaryQuery)
+  // console.log({
+  //   sql: compiledQuery.sql,
+  //   params: compiledQuery.params,
+  // })
+
   const [bookingSummaries, recentCatchReturns] = await Promise.all([
-    payload.db.drizzle.all<BookingSummary>(sql`
-      SELECT
-        locations.type AS LocationType,
-        COUNT(bookings_anglers.id) AS CountOfRods,
-        COALESCE(SUM(catch_returns_returns.quantity), 0) AS TotalCatches,
-        CAST(ROUND(COALESCE(
-          SUM(catch_returns_returns.length * catch_returns_returns.quantity)
-            / NULLIF(SUM(catch_returns_returns.quantity), 0),
-          0
-        ), 0) AS INTEGER) AS AvgLength,
-        COALESCE(MAX(catch_returns_returns.length), 0) AS MaxLargeFish
-      FROM bookings
-      INNER JOIN locations ON locations.id = bookings.location_id
-      INNER JOIN bookings_anglers ON bookings_anglers._parent_id = bookings.id
-      LEFT JOIN catch_returns ON catch_returns.booking_id = bookings.id
-      AND catch_returns.return_completed = 1        
-      LEFT JOIN catch_returns_returns ON catch_returns_returns._parent_id = catch_returns.id
-      WHERE DATE(bookings.date) >= DATE(${startDate})
-        AND DATE(bookings.date) <= DATE(${endDate})
-        ${locationId ? sql`AND locations.id = ${Number(locationId)}` : sql``}
-      GROUP BY locations.type
-    `),
+    payload.db.drizzle.all<BookingSummary>(bookingSummaryQuery),
     payload.db.drizzle.all<RecentCatchReturn>(sql`
       SELECT
         catch_returns.id,
