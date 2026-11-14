@@ -61,9 +61,10 @@ server-side and a human promoting the build in the dashboard:
 4. Merge the PR — this triggers a Cloudflare build of `main`.
 5. Once the `main` build is green, a human marks it **"Promote"** in the Cloudflare dashboard — this
    is what actually ships it to production.
-6. Only then, back on `main` locally (`git pull`), run the production migration:
-   `pnpm run deploy:database` (`NODE_ENV=production PAYLOAD_SECRET=ignore pnpm payload migrate`
-   followed by `wrangler d1 execute D1 --command "PRAGMA optimize" --remote` — see `VC Notes.txt`).
+6. Only then, run the **Backup and migrate production D1** GitHub Actions workflow from `main`
+   with confirmation `MIGRATE`. The workflow exports production D1 and uploads the backup artifact
+   before running Payload migrations, then verifies foreign keys and optimizes D1. Confirm the
+   workflow completes successfully before considering the release finished.
 
 Use `/deploy` (in `.claude/commands/`) to walk through this — it has the checkpoints that need human
 confirmation (dashboard build status, the promote step) built in.
@@ -167,7 +168,8 @@ write cycles/day and SQLite busy/locked errors).
   `cloudflare-env.d.ts`, `tsconfig.tsbuildinfo`, `migrations/*.json`) — run `pnpm run schema:update`
   instead.
 - Use `/deploy`, `/schema-update`, and `/db-restore-prod-to-local` (in `.claude/commands/`) for those
-  respective workflows — they wrap the right confirmation steps.
+  respective workflows — they wrap the right confirmation steps. Production migrations run through
+  `.github/workflows/migrate-production-d1.yml`, not from a developer workstation.
 
 ## Agent skills
 

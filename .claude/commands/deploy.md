@@ -22,17 +22,16 @@ git-driven, with Cloudflare building server-side and a human promoting the build
 7. **Wait for the `main` build to pass, then the user promotes it** in the Cloudflare dashboard
    ("Promote" action). This is a manual portal step you cannot perform — ask the user to confirm
    the build passed and was promoted before moving on to migrations.
-8. **Run any pending migration against production** — only after promotion is confirmed. On the
-   local dev machine: `git checkout main && git pull`, then run the production migration step:
+8. **Back up and migrate production D1** — only after promotion is confirmed. Ask for explicit
+   approval, then trigger the guarded GitHub Actions workflow from `main`:
 
    ```bash
-   pnpm run deploy:database
+   gh workflow run migrate-production-d1.yml --ref main -f confirmation=MIGRATE
    ```
 
-   (equivalent to `NODE_ENV=production PAYLOAD_SECRET=ignore pnpm payload migrate && wrangler d1
-   execute D1 --command "PRAGMA optimize" --env=$CLOUDFLARE_ENV --remote` — see `VC Notes.txt`).
-   This is gated to prompt for confirmation in settings; confirm with the user it's expected before
-   running it, since it writes to production D1.
+   The workflow uploads a fresh production export before running migrations, verifies foreign keys,
+   and optimizes D1. Watch the run with `gh run watch` and report both the backup artifact name and
+   final workflow status. Triggering this workflow writes to production D1, so approval is required.
 
 Do not skip steps or collapse this into a single command — each numbered step above has a human
 checkpoint (dashboard build status, promote action, or an explicit go-ahead) that you cannot verify

@@ -1,0 +1,97 @@
+name: Backup and migrate production D1
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type MIGRATE to confirm the production database migration
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-d1-migration
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Backup and migrate
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Require main and confirmation
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "Production migrations must run from main." >&2
+            exit 1
+          fi
+
+          if [[ "$CONFIRMATION" != "MIGRATE" ]]; then
+            echo "Confirmation must be exactly MIGRATE." >&2
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Export production D1
+        id: backup
+        run: |
+          mkdir -p database-exports
+          backup_path="database-exports/prod-before-migration-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.sql"
+          pnpm exec wrangler d1 export d1-uhtfc-cloudflare \
+            --remote \
+            --output="$backup_path" \
+            -y
+          test -s "$backup_path"
+          grep -q 'CREATE TABLE `payload_migrations`' "$backup_path"
+          echo "path=$backup_path" >> "$GITHUB_OUTPUT"
+
+      - name: Upload pre-migration backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-d1-before-migration-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.backup.outputs.path }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Run Payload migrations
+        run: NODE_ENV=production PAYLOAD_SECRET=ignore pnpm payload migrate
+
+      - name: Verify foreign keys
+        run: |
+          result="$(pnpm exec wrangler d1 execute D1 \
+            --remote \
+            --json \
+            --command "SELECT COUNT(*) AS violations FROM pragma_foreign_key_check;")"
+          echo "$result" | jq
+          violations="$(echo "$result" | jq -r '.[0].results[0].violations')"
+
+          if [[ "$violations" != "0" ]]; then
+            echo "Foreign-key verification failed with $violations violation(s)." >&2
+            exit 1
+          fi
+
+      - name: Optimize D1
+        run: pnpm exec wrangler d1 execute D1 --remote -y --command "PRAGMA optimize"
