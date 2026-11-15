@@ -1,7 +1,6 @@
 import 'server-only'
 
 import { sql } from '@payloadcms/db-d1-sqlite'
-import { SQLiteAsyncDialect } from '@payloadcms/db-d1-sqlite/drizzle/sqlite-core'
 import type { Params, Payload } from 'payload'
 
 export type BookingSummary = {
@@ -13,6 +12,7 @@ export type BookingSummary = {
 }
 
 export type RecentCatchReturn = {
+  BookingsAnglersNames: string | null
   comments: string | null
   created_at: string
   id: number
@@ -23,6 +23,7 @@ export type RecentCatchReturn = {
   stats_total: number
   userId: number | null
   userName: string
+  NumberOfRods: number
 }
 
 const formatDashboardDate = (date: Date) => date.toISOString().slice(0, 10)
@@ -59,22 +60,16 @@ export async function getDashboardData(payload: Payload, searchParams?: Params) 
   const locationId = getSelectedLocationId(searchParams?.locationId)
 
   const bookingSummaryQuery = sql`
-    SELECT
-      locations.type AS LocationType,
-      COUNT(bookings_anglers.id) AS CountOfRods,
-      COALESCE(SUM(catch_returns_returns.quantity), 0) AS TotalCatches,
-      CAST(ROUND(COALESCE(
-        SUM(catch_returns_returns.length * catch_returns_returns.quantity)
-          / NULLIF(SUM(catch_returns_returns.quantity), 0),
-        0
-      ), 0) AS INTEGER) AS AvgLength,
-      COALESCE(MAX(catch_returns_returns.length), 0) AS MaxLargeFish
-    FROM bookings
-    INNER JOIN locations ON locations.id = bookings.location_id
-    INNER JOIN bookings_anglers ON bookings_anglers._parent_id = bookings.id
-    LEFT JOIN catch_returns ON catch_returns.booking_id = bookings.id
-    AND catch_returns.return_completed = 1        
-    LEFT JOIN catch_returns_returns ON catch_returns_returns._parent_id = catch_returns.id
+    SELECT     locations.type AS LocationType,    
+      sum((select count(bookings_anglers.id) from bookings_anglers 
+      where bookings_anglers._parent_id = bookings.id )) AS CountOfRods,    
+      SUM(catch_returns.stats_total) AS TotalCatches,   
+      CAST(ROUND(sum(catch_returns.stats_average_length * catch_returns.stats_total)       
+      / SUM(catch_returns.stats_total),0) AS INTEGER) AS AvgLength,    
+      COALESCE(MAX(catch_returns.stats_large_fish), 0) AS MaxLargeFish  
+    FROM bookings   INNER JOIN locations ON locations.id = bookings.location_id  
+      LEFT JOIN catch_returns ON catch_returns.booking_id = bookings.id  
+      AND catch_returns.return_completed = 1   
     WHERE DATE(bookings.date) >= DATE(${startDate})
       AND DATE(bookings.date) <= DATE(${endDate})
       ${locationId ? sql`AND locations.id = ${Number(locationId)}` : sql``}
@@ -82,36 +77,54 @@ export async function getDashboardData(payload: Payload, searchParams?: Params) 
   `
 
   // code below is to write sql to the console for debugging purposes
-  //const compiledQuery = new SQLiteAsyncDialect().sqlToQuery(bookingSummaryQuery)
+  // const compiledQuery = new SQLiteAsyncDialect().sqlToQuery(bookingSummaryQuery)
   // console.log({
   //   sql: compiledQuery.sql,
   //   params: compiledQuery.params,
   // })
 
+  const RecentCatchReturnQuery = sql`
+    SELECT
+      catch_returns.id,
+      bookings.date AS bookingDate,
+      catch_returns.created_at,
+      (select count(bookings_anglers.id) from bookings_anglers 
+      where bookings_anglers._parent_id = bookings.id ) as NumberOfRods,
+      (SELECT GROUP_CONCAT(
+        TRIM(COALESCE(bookings_anglers.first_name, '') || ' ' || COALESCE(bookings_anglers.last_name, '')),
+        ', '
+      )
+      FROM bookings_anglers
+      WHERE bookings_anglers._parent_id = bookings.id
+      ORDER BY bookings_anglers._order) AS BookingsAnglersNames,
+      catch_returns.nil_return,
+      catch_returns.location_name,
+      catch_returns.comments,
+      catch_returns.user_id AS userId,
+      catch_returns.stats_total,
+      catch_returns.stats_large_fish,
+      catch_returns.stats_average_length,
+      TRIM(COALESCE(users.first_name, '') || ' ' || COALESCE(users.last_name, '')) AS userName
+    FROM catch_returns
+    INNER JOIN bookings ON bookings.id = catch_returns.booking_id
+    LEFT JOIN users ON users.id = catch_returns.user_id
+    WHERE catch_returns.return_completed = 1          
+        AND DATE(bookings.date) >= DATE(${startDate})
+      AND DATE(bookings.date) <= DATE(${endDate})
+      ${requireCaughtOrComments ? sql` AND (catch_returns.nil_return = 0 OR catch_returns.comments <> '')` : sql``}
+      ${locationId ? sql`AND bookings.location_id = ${Number(locationId)}` : sql``}
+    ORDER BY catch_returns.created_at DESC
+  `
+  // code below is to write sql to the console for debugging purposes
+  // const compiledRecentCatchReturnQuery = new SQLiteAsyncDialect().sqlToQuery(RecentCatchReturnQuery)
+  // console.log({
+  //   sql: compiledRecentCatchReturnQuery.sql,
+  //   params: compiledRecentCatchReturnQuery.params,
+  // })
+
   const [bookingSummaries, recentCatchReturns] = await Promise.all([
     payload.db.drizzle.all<BookingSummary>(bookingSummaryQuery),
-    payload.db.drizzle.all<RecentCatchReturn>(sql`
-      SELECT
-        catch_returns.id,
-        bookings.date AS bookingDate,
-        catch_returns.created_at,
-        catch_returns.nil_return,
-        catch_returns.location_name,
-        catch_returns.comments,
-        catch_returns.user_id AS userId,
-        catch_returns.stats_total,
-        catch_returns.stats_large_fish,
-        TRIM(COALESCE(users.first_name, '') || ' ' || COALESCE(users.last_name, '')) AS userName
-      FROM catch_returns
-      INNER JOIN bookings ON bookings.id = catch_returns.booking_id
-      LEFT JOIN users ON users.id = catch_returns.user_id
-      WHERE catch_returns.return_completed = 1          
-          AND DATE(bookings.date) >= DATE(${startDate})
-        AND DATE(bookings.date) <= DATE(${endDate})
-        ${requireCaughtOrComments ? sql` AND (catch_returns.nil_return = 0 OR catch_returns.comments <> '')` : sql``}
-        ${locationId ? sql`AND bookings.location_id = ${Number(locationId)}` : sql``}
-      ORDER BY catch_returns.created_at DESC
-    `),
+    payload.db.drizzle.all<RecentCatchReturn>(RecentCatchReturnQuery),
   ])
 
   return {

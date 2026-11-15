@@ -4,7 +4,6 @@ import { getDashboardData } from '@/dashboard/getDashboardData'
 import { getLocationOptions } from '@/dashboard/getLocationOptions'
 import { formatDisplayDate } from '@/utils/date'
 import { CaughtCell } from '../CatchReturns/CaughtCell'
-import { UserNameCell } from '../CatchReturns/UserNameCell'
 import { CatchReturnFilters } from './CatchReturnFilters'
 import { DashboardDetailsModal } from './DashboardDetailsModal'
 import { LocationFilter } from './LocationFilter'
@@ -67,17 +66,18 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
       </section>
       <section aria-label="Latest completed catch returns" className="card dashboard-summary">
         <div className="dashboard-summary__heading">
-          <h2>Last Catch Returns</h2>
+          <h2>Catch Returns</h2>
           <CatchReturnFilters requireCaughtOrComments={requireCaughtOrComments} />
         </div>
         <div className="dashboard-summary__table-wrap">
           <table className="dashboard-summary__table">
             <thead>
               <tr>
-                <th>Booking</th>
+                <th>Date</th>
                 <th>Location</th>
-                <th>User</th>
+                <th>Anglers</th>
                 <th>Caught</th>
+                <th>Largest Fish</th>
                 <th>Comments</th>
               </tr>
             </thead>
@@ -95,12 +95,11 @@ export const AdminDashboard = async ({ payload, searchParams }: AdminDashboardPr
                     </a>
                   </td>
                   <td>{catchReturn.location_name}</td>
-                  <td>
-                    <UserNameCell cellData={catchReturn.userId} payload={payload} />
-                  </td>
+                  <td>{catchReturn.BookingsAnglersNames || '-'}</td>
                   <td className="dashboard-summary__nowrap">
                     <CaughtCell rowData={catchReturn} />
                   </td>
+                  <td className="dashboard-summary__text">{catchReturn.stats_large_fish || ''}</td>
                   <td>{catchReturn.comments || ''}</td>
                 </tr>
               ))}

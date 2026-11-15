@@ -98,7 +98,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         <section aria-labelledby="catch-returns-heading" className="flex flex-col gap-4">
           <h2 className="flex flex-wrap items-center gap-4" id="catch-returns-heading">
-            <span>Last Catch Returns</span>
+            <span>Catch Returns</span>
             <DashboardControlsCatchReturns requireCaughtOrComments={requireCaughtOrComments} />
           </h2>
           <div className="overflow-x-auto border border-slate-600">
@@ -107,8 +107,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 <tr>
                   <th className="p-3">Booking</th>
                   <th className="p-3">Location</th>
-                  <th className="p-3">User</th>
+                  <th className="p-3">Anglers</th>
                   <th className="p-3">Caught</th>
+                  <th className="p-3">Largest Fish</th>
                   <th className="p-3">Comments</th>
                 </tr>
               </thead>
@@ -119,16 +120,17 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       {formatDisplayDate(catchReturn.created_at)}
                     </td>
                     <td className="p-3">{catchReturn.location_name}</td>
-                    <td className="p-3">{catchReturn.userName || '-'}</td>
+                    <td className="p-3">{catchReturn.BookingsAnglersNames || '-'}</td>
                     <td className="whitespace-nowrap p-3">
                       <CaughtCell rowData={catchReturn} />
                     </td>
+                    <td className="p-3">{catchReturn.stats_large_fish || ''}</td>
                     <td className="p-3">{catchReturn.comments || ''}</td>
                   </tr>
                 ))}
                 {recentCatchReturns.length === 0 && (
                   <tr className="border-t border-slate-600">
-                    <td className="p-5 text-center text-slate-400" colSpan={5}>
+                    <td className="p-5 text-center text-slate-400" colSpan={6}>
                       No matching catch returns
                     </td>
                   </tr>
